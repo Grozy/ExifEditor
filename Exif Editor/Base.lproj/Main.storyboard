@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="MHI-Ta-mbS">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="64" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="420" y="736"/>
+        </scene>
+        <!--exif editor-->
+        <scene sceneID="cUd-50-pvA">
+            <objects>
+                <viewController id="f3D-xa-fDF" customClass="ChildViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="ykT-18-PJA"/>
+                        <viewControllerLayoutGuide type="bottom" id="lsq-Ja-2I6"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="d2e-hC-EqN">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aiV-Qh-RB3">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </scrollView>
+                        </subviews>
+                        <constraints>
+                            <constraint firstItem="lsq-Ja-2I6" firstAttribute="top" secondItem="aiV-Qh-RB3" secondAttribute="bottom" id="AK8-nk-LsF"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="aiV-Qh-RB3" secondAttribute="trailing" constant="-16" id="Sve-Ao-nfe"/>
+                            <constraint firstItem="aiV-Qh-RB3" firstAttribute="top" secondItem="ykT-18-PJA" secondAttribute="bottom" id="mJC-XR-sRH"/>
+                            <constraint firstItem="aiV-Qh-RB3" firstAttribute="leading" secondItem="d2e-hC-EqN" secondAttribute="leadingMargin" constant="-16" id="zi6-gL-jnk"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <navigationItem key="navigationItem" title="exif editor" id="fpI-WR-K4S"/>
+                    <connections>
+                        <outlet property="scrollView" destination="aiV-Qh-RB3" id="aac-6S-J2z"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GQx-W6-szS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1910" y="275"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="TQx-BF-MUD">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="MHI-Ta-mbS" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Lxy-hd-z2a">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="f3D-xa-fDF" kind="relationship" relationship="rootViewController" id="dqw-Qp-T6b"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="L5k-0T-Iyk" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1098" y="275"/>
+        </scene>
+    </scenes>
+    <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+</document>
