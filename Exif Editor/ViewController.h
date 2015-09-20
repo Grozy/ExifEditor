@@ -28,6 +28,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *fileSize;
 @property (strong, nonatomic) IBOutlet UITextField *dateTimeOriginal;
 @property (strong, nonatomic) IBOutlet UITextField *dateTimeDigitized;
+@property (strong, nonatomic) IBOutlet UITextField *fileName;
 
 
 // EXIF Dictionary Keys
