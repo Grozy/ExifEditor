@@ -279,7 +279,7 @@
                          self.exifFocalLength.text = [NSString stringWithFormat:@"%@", exifFocalLength];
                          
                          NSDecimalNumber *exifSubjectArea = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectArea);
-                         self.exifSubjectArea.text = [NSString stringWithFormat:@"%@", exifSubjectDistance];
+                         self.exifSubjectArea.text = [NSString stringWithFormat:@"%@", exifSubjectArea];
                          
                          NSDecimalNumber *exifMakerNote = CFDictionaryGetValue(exif, kCGImagePropertyExifMakerNote);
                          self.exifMakerNote.text = [NSString stringWithFormat:@"%@", exifMakerNote];
@@ -433,20 +433,27 @@
                      NSLog(@"gps_dict: %@",gps_dict);
                      
                      if(gps_dict) {
-                         NSString *version = CFDictionaryGetValue(gps, kCGImagePropertyGPSVersion);
-                         self.gpsVersion.text = version;
+                         NSDecimalNumber *version = CFDictionaryGetValue(gps, kCGImagePropertyGPSVersion);
+                         self.gpsVersion.text = [NSString stringWithFormat:@"%@", version];;
+                         
                          NSString *latitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitudeRef);
                          self.gpsLatitudeRef.text = latitudeRef;
-                         NSString *latitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitude);
-                         self.gpsLatitude.text = latitude;
+                         
+                         NSDecimalNumber *latitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitude);
+                         self.gpsLatitude.text = [NSString stringWithFormat:@"%@", latitude];;
+                         
                          NSString *longitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitudeRef);
                          self.gpsLongitudeRef.text = longitudeRef;
-                         NSString *longitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitude);
-                         self.gpsLongitude.text = longitude;
-                         NSString *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
-                         self.gpsAltitudeRef.text = altitudeRef;
-                         NSString *altitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitude);
-                         self.gpsAltitude.text = altitude;
+                         
+                         NSDecimalNumber *longitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitude);
+                         self.gpsLongitude.text = [NSString stringWithFormat:@"%@", longitude];;
+                         
+                         NSDecimalNumber *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
+                         self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];;
+                         
+                         NSDecimalNumber *altitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitude);
+                         self.gpsAltitude.text = [NSString stringWithFormat:@"%@", altitude];;
+                         
                          NSString *timeStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSTimeStamp);
                          self.gpsTimeStamp.text = timeStamp;
                          NSString *satellites = CFDictionaryGetValue(gps, kCGImagePropertyGPSSatellites);
@@ -936,8 +943,11 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.imageView addGestureRecognizer:newTap];
     
     // Table view to hold the data
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, h*6-420)];
-    [self.scrollView addSubview:self.tableView];
+//    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, h*6-420)];
+    self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, 2860)];
+    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
+    [self.scrollView addSubview:self.exifTableView];
+    [self.scrollView addSubview:self.gpsTableView];
     
     // Exif title banner
     UIView *exifTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 332, w, 44)];
@@ -963,7 +973,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.fileName.frame = CGRectMake(w/2, 388, 400, 20);
     self.fileName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileName.textColor = [UIColor blackColor];
-    [self.fileName setReturnKeyType:UIReturnKeyNext];
+    [self.fileName setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.fileName];
     
     // Width label
@@ -979,7 +989,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.width.frame = CGRectMake(w/2, 432, 400, 20);
     self.width.keyboardAppearance = UIKeyboardAppearanceDark;
     self.width.textColor = [UIColor blackColor];
-    [self.width setReturnKeyType:UIReturnKeyNext];
+    [self.width setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.width];
     
     // Height label
@@ -995,7 +1005,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.height.frame = CGRectMake(w/2, 476, 400, 20);
     self.height.keyboardAppearance = UIKeyboardAppearanceDark;
     self.height.textColor = [UIColor blackColor];
-    [self.height setReturnKeyType:UIReturnKeyNext];
+    [self.height setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.height];
     
     // File size label
@@ -1011,7 +1021,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.fileSize.frame = CGRectMake(w/2, 520, 400, 20);
     self.fileSize.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileSize.textColor = [UIColor blackColor];
-    [self.height setReturnKeyType:UIReturnKeyNext];
+    [self.height setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.fileSize];
     
     // Date label. created or modified?
@@ -1027,7 +1037,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.dateTimeDigitized.frame = CGRectMake(w/2, 564, 400, 20);
     self.dateTimeDigitized.keyboardAppearance = UIKeyboardAppearanceDark;
     self.dateTimeDigitized.textColor = [UIColor blackColor];
-    [self.dateTimeDigitized setReturnKeyType:UIReturnKeyNext];
+    [self.dateTimeDigitized setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.dateTimeDigitized];
     
     // Exif exposure time label
@@ -1043,7 +1053,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureTime.frame = CGRectMake(w/2, 608, 400, 20);
     self.exifExposureTime.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureTime.textColor = [UIColor blackColor];
-    [self.exifExposureTime setReturnKeyType:UIReturnKeyNext];
+    [self.exifExposureTime setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifExposureTime];
     
     // F number label
@@ -1059,7 +1069,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFNumber.frame = CGRectMake(w/2, 652, 400, 20);
     self.exifFNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFNumber.textColor = [UIColor blackColor];
-    [self.exifFNumber setReturnKeyType:UIReturnKeyNext];
+    [self.exifFNumber setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFNumber];
     
     // Exposure program label
@@ -1075,7 +1085,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureProgram.frame = CGRectMake(w/2, 696, 400, 20);
     self.exifExposureProgram.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureProgram.textColor = [UIColor blackColor];
-    [self.exifExposureProgram setReturnKeyType:UIReturnKeyNext];
+    [self.exifExposureProgram setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifExposureProgram];
     
     // Spectral sensitivity label
@@ -1091,7 +1101,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSpectralSensitivity.frame = CGRectMake(w/2, 740, 400, 20);
     self.exifSpectralSensitivity.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSpectralSensitivity.textColor = [UIColor blackColor];
-    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyNext];
+    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSpectralSensitivity];
     
     // ISO speed ratings label
@@ -1107,7 +1117,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifISOSpeedRatings.frame = CGRectMake(w/2, 784, 400, 20);
     self.exifISOSpeedRatings.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifISOSpeedRatings.textColor = [UIColor blackColor];
-    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyNext];
+    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifISOSpeedRatings];
     
     // OECF label
@@ -1123,7 +1133,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifOECF.frame = CGRectMake(w/2, 828, 400, 20);
     self.exifOECF.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifOECF.textColor = [UIColor blackColor];
-    [self.exifOECF setReturnKeyType:UIReturnKeyNext];
+    [self.exifOECF setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifOECF];
     
     // Version label
@@ -1139,7 +1149,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifVersion.frame = CGRectMake(w/2, 872, 400, 20);
     self.exifVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifVersion.textColor = [UIColor blackColor];
-    [self.exifVersion setReturnKeyType:UIReturnKeyNext];
+    [self.exifVersion setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifVersion];
     
     // Components configuration label
@@ -1155,7 +1165,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifComponentsConfiguration.frame = CGRectMake(w/2, 916, 400, 20);
     self.exifComponentsConfiguration.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifComponentsConfiguration.textColor = [UIColor blackColor];
-    [self.exifComponentsConfiguration setReturnKeyType:UIReturnKeyNext];
+    [self.exifComponentsConfiguration setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifComponentsConfiguration];
     
     // Shutter speed value label
@@ -1171,7 +1181,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifShutterSpeedValue.frame = CGRectMake(w/2, 960, 400, 20);
     self.exifShutterSpeedValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifShutterSpeedValue.textColor = [UIColor blackColor];
-    [self.exifShutterSpeedValue setReturnKeyType:UIReturnKeyNext];
+    [self.exifShutterSpeedValue setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifShutterSpeedValue];
     
     // Aperture value label
@@ -1187,7 +1197,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifApertureValue.frame = CGRectMake(w/2, 1004, 400, 20);
     self.exifApertureValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifApertureValue.textColor = [UIColor blackColor];
-    [self.exifApertureValue setReturnKeyType:UIReturnKeyNext];
+    [self.exifApertureValue setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifApertureValue];
     
     // Brightness value label
@@ -1203,7 +1213,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifBrightnessValue.frame = CGRectMake(w/2, 1048, 400, 20);
     self.exifBrightnessValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifBrightnessValue.textColor = [UIColor blackColor];
-    [self.exifBrightnessValue setReturnKeyType:UIReturnKeyNext];
+    [self.exifBrightnessValue setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifBrightnessValue];
     
     // Exposure bias value label
@@ -1219,7 +1229,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureBiasValue.frame = CGRectMake(w/2, 1092, 400, 20);
     self.exifExposureBiasValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureBiasValue.textColor = [UIColor blackColor];
-    [self.exifExposureBiasValue setReturnKeyType:UIReturnKeyNext];
+    [self.exifExposureBiasValue setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifExposureBiasValue];
     
     // Max aperture value label
@@ -1235,7 +1245,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifMaxApertureValue.frame = CGRectMake(w/2, 1136, 400, 20);
     self.exifMaxApertureValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMaxApertureValue.textColor = [UIColor blackColor];
-    [self.exifMaxApertureValue setReturnKeyType:UIReturnKeyNext];
+    [self.exifMaxApertureValue setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifMaxApertureValue];
     
     // Subject distance label
@@ -1251,7 +1261,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubjectDistance.frame = CGRectMake(w/2, 1180, 400, 20);
     self.exifSubjectDistance.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectDistance.textColor = [UIColor blackColor];
-    [self.exifSubjectDistance setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubjectDistance setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubjectDistance];
     
     // Metering mode label
@@ -1267,7 +1277,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifMeteringMode.frame = CGRectMake(w/2, 1224, 400, 20);
     self.exifMeteringMode.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMeteringMode.textColor = [UIColor blackColor];
-    [self.exifMeteringMode setReturnKeyType:UIReturnKeyNext];
+    [self.exifMeteringMode setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifMeteringMode];
     
     // Light source label
@@ -1283,7 +1293,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifLightSource.frame = CGRectMake(w/2, 1268, 400, 20);
     self.exifLightSource.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLightSource.textColor = [UIColor blackColor];
-    [self.exifLightSource setReturnKeyType:UIReturnKeyNext];
+    [self.exifLightSource setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifLightSource];
     
     // Flash label
@@ -1299,7 +1309,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFlash.frame = CGRectMake(w/2, 1312, 400, 20);
     self.exifFlash.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlash.textColor = [UIColor blackColor];
-    [self.exifFlash setReturnKeyType:UIReturnKeyNext];
+    [self.exifFlash setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFlash];
     
     // Focal length label
@@ -1315,7 +1325,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFocalLength.frame = CGRectMake(w/2, 1356, 400, 20);
     self.exifFocalLength.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalLength.textColor = [UIColor blackColor];
-    [self.exifFocalLength setReturnKeyType:UIReturnKeyNext];
+    [self.exifFocalLength setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFocalLength];
     
     // Subject area label
@@ -1331,7 +1341,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubjectArea.frame = CGRectMake(w/2, 1400, 400, 20);
     self.exifSubjectArea.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectArea.textColor = [UIColor blackColor];
-    [self.exifSubjectArea setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubjectArea setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubjectArea];
     
     // Maker note label
@@ -1347,7 +1357,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifMakerNote.frame = CGRectMake(w/2, 1444, 400, 20);
     self.exifMakerNote.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMakerNote.textColor = [UIColor blackColor];
-    [self.exifMakerNote setReturnKeyType:UIReturnKeyNext];
+    [self.exifMakerNote setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifMakerNote];
     
     // User comment label
@@ -1363,7 +1373,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifUserComment.frame = CGRectMake(w/2, 1488, 400, 20);
     self.exifUserComment.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifUserComment.textColor = [UIColor blackColor];
-    [self.exifUserComment setReturnKeyType:UIReturnKeyNext];
+    [self.exifUserComment setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifUserComment];
     
     // Subsec time label
@@ -1379,7 +1389,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubsecTime.frame = CGRectMake(w/2, 1532, 400, 20);
     self.exifSubsecTime.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTime.textColor = [UIColor blackColor];
-    [self.exifSubsecTime setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubsecTime setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubsecTime];
     
     // Subsec time original label
@@ -1395,7 +1405,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubsecTimeOrginal.frame = CGRectMake(w/2, 1576, 400, 20);
     self.exifSubsecTimeOrginal.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTimeOrginal.textColor = [UIColor blackColor];
-    [self.exifSubsecTimeOrginal setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubsecTimeOrginal setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubsecTimeOrginal];
     
     // Subsec time digitized label
@@ -1411,7 +1421,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubsecTimeDigitized.frame = CGRectMake(w/2, 1620, 400, 20);
     self.exifSubsecTimeDigitized.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTimeDigitized.textColor = [UIColor blackColor];
-    [self.exifSubsecTimeDigitized setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubsecTimeDigitized setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubsecTimeDigitized];
     
     // Flash pix version label
@@ -1427,7 +1437,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFlashPixVersion.frame = CGRectMake(w/2, 1664, 400, 20);
     self.exifFlashPixVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlashPixVersion.textColor = [UIColor blackColor];
-    [self.exifFlashPixVersion setReturnKeyType:UIReturnKeyNext];
+    [self.exifFlashPixVersion setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFlashPixVersion];
     
     // Color space label
@@ -1443,7 +1453,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifColorSpace.frame = CGRectMake(w/2, 1708, 400, 20);
     self.exifColorSpace.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifColorSpace.textColor = [UIColor blackColor];
-    [self.exifColorSpace setReturnKeyType:UIReturnKeyNext];
+    [self.exifColorSpace setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifColorSpace];
     
     // Pixel X dimension label
@@ -1459,7 +1469,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifPixelXDimension.frame = CGRectMake(w/2, 1752, 400, 20);
     self.exifPixelXDimension.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifPixelXDimension.textColor = [UIColor blackColor];
-    [self.exifPixelXDimension setReturnKeyType:UIReturnKeyNext];
+    [self.exifPixelXDimension setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifPixelXDimension];
     
     // Pixel Y dimension label
@@ -1475,7 +1485,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifPixelYDimension.frame = CGRectMake(w/2, 1796, 400, 20);
     self.exifPixelYDimension.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifPixelYDimension.textColor = [UIColor blackColor];
-    [self.exifPixelYDimension setReturnKeyType:UIReturnKeyNext];
+    [self.exifPixelYDimension setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifPixelYDimension];
     
     // Related sound file label
@@ -1491,7 +1501,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifRelatedSoundFile.frame = CGRectMake(w/2, 1840, 400, 20);
     self.exifRelatedSoundFile.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifRelatedSoundFile.textColor = [UIColor blackColor];
-    [self.exifRelatedSoundFile setReturnKeyType:UIReturnKeyNext];
+    [self.exifRelatedSoundFile setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifRelatedSoundFile];
     
     // Flash energy label
@@ -1507,7 +1517,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFlashEnergy.frame = CGRectMake(w/2, 1884, 400, 20);
     self.exifFlashEnergy.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlashEnergy.textColor = [UIColor blackColor];
-    [self.exifFlashEnergy setReturnKeyType:UIReturnKeyNext];
+    [self.exifFlashEnergy setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFlashEnergy];
     
     // Spatial frequency response label
@@ -1523,7 +1533,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSpatialFrequencyResponse.frame = CGRectMake(w/2, 1928, 400, 20);
     self.exifSpatialFrequencyResponse.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSpatialFrequencyResponse.textColor = [UIColor blackColor];
-    [self.exifSpatialFrequencyResponse setReturnKeyType:UIReturnKeyNext];
+    [self.exifSpatialFrequencyResponse setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSpatialFrequencyResponse];
     
     // Focal plane X resolution label
@@ -1539,7 +1549,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFocalPlaneXResolution.frame = CGRectMake(w/2, 1972, 400, 20);
     self.exifFocalPlaneXResolution.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneXResolution.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneXResolution setReturnKeyType:UIReturnKeyNext];
+    [self.exifFocalPlaneXResolution setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFocalPlaneXResolution];
     
     // Focal plane Y resolution label
@@ -1555,7 +1565,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFocalPlaneYResolution.frame = CGRectMake(w/2, 2016, 400, 20);
     self.exifFocalPlaneYResolution.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneYResolution.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneYResolution setReturnKeyType:UIReturnKeyNext];
+    [self.exifFocalPlaneYResolution setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFocalPlaneYResolution];
     
     // Focal plane resolution unit label
@@ -1571,7 +1581,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFocalPlaneResolutionUnit.frame = CGRectMake(w/2, 2060, 400, 20);
     self.exifFocalPlaneResolutionUnit.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneResolutionUnit.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneResolutionUnit setReturnKeyType:UIReturnKeyNext];
+    [self.exifFocalPlaneResolutionUnit setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFocalPlaneResolutionUnit];
     
     // Subject location label
@@ -1587,7 +1597,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubjectLocation.frame = CGRectMake(w/2, 2104, 400, 20);
     self.exifSubjectLocation.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectLocation.textColor = [UIColor blackColor];
-    [self.exifSubjectLocation setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubjectLocation setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubjectLocation];
     
     // Exposure index label
@@ -1603,7 +1613,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureIndex.frame = CGRectMake(w/2, 2148, 400, 20);
     self.exifExposureIndex.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureIndex.textColor = [UIColor blackColor];
-    [self.exifExposureIndex setReturnKeyType:UIReturnKeyNext];
+    [self.exifExposureIndex setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifExposureIndex];
     
     // Sensing method label
@@ -1619,7 +1629,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSensingMethod.frame = CGRectMake(w/2, 2192, 400, 20);
     self.exifSensingMethod.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSensingMethod.textColor = [UIColor blackColor];
-    [self.exifSensingMethod setReturnKeyType:UIReturnKeyNext];
+    [self.exifSensingMethod setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSensingMethod];
     
     // File source label
@@ -1635,7 +1645,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFileSource.frame = CGRectMake(w/2, 2236, 400, 20);
     self.exifFileSource.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFileSource.textColor = [UIColor blackColor];
-    [self.exifFileSource setReturnKeyType:UIReturnKeyNext];
+    [self.exifFileSource setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFileSource];
     
     // Scene type label
@@ -1651,7 +1661,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSceneType.frame = CGRectMake(w/2, 2280, 400, 20);
     self.exifSceneType.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSceneType.textColor = [UIColor blackColor];
-    [self.exifSceneType setReturnKeyType:UIReturnKeyNext];
+    [self.exifSceneType setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSceneType];
     
     // CFA pattern label
@@ -1667,7 +1677,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifCFAPattern.frame = CGRectMake(w/2, 2324, 400, 20);
     self.exifCFAPattern.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCFAPattern.textColor = [UIColor blackColor];
-    [self.exifCFAPattern setReturnKeyType:UIReturnKeyNext];
+    [self.exifCFAPattern setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifCFAPattern];
     
     // Custom rendered label
@@ -1683,7 +1693,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifCustomRendered.frame = CGRectMake(w/2, 2368, 400, 20);
     self.exifCustomRendered.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCustomRendered.textColor = [UIColor blackColor];
-    [self.exifCustomRendered setReturnKeyType:UIReturnKeyNext];
+    [self.exifCustomRendered setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifCustomRendered];
     
     // Exposure mode label
@@ -1699,7 +1709,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureMode.frame = CGRectMake(w/2, 2412, 400, 20);
     self.exifExposureMode.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureMode.textColor = [UIColor blackColor];
-    [self.exifExposureMode setReturnKeyType:UIReturnKeyNext];
+    [self.exifExposureMode setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifExposureMode];
     
     // White balance label
@@ -1715,7 +1725,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifWhiteBalance.frame = CGRectMake(w/2, 2456, 400, 20);
     self.exifWhiteBalance.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifWhiteBalance.textColor = [UIColor blackColor];
-    [self.exifWhiteBalance setReturnKeyType:UIReturnKeyNext];
+    [self.exifWhiteBalance setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifWhiteBalance];
     
     // Digital zoom ratio label
@@ -1731,7 +1741,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifDigitalZoomRatio.frame = CGRectMake(w/2, 2500, 400, 20);
     self.exifDigitalZoomRatio.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifDigitalZoomRatio.textColor = [UIColor blackColor];
-    [self.exifDigitalZoomRatio setReturnKeyType:UIReturnKeyNext];
+    [self.exifDigitalZoomRatio setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifDigitalZoomRatio];
     
     // Focal length in 35 mm label
@@ -1747,7 +1757,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifFocalLenIn35mmFilm.frame = CGRectMake(w/2, 2544, 400, 20);
     self.exifFocalLenIn35mmFilm.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalLenIn35mmFilm.textColor = [UIColor blackColor];
-    [self.exifFocalLenIn35mmFilm setReturnKeyType:UIReturnKeyNext];
+    [self.exifFocalLenIn35mmFilm setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifFocalLenIn35mmFilm];
     
     // Scene capture type label
@@ -1763,7 +1773,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSceneCaptureType.frame = CGRectMake(w/2, 2588, 400, 20);
     self.exifSceneCaptureType.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSceneCaptureType.textColor = [UIColor blackColor];
-    [self.exifSceneCaptureType setReturnKeyType:UIReturnKeyNext];
+    [self.exifSceneCaptureType setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSceneCaptureType];
     
     // Gain control label
@@ -1779,7 +1789,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifGainControl.frame = CGRectMake(w/2, 2632, 400, 20);
     self.exifGainControl.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifGainControl.textColor = [UIColor blackColor];
-    [self.exifGainControl setReturnKeyType:UIReturnKeyNext];
+    [self.exifGainControl setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifGainControl];
     
     // Contrast label
@@ -1795,7 +1805,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifContrast.frame = CGRectMake(w/2, 2676, 400, 20);
     self.exifContrast.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifContrast.textColor = [UIColor blackColor];
-    [self.exifContrast setReturnKeyType:UIReturnKeyNext];
+    [self.exifContrast setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifContrast];
     
     // Saturation label
@@ -1811,7 +1821,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSaturation.frame = CGRectMake(w/2, 2720, 400, 20);
     self.exifSaturation.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSaturation.textColor = [UIColor blackColor];
-    [self.exifSaturation setReturnKeyType:UIReturnKeyNext];
+    [self.exifSaturation setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSaturation];
     
     // Sharpness label
@@ -1827,7 +1837,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSharpness.frame = CGRectMake(w/2, 2764, 400, 20);
     self.exifSharpness.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSharpness.textColor = [UIColor blackColor];
-    [self.exifSharpness setReturnKeyType:UIReturnKeyNext];
+    [self.exifSharpness setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSharpness];
     
     // Device setting description label
@@ -1843,7 +1853,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifDeviceSettingDescription.frame = CGRectMake(w/2, 2808, 400, 20);
     self.exifDeviceSettingDescription.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifDeviceSettingDescription.textColor = [UIColor blackColor];
-    [self.exifDeviceSettingDescription setReturnKeyType:UIReturnKeyNext];
+    [self.exifDeviceSettingDescription setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifDeviceSettingDescription];
     
     // Subject dist range label
@@ -1859,7 +1869,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifSubjectDistRange.frame = CGRectMake(w/2, 2852, 400, 20);
     self.exifSubjectDistRange.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectDistRange.textColor = [UIColor blackColor];
-    [self.exifSubjectDistRange setReturnKeyType:UIReturnKeyNext];
+    [self.exifSubjectDistRange setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifSubjectDistRange];
     
     // Image unique ID label
@@ -1875,7 +1885,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifImageUniqueID.frame = CGRectMake(w/2, 2896, 400, 20);
     self.exifImageUniqueID.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifImageUniqueID.textColor = [UIColor blackColor];
-    [self.exifImageUniqueID setReturnKeyType:UIReturnKeyNext];
+    [self.exifImageUniqueID setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifImageUniqueID];
     
     // Gamma label
@@ -1891,7 +1901,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifGamma.frame = CGRectMake(w/2, 2940, 400, 20);
     self.exifGamma.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifGamma.textColor = [UIColor blackColor];
-    [self.exifGamma setReturnKeyType:UIReturnKeyNext];
+    [self.exifGamma setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifGamma];
     
     // Camera owner name label
@@ -1907,7 +1917,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifCameraOwnerName.frame = CGRectMake(w/2, 2984, 400, 20);
     self.exifCameraOwnerName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCameraOwnerName.textColor = [UIColor blackColor];
-    [self.exifCameraOwnerName setReturnKeyType:UIReturnKeyNext];
+    [self.exifCameraOwnerName setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifCameraOwnerName];
     
     // Body serial number label
@@ -1923,7 +1933,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifBodySerialNumber.frame = CGRectMake(w/2, 3028, 400, 20);
     self.exifBodySerialNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifBodySerialNumber.textColor = [UIColor blackColor];
-    [self.exifBodySerialNumber setReturnKeyType:UIReturnKeyNext];
+    [self.exifBodySerialNumber setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifBodySerialNumber];
     
     // Lens specification label
@@ -1939,7 +1949,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifLensSpecification.frame = CGRectMake(w/2, 3072, 400, 20);
     self.exifLensSpecification.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensSpecification.textColor = [UIColor blackColor];
-    [self.exifLensSpecification setReturnKeyType:UIReturnKeyNext];
+    [self.exifLensSpecification setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifLensSpecification];
     
     // Lens make label
@@ -1955,7 +1965,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifLensMake.frame = CGRectMake(w/2, 3116, 400, 20);
     self.exifLensMake.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensMake.textColor = [UIColor blackColor];
-    [self.exifLensMake setReturnKeyType:UIReturnKeyNext];
+    [self.exifLensMake setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifLensMake];
     
     // Lens model label
@@ -1971,7 +1981,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifLensModel.frame = CGRectMake(w/2, 3160, 400, 20);
     self.exifLensModel.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensModel.textColor = [UIColor blackColor];
-    [self.exifLensModel setReturnKeyType:UIReturnKeyNext];
+    [self.exifLensModel setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifLensModel];
     
     // Lens serial number label
@@ -1987,22 +1997,152 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifLensSerialNumber.frame = CGRectMake(w/2, 3204, 400, 20);
     self.exifLensSerialNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensSerialNumber.textColor = [UIColor blackColor];
-    [self.exifLensSerialNumber setReturnKeyType:UIReturnKeyNext];
+    [self.exifLensSerialNumber setReturnKeyType:UIReturnKeyDone];
     [self.scrollView addSubview:self.exifLensSerialNumber];
     
     // GPS title banner
-    UIView *gpsTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 3216, w, 44)];
-    exifTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
-    [self.tableView addSubview:gpsTitle];
+    UIView *gpsTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 3236, w, 44)];
+    gpsTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
+    [self.scrollView addSubview:gpsTitle];
     
     // GPS banner text
-    UILabel *gpsTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 3216, 40, 20)];
-    gpsTitleLabel.text = @"EXIF";
+    UILabel *gpsTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 3248, 40, 20)];
+    gpsTitleLabel.text = @"GPS";
     gpsTitleLabel.textColor = [UIColor whiteColor];
-    [self.tableView addSubview:gpsTitleLabel];
+    [self.scrollView addSubview:gpsTitleLabel];
+    
+    // GPS version label
+    UILabel *gpsVersion = [[UILabel alloc] initWithFrame:CGRectMake(10, 3292, 400, 20)];
+    gpsVersion.text = @"GPS version";
+    gpsVersion.textColor = [UIColor grayColor];
+    [gpsVersion setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsVersion];
+    
+    // GPS version
+    self.gpsVersion = [[UITextField alloc] init];
+    self.gpsVersion.delegate = self;
+    self.gpsVersion.frame = CGRectMake(w/2, 3292, 400, 20);
+    self.gpsVersion.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsVersion.textColor = [UIColor blackColor];
+    [self.gpsVersion setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsVersion];
+    
+    // Latitude ref label
+    UILabel *gpsLatitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3336, 400, 20)];
+    gpsLatitudeRef.text = @"Latitude ref";
+    gpsLatitudeRef.textColor = [UIColor grayColor];
+    [gpsLatitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsLatitudeRef];
+    
+    // Latitude ref
+    self.gpsLatitudeRef = [[UITextField alloc] init];
+    self.gpsLatitudeRef.delegate = self;
+    self.gpsLatitudeRef.frame = CGRectMake(w/2, 3336, 400, 20);
+    self.gpsLatitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsLatitudeRef.textColor = [UIColor blackColor];
+    [self.gpsLatitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsLatitudeRef];
+    
+    // Latitude label
+    UILabel *gpsLatitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3380, 400, 20)];
+    gpsLatitude.text = @"Latitude";
+    gpsLatitude.textColor = [UIColor grayColor];
+    [gpsLatitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsLatitude];
+    
+    // Latitude
+    self.gpsLatitude = [[UITextField alloc] init];
+    self.gpsLatitude.delegate = self;
+    self.gpsLatitude.frame = CGRectMake(w/2, 3380, 400, 20);
+    self.gpsLatitude.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsLatitude.textColor = [UIColor blackColor];
+    [self.gpsLatitude setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsLatitude];
+    
+    // Latitude ref label
+    UILabel *gpsLongitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3424, 400, 20)];
+    gpsLongitudeRef.text = @"Longitude ref";
+    gpsLongitudeRef.textColor = [UIColor grayColor];
+    [gpsLongitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsLongitudeRef];
+    
+    // Latitude ref
+    self.gpsLongitudeRef = [[UITextField alloc] init];
+    self.gpsLongitudeRef.delegate = self;
+    self.gpsLongitudeRef.frame = CGRectMake(w/2, 3424, 400, 20);
+    self.gpsLongitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsLongitudeRef.textColor = [UIColor blackColor];
+    [self.gpsLongitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsLongitudeRef];
+    
+    // Latitude label
+    UILabel *gpsLongitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3468, 400, 20)];
+    gpsLongitude.text = @"Longitude";
+    gpsLongitude.textColor = [UIColor grayColor];
+    [gpsLongitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsLongitude];
+    
+    // Latitude
+    self.gpsLongitude = [[UITextField alloc] init];
+    self.gpsLongitude.delegate = self;
+    self.gpsLongitude.frame = CGRectMake(w/2, 3468, 400, 20);
+    self.gpsLongitude.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsLongitude.textColor = [UIColor blackColor];
+    [self.gpsLongitude setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsLongitude];
+    
+    // Altitude ref label
+    UILabel *gpsAltitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3512, 400, 20)];
+    gpsAltitudeRef.text = @"Altitude ref";
+    gpsAltitudeRef.textColor = [UIColor grayColor];
+    [gpsAltitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsAltitudeRef];
+    
+    // Altitude ref
+    self.gpsAltitudeRef = [[UITextField alloc] init];
+    self.gpsAltitudeRef.delegate = self;
+    self.gpsAltitudeRef.frame = CGRectMake(w/2, 3512, 400, 20);
+    self.gpsAltitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsAltitudeRef.textColor = [UIColor blackColor];
+    [self.gpsAltitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.scrollView addSubview:self.gpsAltitudeRef];
+    
+    UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
+    numberToolbar.barStyle = UIBarStyleBlackTranslucent;
+//    numberToolbar.tintColor = [UIColor whiteColor];
+    numberToolbar.items = [NSArray arrayWithObjects:
+                           [[UIBarButtonItem alloc]initWithTitle:@"Previous" style:UIBarButtonItemStylePlain target:self action:@selector(previousItemPressed)],
+                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                           [[UIBarButtonItem alloc]initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(resetPressed)],
+                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                           [[UIBarButtonItem alloc]initWithTitle:@"Erase" style:UIBarButtonItemStylePlain target:self action:@selector(erasePressed)],
+                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                           [[UIBarButtonItem alloc]initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(nextItemPressed)],
+                           nil];
+    [numberToolbar sizeToFit];
+    self.width.inputAccessoryView = numberToolbar;
     
     [self loadPicture];
-    
+}
+
+- (void)previousItemPressed {
+    NSLog(@"Going to previous item");
+}
+
+- (void)resetPressed {
+    NSLog(@"Resetting");
+}
+
+- (void)erasePressed {
+    NSLog(@"Erasing");
+}
+
+- (void)nextItemPressed {
+    NSLog(@"Going to next item");
+}
+
+- (void)donePressed {
+    NSLog(@"Done/closing the keyboard");
 }
 
 - (void)didReceiveMemoryWarning {

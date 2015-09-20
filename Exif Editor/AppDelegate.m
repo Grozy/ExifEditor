@@ -41,7 +41,8 @@
     
 
     [[UITextField appearance] setFont:[UIFont fontWithName:@"Avenir" size:14]];
-    
+    NSDictionary *barButtonAppearanceDict = @{NSFontAttributeName : [UIFont fontWithName:@"Avenir" size:18.0], NSForegroundColorAttributeName: [UIColor whiteColor]};
+    [[UIBarButtonItem appearance] setTitleTextAttributes:barButtonAppearanceDict forState:UIControlStateNormal];
     return YES;
 }
 

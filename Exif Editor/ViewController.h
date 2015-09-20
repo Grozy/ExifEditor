@@ -143,8 +143,8 @@
 
 // Look into expanding menus
 
-@property (strong, nonatomic) IBOutlet UITableView *tableView;
-
+@property (strong, nonatomic) IBOutlet UITableView *exifTableView;
+@property (strong, nonatomic) IBOutlet UITableView *gpsTableView;
 
 @property (strong) UIImagePickerController *pic;
 @property (strong) NSDictionary *inf;
