@@ -21,7 +21,10 @@
     // proper blue: 0x1b81c8
     
     [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x1b81c8)];
+    //99d0f6
     [[UINavigationBar appearance] setTintColor:UIColorFromRGB(0xffffff)];
+    [[UITextField appearance] setTintColor:[UIColor blackColor]];
+    [[UITextView appearance] setTintColor:[UIColor blackColor]];
 //    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRed:1.0 green:0.75294117647059 blue:0.09019607843137 alpha:1.0]];
     
     NSShadow *shadow = [[NSShadow alloc] init];
@@ -35,6 +38,10 @@
                                                            UIColorFromRGB(0xffffff), NSForegroundColorAttributeName,
                                                            shadow, NSShadowAttributeName,
                                                            [UIFont fontWithName:@"Avenir" size:28.0], NSFontAttributeName, nil]];
+    
+
+    [[UITextField appearance] setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    
     return YES;
 }
 

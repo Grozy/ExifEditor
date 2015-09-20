@@ -1,0 +1,6 @@
+#include "XLMediaZoom.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Private" "${PODS_ROOT}/Headers/Private/XLMediaZoom" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/XLMediaZoom"
+OTHER_LDFLAGS = ${XLMEDIAZOOM_OTHER_LDFLAGS}
+PODS_ROOT = ${SRCROOT}
+SKIP_INSTALL = YES

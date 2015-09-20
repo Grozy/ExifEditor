@@ -1,0 +1,10 @@
+PODS:
+  - XLMediaZoom (2.0.1)
+
+DEPENDENCIES:
+  - XLMediaZoom
+
+SPEC CHECKSUMS:
+  XLMediaZoom: 52f8f473066d0a3e09572fbee6c84f25c1ed0bca
+
+COCOAPODS: 0.38.2

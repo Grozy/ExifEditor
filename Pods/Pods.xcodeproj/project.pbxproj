@@ -1,0 +1,450 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0052DC0BC49DA29E9DC5D0B51F8B61A3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F346FF4D7BE27218ACF288E86EF30592 /* Foundation.framework */; };
+		21B1C08BD8E2E6DB39A0B91D978191C1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2284E6D61046C8B9F853FA5D526F641D /* UIKit.framework */; };
+		321C20ABD7719EAC9AA4973C6D9E061C /* XLVideoZoom.h in Headers */ = {isa = PBXBuildFile; fileRef = 64D0F965990739DE0CDCB62FD15894CF /* XLVideoZoom.h */; };
+		325749E3ACCDD7506D561324BBEB7186 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDB44EC9D044C8F4A9638B7BAB214DB7 /* CoreGraphics.framework */; };
+		3673734146BB6DB4E0A3CB225340F011 /* XLMediaZoom.h in Headers */ = {isa = PBXBuildFile; fileRef = C8565279BB571EBCB2B217FFB6327DC1 /* XLMediaZoom.h */; };
+		7A3C511655D06C11F37258F38824964F /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7C2E19CBB624C2A54CB158A8C43DFA /* AVFoundation.framework */; };
+		9EE09DC55257FBF00B41776F883CE2EB /* XLMediaZoom-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0EF7D3CA4B6895E34936605567250817 /* XLMediaZoom-dummy.m */; };
+		B96A8191D3641CE80B2B368AECD1562A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F346FF4D7BE27218ACF288E86EF30592 /* Foundation.framework */; };
+		E1922DD1D16F21B0B8A9AC02C930C77C /* Pods-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 724B6623E3D20EE348A52CFEE845CEE4 /* Pods-dummy.m */; };
+		E92BFAD5335924E41A8C69C5AE261885 /* XLMediaZoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 086E9AD328DAADCA2FB893BD761EB6A4 /* XLMediaZoom.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+		EE2E83833178FE341AC21ADB507D4A30 /* XLVideoZoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 742BF78BA08E208933433984D337F9D8 /* XLVideoZoom.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E3B8AB9293D06E6E0FB02120C5D84A5D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7F8FCE4C5F25108E4681F649D7C86658;
+			remoteInfo = XLMediaZoom;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		086E9AD328DAADCA2FB893BD761EB6A4 /* XLMediaZoom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = XLMediaZoom.m; path = XLMediaZoom/XL/XLMediaZoom.m; sourceTree = "<group>"; };
+		0EF7D3CA4B6895E34936605567250817 /* XLMediaZoom-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "XLMediaZoom-dummy.m"; sourceTree = "<group>"; };
+		127F9BC0B5BDD2B476C64311DC8A573D /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.debug.xcconfig; sourceTree = "<group>"; };
+		15A529C27057E4A57D259CBC6E6CE49C /* Pods-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-acknowledgements.markdown"; sourceTree = "<group>"; };
+		1D7C2E19CBB624C2A54CB158A8C43DFA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		20AAFF8BBF9093756BD4935D9BED03F8 /* libXLMediaZoom.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libXLMediaZoom.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2284E6D61046C8B9F853FA5D526F641D /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		55C4693FB525CA16C3CA98B599D41E7E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		641AE05DD55E5E6AC1590CD7B4A18F97 /* Pods-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-resources.sh"; sourceTree = "<group>"; };
+		64D0F965990739DE0CDCB62FD15894CF /* XLVideoZoom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XLVideoZoom.h; path = XLMediaZoom/XL/XLVideoZoom.h; sourceTree = "<group>"; };
+		651F1BC98B1D54DFF63766FD955C9DF0 /* XLMediaZoom.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = XLMediaZoom.xcconfig; sourceTree = "<group>"; };
+		724B6623E3D20EE348A52CFEE845CEE4 /* Pods-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-dummy.m"; sourceTree = "<group>"; };
+		742BF78BA08E208933433984D337F9D8 /* XLVideoZoom.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = XLVideoZoom.m; path = XLMediaZoom/XL/XLVideoZoom.m; sourceTree = "<group>"; };
+		85A313E6A5FFEF5D104639F00464A889 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Pods.release.xcconfig; sourceTree = "<group>"; };
+		A1A9962451B07E44F8D877F471BAF29F /* XLMediaZoom-Private.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "XLMediaZoom-Private.xcconfig"; sourceTree = "<group>"; };
+		BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BF59BC15D23E1E1912C8F334E7236813 /* Pods-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-acknowledgements.plist"; sourceTree = "<group>"; };
+		C8565279BB571EBCB2B217FFB6327DC1 /* XLMediaZoom.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = XLMediaZoom.h; path = XLMediaZoom/XL/XLMediaZoom.h; sourceTree = "<group>"; };
+		CCB4D025B882A067AEBE5719454C7F14 /* XLMediaZoom-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "XLMediaZoom-prefix.pch"; sourceTree = "<group>"; };
+		CDB44EC9D044C8F4A9638B7BAB214DB7 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/CoreGraphics.framework; sourceTree = DEVELOPER_DIR; };
+		F346FF4D7BE27218ACF288E86EF30592 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		0782F9E510E0ADE859715FC08E06EF29 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B96A8191D3641CE80B2B368AECD1562A /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F75B263ECD6E5DC2C633DDFB6EE59CEF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7A3C511655D06C11F37258F38824964F /* AVFoundation.framework in Frameworks */,
+				325749E3ACCDD7506D561324BBEB7186 /* CoreGraphics.framework in Frameworks */,
+				0052DC0BC49DA29E9DC5D0B51F8B61A3 /* Foundation.framework in Frameworks */,
+				21B1C08BD8E2E6DB39A0B91D978191C1 /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		058F594190233660CA36F4354AC45600 /* Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				651F1BC98B1D54DFF63766FD955C9DF0 /* XLMediaZoom.xcconfig */,
+				A1A9962451B07E44F8D877F471BAF29F /* XLMediaZoom-Private.xcconfig */,
+				0EF7D3CA4B6895E34936605567250817 /* XLMediaZoom-dummy.m */,
+				CCB4D025B882A067AEBE5719454C7F14 /* XLMediaZoom-prefix.pch */,
+			);
+			name = "Support Files";
+			path = "../Target Support Files/XLMediaZoom";
+			sourceTree = "<group>";
+		};
+		14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				797ADB535997CD353A6AD65D7D4E32BD /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		48031710499FA497BF1DEC9BB5367D1C /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F4F39C5F1687E72459CB74E31071BBEA /* XLMediaZoom */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		797ADB535997CD353A6AD65D7D4E32BD /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				1D7C2E19CBB624C2A54CB158A8C43DFA /* AVFoundation.framework */,
+				CDB44EC9D044C8F4A9638B7BAB214DB7 /* CoreGraphics.framework */,
+				F346FF4D7BE27218ACF288E86EF30592 /* Foundation.framework */,
+				2284E6D61046C8B9F853FA5D526F641D /* UIKit.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		7DB346D0F39D3F0E887471402A8071AB = {
+			isa = PBXGroup;
+			children = (
+				BA6428E9F66FD5A23C0A2E06ED26CD2F /* Podfile */,
+				14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */,
+				48031710499FA497BF1DEC9BB5367D1C /* Pods */,
+				CCA510CFBEA2D207524CDA0D73C3B561 /* Products */,
+				D2411A5FE7F7A004607BED49990C37F4 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		952EEBFAF8F7E620423C9F156F25A506 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				15A529C27057E4A57D259CBC6E6CE49C /* Pods-acknowledgements.markdown */,
+				BF59BC15D23E1E1912C8F334E7236813 /* Pods-acknowledgements.plist */,
+				724B6623E3D20EE348A52CFEE845CEE4 /* Pods-dummy.m */,
+				641AE05DD55E5E6AC1590CD7B4A18F97 /* Pods-resources.sh */,
+				127F9BC0B5BDD2B476C64311DC8A573D /* Pods.debug.xcconfig */,
+				85A313E6A5FFEF5D104639F00464A889 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			path = "Target Support Files/Pods";
+			sourceTree = "<group>";
+		};
+		CCA510CFBEA2D207524CDA0D73C3B561 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				55C4693FB525CA16C3CA98B599D41E7E /* libPods.a */,
+				20AAFF8BBF9093756BD4935D9BED03F8 /* libXLMediaZoom.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		D2411A5FE7F7A004607BED49990C37F4 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				952EEBFAF8F7E620423C9F156F25A506 /* Pods */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		F4F39C5F1687E72459CB74E31071BBEA /* XLMediaZoom */ = {
+			isa = PBXGroup;
+			children = (
+				C8565279BB571EBCB2B217FFB6327DC1 /* XLMediaZoom.h */,
+				086E9AD328DAADCA2FB893BD761EB6A4 /* XLMediaZoom.m */,
+				64D0F965990739DE0CDCB62FD15894CF /* XLVideoZoom.h */,
+				742BF78BA08E208933433984D337F9D8 /* XLVideoZoom.m */,
+				058F594190233660CA36F4354AC45600 /* Support Files */,
+			);
+			path = XLMediaZoom;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		9837B158DFCAA1E399BDA073C2649890 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3673734146BB6DB4E0A3CB225340F011 /* XLMediaZoom.h in Headers */,
+				321C20ABD7719EAC9AA4973C6D9E061C /* XLVideoZoom.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		7F8FCE4C5F25108E4681F649D7C86658 /* XLMediaZoom */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E120C6D8B7C3B6E71572B0F87126D971 /* Build configuration list for PBXNativeTarget "XLMediaZoom" */;
+			buildPhases = (
+				B69A5236C896E8978DF59D782EA7519F /* Sources */,
+				F75B263ECD6E5DC2C633DDFB6EE59CEF /* Frameworks */,
+				9837B158DFCAA1E399BDA073C2649890 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = XLMediaZoom;
+			productName = XLMediaZoom;
+			productReference = 20AAFF8BBF9093756BD4935D9BED03F8 /* libXLMediaZoom.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		9E4AA0FBAB3D4AE8264FBC5407E5AD14 /* Pods */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D6C81AFED5C8A971CAACB2604204AA5F /* Build configuration list for PBXNativeTarget "Pods" */;
+			buildPhases = (
+				5CBDF5AB313688266C5A6FA8A5F5225E /* Sources */,
+				0782F9E510E0ADE859715FC08E06EF29 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A97FBFFD8B04681F91CB9C79CDEBCC0 /* PBXTargetDependency */,
+			);
+			name = Pods;
+			productName = Pods;
+			productReference = 55C4693FB525CA16C3CA98B599D41E7E /* libPods.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D41D8CD98F00B204E9800998ECF8427E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0700;
+				LastUpgradeCheck = 0700;
+			};
+			buildConfigurationList = 2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
+			productRefGroup = CCA510CFBEA2D207524CDA0D73C3B561 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9E4AA0FBAB3D4AE8264FBC5407E5AD14 /* Pods */,
+				7F8FCE4C5F25108E4681F649D7C86658 /* XLMediaZoom */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5CBDF5AB313688266C5A6FA8A5F5225E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1922DD1D16F21B0B8A9AC02C930C77C /* Pods-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B69A5236C896E8978DF59D782EA7519F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9EE09DC55257FBF00B41776F883CE2EB /* XLMediaZoom-dummy.m in Sources */,
+				E92BFAD5335924E41A8C69C5AE261885 /* XLMediaZoom.m in Sources */,
+				EE2E83833178FE341AC21ADB507D4A30 /* XLVideoZoom.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		0A97FBFFD8B04681F91CB9C79CDEBCC0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = XLMediaZoom;
+			target = 7F8FCE4C5F25108E4681F649D7C86658 /* XLMediaZoom */;
+			targetProxy = E3B8AB9293D06E6E0FB02120C5D84A5D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		2844358E92A58794626DF17D53E84533 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1A9962451B07E44F8D877F471BAF29F /* XLMediaZoom-Private.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/XLMediaZoom/XLMediaZoom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		511103F7F15A7E8F83B268EA03462CAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREPROCESSOR_DEFINITIONS = "RELEASE=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		529DF1BE3C082ED18F1D5E0D7A871F7B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A1A9962451B07E44F8D877F471BAF29F /* XLMediaZoom-Private.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_PREFIX_HEADER = "Target Support Files/XLMediaZoom/XLMediaZoom-prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		AA05AF9C3A14EE0E32F42C6E6D42D34F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				ONLY_ACTIVE_ARCH = YES;
+				STRIP_INSTALLED_PRODUCT = NO;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		C0786A40E400AEE0E33026D295B42A80 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 85A313E6A5FFEF5D104639F00464A889 /* Pods.release.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		D600C2BF9A20EE932CA0909672FEA6F0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 127F9BC0B5BDD2B476C64311DC8A573D /* Pods.debug.xcconfig */;
+			buildSettings = {
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA05AF9C3A14EE0E32F42C6E6D42D34F /* Debug */,
+				511103F7F15A7E8F83B268EA03462CAB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D6C81AFED5C8A971CAACB2604204AA5F /* Build configuration list for PBXNativeTarget "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D600C2BF9A20EE932CA0909672FEA6F0 /* Debug */,
+				C0786A40E400AEE0E33026D295B42A80 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E120C6D8B7C3B6E71572B0F87126D971 /* Build configuration list for PBXNativeTarget "XLMediaZoom" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				529DF1BE3C082ED18F1D5E0D7A871F7B /* Debug */,
+				2844358E92A58794626DF17D53E84533 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
+}
