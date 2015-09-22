@@ -30,7 +30,13 @@
 @property (strong, nonatomic) IBOutlet UITextField *dateTimeDigitized;
 @property (strong, nonatomic) IBOutlet UITextField *fileName;
 @property (strong, nonatomic) IBOutlet UITextField *fileExtension;
+@property (strong, nonatomic) IBOutlet UITextField *widthAndHeight;
 
+@property (strong, nonatomic) IBOutlet UITextField *currentlyBeingEdited;
+
+@property (strong, nonatomic) IBOutlet NSString *exifExposureTimeO;
+
+@property (strong, nonatomic) IBOutlet UIView *descriptionView;
 
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;
@@ -146,6 +152,9 @@
 
 @property (strong, nonatomic) IBOutlet UITableView *exifTableView;
 @property (strong, nonatomic) IBOutlet UITableView *gpsTableView;
+
+@property (strong) UIImagePickerController *pic;
+@property (strong) NSDictionary *inf;
 
 
 - (IBAction)takePicture:(id)sender;

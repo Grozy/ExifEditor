@@ -60,12 +60,6 @@
 
 - (IBAction)eraseExif:(id)sender {
     NSLog(@"Now erasing");
-    self.width.text = @"";
-    self.height.text = @"";
-    self.dateTimeDigitized.text = @"";
-    self.duration.text = @"";
-    self.latitude.text = @"";
-    self.longitude.text = @"";
 }
 
 - (NSString *)stringOutputForDictionary:(NSDictionary *)inputDict {
@@ -93,6 +87,9 @@
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    
+    self.pic = picker;
+    self.inf = info;
     
     [self dismissViewControllerAnimated:YES completion:nil];
     
@@ -124,7 +121,8 @@
                  uint8_t *buffer = (Byte*)malloc(image_representation.size);
                  NSUInteger length = [image_representation getBytes:buffer fromOffset: 0.0  length:image_representation.size error:nil];
                  
-                 self.fileName.text = [[asset defaultRepresentation] filename];
+                 NSString *fullFileName = [[asset defaultRepresentation] filename];
+                 self.fileName.text = [fullFileName stringByDeletingPathExtension];
                  
                  if (length != 0)  {
                      
@@ -166,8 +164,8 @@
                      CFNumberGetValue(imageWidth, kCFNumberIntType, &w);
                      CFNumberGetValue(imageHeight, kCFNumberIntType, &h);
                      
-                     self.width.text = [NSString stringWithFormat:@"%d",w];
-                     self.height.text = [NSString stringWithFormat:@"%d",h];
+                     NSString *dimensions = [[[NSString stringWithFormat:@"%d",w] stringByAppendingString:@" x "] stringByAppendingString:[NSString stringWithFormat:@"%d",h]];
+                     self.widthAndHeight.text = dimensions;
                      
                      // get exif data
                      CFDictionaryRef exif = (CFDictionaryRef)CFDictionaryGetValue(imagePropertiesDictionary, kCGImagePropertyExifDictionary);
@@ -208,6 +206,7 @@
                          NSDecimalNumber *exifExposureTime = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureTime);
                          //                         NSLog(@"%@", exifExposureTime);
                          self.exifExposureTime.text = [NSString stringWithFormat:@"%@", exifExposureTime];
+                         self.exifExposureTimeO = self.exifExposureTime.text;
                          
                          NSDecimalNumber *exifFNumber = CFDictionaryGetValue(exif, kCGImagePropertyExifFNumber);
                          self.exifFNumber.text = [NSString stringWithFormat:@"%@", exifFNumber];
@@ -819,8 +818,10 @@
 
 -(void)dismissKeyboard {
     [self.view endEditing:YES];
-    //    [self.width resignFirstResponder];
-    //    [self.height resignFirstResponder];
+    [UIView animateWithDuration:0.3 animations:^() {
+        self.descriptionView.alpha = 0.0;
+    }];
+//    [self.descriptionView setHidden:YES];
 }
 
 
@@ -901,9 +902,21 @@ CGPoint pointFromRectangle(CGRect rect) {
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
     NSLog(@"did begin editing");
     
-//    [self.width becomeFirstResponder];
     [self.scrollView setContentOffset:(pointFromRectangle(textField.frame)) animated:YES];
-    }
+    
+    UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
+    numberToolbar.barStyle = UIBarStyleBlackTranslucent;
+    //    numberToolbar.tintColor = [UIColor whiteColor];
+    numberToolbar.items = [NSArray arrayWithObjects:
+                           [[UIBarButtonItem alloc]initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(resetPressed)],
+                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
+                           [[UIBarButtonItem alloc]initWithTitle:@"What is this?" style:UIBarButtonItemStylePlain target:self action:@selector(identifyPressed)],
+                           nil];
+    [numberToolbar sizeToFit];
+    textField.inputAccessoryView = numberToolbar;
+    
+    self.currentlyBeingEdited = textField;
+}
 
 //- (void)textFieldDidEndEditing:(UITextField *)textField {
 //    NSLog(@"just finished editing");
@@ -913,12 +926,9 @@ CGPoint pointFromRectangle(CGRect rect) {
 -(BOOL)textFieldShouldReturn:(UITextField*)textField
 {
     if(textField == self.fileName) {
-        [self.width becomeFirstResponder];
+        [self.widthAndHeight becomeFirstResponder];
     }
-    if(textField == self.width) {
-        [self.height becomeFirstResponder];
-    }
-    else if(textField == self.height) {
+    if(textField == self.widthAndHeight) {
         [self.fileSize becomeFirstResponder];
     }
     else if(textField == self.fileSize) {
@@ -1209,17 +1219,11 @@ CGPoint pointFromRectangle(CGRect rect) {
     //    self.view.backgroundColor = [UIColor colorWithRed:0.5 green:0.5 blue:0.5 alpha:1.0];
     self.view.backgroundColor = UIColorFromRGB(0x99d0f6);
     
-    
+    // Dismisses keyboard when the main view is clicked
     UITapGestureRecognizer *tapOnView = [[UITapGestureRecognizer alloc]
                                          initWithTarget:self
                                          action:@selector(dismissKeyboard)];
     [self.view addGestureRecognizer:tapOnView];
-    
-    //    UITapGestureRecognizer *focus = [[UITapGestureRecognizer alloc]
-    //                                         initWithTarget:self
-    //                                         action:@selector(focusOnTextField)];
-    //    [self.view addGestureRecognizer:focus];
-    
     
     // Scroll view
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
@@ -1241,7 +1245,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [takePicture addTarget:self
                     action:@selector(takePicture:)
           forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:takePicture];
+//    [self.view addSubview:takePicture];
     
     // New image button
     UIButton *chooseNewImage = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1251,7 +1255,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [chooseNewImage addTarget:self
                        action:@selector(newImageButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:chooseNewImage];
+//    [self.view addSubview:chooseNewImage];
     
     // Reset to actual
     UIButton *resetExif = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1261,7 +1265,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [resetExif addTarget:self
                   action:@selector(resetExif:)
         forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:resetExif];
+//    [self.view addSubview:resetExif];
     
     // Delete all
     UIButton *eraseExif = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1271,7 +1275,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [eraseExif addTarget:self
                   action:@selector(eraseExif:)
         forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:eraseExif];
+//    [self.view addSubview:eraseExif];
     
     // Button for saving the modified image
     UIButton *saveExif = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1281,7 +1285,13 @@ CGPoint pointFromRectangle(CGRect rect) {
     [saveExif addTarget:self
                  action:@selector(saveButtonPressed:)
        forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:saveExif];
+//    [self.view addSubview:saveExif];
+    
+    // Description view
+    self.descriptionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 100)];
+    self.descriptionView.backgroundColor = [UIColor yellowColor];
+    [self.descriptionView setAlpha:0.0];
+    [self.view addSubview:self.descriptionView];
     
     // Image view
     self.imageView = [[UIImageView alloc] init];
@@ -1297,72 +1307,97 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.imageView addGestureRecognizer:newTap];
     
     // File name label
-    UILabel *fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 388, 400, 20)];
+    UILabel *fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 322, w/2-10, 20)];
     fileNameLabel.text = @"File name";
-    fileNameLabel.textColor = [UIColor grayColor];
-    [fileNameLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    fileNameLabel.textAlignment = NSTextAlignmentRight;
+    fileNameLabel.textColor = [UIColor blackColor];
+    [fileNameLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:fileNameLabel];
     
     // File name
     self.fileName = [[UITextField alloc] init];
     self.fileName.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileName.delegate = self;
-    self.fileName.frame = CGRectMake(w/2, 388, w/2, 20);
+    self.fileName.enabled = NO;
+    self.fileName.frame = CGRectMake(w/2, 322, w/2, 20);
     self.fileName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileName.textColor = [UIColor blackColor];
     [self.fileName setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.fileName];
     
-    // Width label
-    UILabel *widthLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 432, 400, 20)];
-    widthLabel.text = @"Width";
-    widthLabel.textColor = [UIColor grayColor];
-    [widthLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
-    [self.scrollView addSubview:widthLabel];
+    // File extension label
+    UILabel *fileExtensionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 366, w/2-10, 20)];
+    fileExtensionLabel.text = @"File extension";
+    fileExtensionLabel.textAlignment = NSTextAlignmentRight;
+    fileExtensionLabel.textColor = [UIColor blackColor];
+    [fileExtensionLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
+    [self.scrollView addSubview:fileExtensionLabel];
     
-    // Width
-    self.width = [[UITextField alloc] init];
-    self.width.clearButtonMode = UITextFieldViewModeWhileEditing;
-    self.width.delegate = self;
-    self.width.frame = CGRectMake(w/2, 432, w/2, 20);
-    self.width.keyboardAppearance = UIKeyboardAppearanceDark;
-    self.width.textColor = [UIColor blackColor];
-    [self.width setReturnKeyType:UIReturnKeyNext];
-    [self.scrollView addSubview:self.width];
+    // File extension
+    self.fileExtension = [[UITextField alloc] init];
+    self.fileExtension.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.fileExtension.delegate = self;
+    self.fileExtension.enabled = NO;
+    self.fileExtension.frame = CGRectMake(w/2, 366, w/2, 20);
+    self.fileExtension.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.fileExtension.textColor = [UIColor blackColor];
+    [self.fileExtension setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.fileExtension];
     
-    // Height label
-    UILabel *heightLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 476, 400, 20)];
-    heightLabel.text = @"Height";
-    heightLabel.textColor = [UIColor grayColor];
-    [heightLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
-    [self.scrollView addSubview:heightLabel];
+    // Width and height label
+    UILabel *widthAndHeightLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 410, w/2-10, 20)];
+    widthAndHeightLabel.text = @"Dimensions";
+    widthAndHeightLabel.textAlignment = NSTextAlignmentRight;
+    widthAndHeightLabel.textColor = [UIColor blackColor];
+    [widthAndHeightLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
+    [self.scrollView addSubview:widthAndHeightLabel];
     
-    // Height
-    self.height = [[UITextField alloc] init];
-    self.height.clearButtonMode = UITextFieldViewModeWhileEditing;
-    self.height.delegate = self;
-    self.height.frame = CGRectMake(w/2, 476, w/2, 20);
-    self.height.keyboardAppearance = UIKeyboardAppearanceDark;
-    self.height.textColor = [UIColor blackColor];
-    [self.height setReturnKeyType:UIReturnKeyNext];
-    [self.scrollView addSubview:self.height];
+    // Width and height
+    self.widthAndHeight = [[UITextField alloc] init];
+    self.widthAndHeight.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.widthAndHeight.delegate = self;
+    self.widthAndHeight.enabled = NO;
+    self.widthAndHeight.frame = CGRectMake(w/2, 410, w/2, 20);
+    self.widthAndHeight.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.widthAndHeight.textColor = [UIColor blackColor];
+    [self.widthAndHeight setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.widthAndHeight];
     
     // File size label
-    UILabel *fileSizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 520, 400, 20)];
+    UILabel *fileSizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 454, w/2-10, 20)];
     fileSizeLabel.text = @"File size";
-    fileSizeLabel.textColor = [UIColor grayColor];
-    [fileSizeLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    fileSizeLabel.textAlignment = NSTextAlignmentRight;
+    fileSizeLabel.textColor = [UIColor blackColor];
+    [fileSizeLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:fileSizeLabel];
     
     // File size
     self.fileSize = [[UITextField alloc] init];
     self.fileSize.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileSize.delegate = self;
-    self.fileSize.frame = CGRectMake(w/2, 520, w/2, 20);
+    self.fileSize.enabled = NO;
+    self.fileSize.frame = CGRectMake(w/2, 454, w/2, 20);
     self.fileSize.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileSize.textColor = [UIColor blackColor];
     [self.fileSize setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.fileSize];
+    
+    // Table view to hold the data
+    self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 508, w, 2860)];
+    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
+    [self.scrollView addSubview:self.exifTableView];
+    [self.scrollView addSubview:self.gpsTableView];
+    
+    // Exif title banner
+    UIView *exifTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 508, w, 44)];
+    exifTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
+    [self.scrollView addSubview:exifTitle];
+    
+    // Exif title banner text
+    UILabel *exifTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 520, 40, 20)];
+    exifTitleLabel.text = @"EXIF";
+    exifTitleLabel.textColor = [UIColor whiteColor];
+    [self.scrollView addSubview:exifTitleLabel];
     
     // Date label. created or modified?
     UILabel *dateLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 564, 400, 20)];
@@ -1372,32 +1407,14 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:dateLabel];
     
     // Date
-    self.dateTimeDigitized = [[UITextField alloc] init];
-    self.dateTimeDigitized.clearButtonMode = UITextFieldViewModeWhileEditing;
-    self.dateTimeDigitized.delegate = self;
-    self.dateTimeDigitized.frame = CGRectMake(w/2, 564, w/2, 20);
-    self.dateTimeDigitized.keyboardAppearance = UIKeyboardAppearanceDark;
-    self.dateTimeDigitized.textColor = [UIColor blackColor];
-    [self.dateTimeDigitized setReturnKeyType:UIReturnKeyNext];
-    [self.scrollView addSubview:self.dateTimeDigitized];
-    
-    // Table view to hold the data
-    //    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, h*6-420)];
-    self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 552, w, 2860)];
-    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
-    [self.scrollView addSubview:self.exifTableView];
-    [self.scrollView addSubview:self.gpsTableView];
-    
-    // Exif title banner
-    UIView *exifTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 552, w, 44)];
-    exifTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
-    [self.scrollView addSubview:exifTitle];
-    
-    // Exif title banner text
-    UILabel *exifTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 564, 40, 20)];
-    exifTitleLabel.text = @"EXIF";
-    exifTitleLabel.textColor = [UIColor whiteColor];
-    [self.scrollView addSubview:exifTitleLabel];
+    self.dateTimeOriginal = [[UITextField alloc] init];
+    self.dateTimeOriginal.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.dateTimeOriginal.delegate = self;
+    self.dateTimeOriginal.frame = CGRectMake(w/2, 564, w/2, 20);
+    self.dateTimeOriginal.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.dateTimeOriginal.textColor = [UIColor blackColor];
+    [self.dateTimeOriginal setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.dateTimeOriginal];
     
     // Exif exposure time label
     UILabel *exifExposureTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 608, 400, 20)];
@@ -2957,19 +2974,6 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.gpsDifferental setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsDifferental];
     
-    UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
-    numberToolbar.barStyle = UIBarStyleBlackTranslucent;
-//    numberToolbar.tintColor = [UIColor whiteColor];
-    numberToolbar.items = [NSArray arrayWithObjects:
-                           [[UIBarButtonItem alloc]initWithTitle:@"Previous" style:UIBarButtonItemStylePlain target:self action:@selector(previousItemPressed)],
-                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                           [[UIBarButtonItem alloc]initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(resetPressed:)],
-                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                           [[UIBarButtonItem alloc]initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(nextItemPressed)],
-                           nil];
-    [numberToolbar sizeToFit];
-    self.width.inputAccessoryView = numberToolbar;
-    
     [self loadPicture];
 }
 
@@ -2977,16 +2981,40 @@ CGPoint pointFromRectangle(CGRect rect) {
     NSLog(@"Going to previous item");
 }
 
-- (void)resetPressed: (id)sender {
+// Resets the field to the original value
+- (void)resetPressed {
     NSLog(@"Resetting");
-    UIBarButtonItem *button = (UIBarButtonItem *)sender;
-    NSLog(@"%@", button);
-    [self loadPicture];
+    if(self.currentlyBeingEdited == self.exifExposureTime) {
+        NSLog(@"currently being edited is the exif exposure time");
+        self.exifExposureTime.text = self.exifExposureTimeO;
+    }
+    else {
+        NSLog(@"failed");
+    }
 }
 
-- (void)nextItemPressed {
-    NSLog(@"Going to next item");
+// Tells the user what the field is
+- (void)identifyPressed {
+    NSLog(@"Identifying item");
     
+    if(self.descriptionView.alpha == 0.0) {
+        [UIView animateWithDuration:0.3 animations:^() {
+            self.descriptionView.alpha = 1.0;
+        }];
+    }
+    else {
+        [UIView animateWithDuration:0.3 animations:^() {
+            self.descriptionView.alpha = 0.0;
+        }];
+    }
+    
+//    if(self.descriptionView.isHidden) {
+//        [self.descriptionView setHidden:NO];
+//        
+//    }
+//    else {
+//        [self.descriptionView setHidden:YES];
+//    }
 }
 
 - (void)donePressed {
