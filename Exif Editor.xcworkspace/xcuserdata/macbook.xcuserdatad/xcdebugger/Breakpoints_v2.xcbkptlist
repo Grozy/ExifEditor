@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Exif Editor/ViewController.m"
-            timestampString = "464433684.262385"
+            timestampString = "464592777.873212"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2022"
-            endingLineNumber = "2022"
+            startingLineNumber = "2337"
+            endingLineNumber = "2337"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>

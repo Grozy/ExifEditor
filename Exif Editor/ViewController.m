@@ -94,10 +94,6 @@
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
-    self.pic = picker;
-    self.inf = info;
-    //    NSLog(@"%@", info);
-    
     [self dismissViewControllerAnimated:YES completion:nil];
     
 //    NSString *mediaType = info[UIImagePickerControllerMediaType];
@@ -105,21 +101,15 @@
 //    UIImage *editedImage = info[UIImagePickerControllerEditedImage];
 //    NSValue *cropRect = info[UIImagePickerControllerCropRect];
 //    NSURL *mediaUrl = info[UIImagePickerControllerMediaURL];
-//    NSURL *referenceUrl = info[UIImagePickerControllerReferenceURL];
+    NSURL *referenceUrl = info[UIImagePickerControllerReferenceURL];
+    NSString *extension = [[referenceUrl path] pathExtension];
+    NSLog(@"The extension is %@", extension);
+    self.fileExtension.text = extension;
+    
     NSMutableDictionary *mediaMetadata = (NSMutableDictionary *) [info objectForKey:UIImagePickerControllerMediaMetadata];
     self.exifData = mediaMetadata;
     
     self.imageView.image = fullImage;
-    //    [self.imageView sizeToFit];
-    //    self.imageView.contentMode = UIViewContentModeScaleAspectFit;
-    //    CGRect frame = self.imageView.frame;
-    //    float imgFactor = frame.size.height / frame.size.width;
-    //    frame.size.width = [[UIScreen mainScreen] bounds].size.width;
-    //    frame.size.height = frame.size.width * imgFactor;
-    
-    // full exif (but with didFinishPikingMediaWithInfo)
-    
-    
     
     // image width and height (but with CGImageSourceRef)
     // below is from http://stackoverflow.com/questions/9766394/get-exif-data-from-uiimage-uiimagepickercontroller
@@ -214,6 +204,7 @@
                      //                     self.textView.text = outputString;
                      
                      if(exif_dict) {
+                         
                          NSDecimalNumber *exifExposureTime = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureTime);
                          //                         NSLog(@"%@", exifExposureTime);
                          self.exifExposureTime.text = [NSString stringWithFormat:@"%@", exifExposureTime];
@@ -224,14 +215,24 @@
                          NSDecimalNumber *exifExposureProgram = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureProgram);
                          self.exifExposureProgram.text = [NSString stringWithFormat:@"%@", exifExposureProgram];
                          
-                         NSDecimalNumber *exifSpectralSensitivity = CFDictionaryGetValue(exif, kCGImagePropertyExifSpectralSensitivity);
-                         self.exifSpectralSensitivity.text = [NSString stringWithFormat:@"%@", exifSpectralSensitivity];
+                         NSString *exifSpectralSensitivity = CFDictionaryGetValue(exif, kCGImagePropertyExifSpectralSensitivity);
+                         if(!exifSpectralSensitivity) {
+                             self.exifSpectralSensitivity.text = @"";
+                         }
+                         else {
+                             self.exifSpectralSensitivity.text = exifSpectralSensitivity;
+                         }
                          
                          NSDecimalNumber *exifISOSpeedRatings = CFDictionaryGetValue(exif, kCGImagePropertyExifISOSpeedRatings);
                          self.exifISOSpeedRatings.text = [NSString stringWithFormat:@"%@", exifISOSpeedRatings];
                          
-                         NSDecimalNumber *exifOECF = CFDictionaryGetValue(exif, kCGImagePropertyExifOECF);
-                         self.exifOECF.text = [NSString stringWithFormat:@"%@", exifOECF];
+                         NSString *exifOECF = CFDictionaryGetValue(exif, kCGImagePropertyExifOECF);
+                         if(!exifOECF) {
+                             self.exifOECF.text = @"";
+                         }
+                         else {
+                             self.exifOECF.text = exifOECF;
+                         }
                          
                          NSDecimalNumber *exifVersion = CFDictionaryGetValue(exif, kCGImagePropertyExifVersion);
                          self.exifVersion.text = [NSString stringWithFormat:@"%@", exifVersion];
@@ -260,17 +261,32 @@
                          NSDecimalNumber *exifExposureBiasValue = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureBiasValue);
                          self.exifExposureBiasValue.text = [NSString stringWithFormat:@"%@", exifExposureBiasValue];
                          
-                         NSDecimalNumber *exifMaxApertureValue = CFDictionaryGetValue(exif, kCGImagePropertyExifMaxApertureValue);
-                         self.exifMaxApertureValue.text = [NSString stringWithFormat:@"%@", exifMaxApertureValue];
+                         NSString *exifMaxApertureValue = CFDictionaryGetValue(exif, kCGImagePropertyExifMaxApertureValue);
+                         if(!exifMaxApertureValue) {
+                             self.exifMaxApertureValue.text = @"";
+                         }
+                         else {
+                             self.exifMaxApertureValue.text = exifMaxApertureValue;
+                         }
                          
-                         NSDecimalNumber *exifSubjectDistance = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectDistance);
-                         self.exifSubjectDistance.text = [NSString stringWithFormat:@"%@", exifSubjectDistance];
+                         NSString *exifSubjectDistance = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectDistance);
+                         if(!exifSubjectDistance) {
+                             self.exifSubjectDistance.text = @"";
+                         }
+                         else {
+                             self.exifSubjectDistance.text = exifSubjectDistance;
+                         }
                          
                          NSDecimalNumber *exifMeteringMode = CFDictionaryGetValue(exif, kCGImagePropertyExifMeteringMode);
                          self.exifMeteringMode.text = [NSString stringWithFormat:@"%@", exifMeteringMode];
                          
-                         NSDecimalNumber *exifLightSource = CFDictionaryGetValue(exif, kCGImagePropertyExifLightSource);
-                         self.exifLightSource.text = [NSString stringWithFormat:@"%@", exifLightSource];
+                         NSString *exifLightSource = CFDictionaryGetValue(exif, kCGImagePropertyExifLightSource);
+                         if(!exifLightSource) {
+                             self.exifLightSource.text = @"";
+                         }
+                         else {
+                             self.exifLightSource.text = exifLightSource;
+                         }
                          
                          NSDecimalNumber *exifFlash = CFDictionaryGetValue(exif, kCGImagePropertyExifFlash);
                          self.exifFlash.text = [NSString stringWithFormat:@"%@", exifFlash];
@@ -281,14 +297,29 @@
                          NSDecimalNumber *exifSubjectArea = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectArea);
                          self.exifSubjectArea.text = [NSString stringWithFormat:@"%@", exifSubjectArea];
                          
-                         NSDecimalNumber *exifMakerNote = CFDictionaryGetValue(exif, kCGImagePropertyExifMakerNote);
-                         self.exifMakerNote.text = [NSString stringWithFormat:@"%@", exifMakerNote];
+                         NSString *exifMakerNote = CFDictionaryGetValue(exif, kCGImagePropertyExifMakerNote);
+                         if(!exifMakerNote) {
+                             self.exifMakerNote.text = @"";
+                         }
+                         else {
+                             self.exifMakerNote.text = exifMakerNote;
+                         }
                          
-                         NSDecimalNumber *exifUserComment = CFDictionaryGetValue(exif, kCGImagePropertyExifUserComment);
-                         self.exifUserComment.text = [NSString stringWithFormat:@"%@", exifUserComment];
+                         NSString *exifUserComment = CFDictionaryGetValue(exif, kCGImagePropertyExifUserComment);
+                         if(!exifUserComment) {
+                             self.exifUserComment.text = @"";
+                         }
+                         else {
+                             self.exifUserComment.text = exifUserComment;
+                         }
                          
-                         NSDecimalNumber *exifSubsecTime = CFDictionaryGetValue(exif, kCGImagePropertyExifSubsecTime);
-                         self.exifSubsecTime.text = [NSString stringWithFormat:@"%@", exifSubsecTime];
+                         NSString *exifSubsecTime = CFDictionaryGetValue(exif, kCGImagePropertyExifSubsecTime);
+                         if(!exifSubsecTime) {
+                             self.exifSubsecTime.text = @"";
+                         }
+                         else {
+                             self.exifSubsecTime.text = exifSubsecTime;
+                         }
                          
                          NSDecimalNumber *exifSubsecTimeOrginal = CFDictionaryGetValue(exif, kCGImagePropertyExifSubsecTimeOrginal);
                          self.exifSubsecTimeOrginal.text = [NSString stringWithFormat:@"%@", exifSubsecTimeOrginal];
@@ -308,44 +339,99 @@
                          NSDecimalNumber *exifPixelYDimension = CFDictionaryGetValue(exif, kCGImagePropertyExifPixelYDimension);
                          self.exifPixelYDimension.text = [NSString stringWithFormat:@"%@", exifPixelYDimension];
                          
-                         NSDecimalNumber *exifRelatedSoundFile = CFDictionaryGetValue(exif, kCGImagePropertyExifRelatedSoundFile);
-                         self.exifRelatedSoundFile.text = [NSString stringWithFormat:@"%@", exifRelatedSoundFile];
+                         NSString *exifRelatedSoundFile = CFDictionaryGetValue(exif, kCGImagePropertyExifRelatedSoundFile);
+                         if(!exifRelatedSoundFile) {
+                             self.exifRelatedSoundFile.text = @"";
+                         }
+                         else {
+                             self.exifRelatedSoundFile.text = exifRelatedSoundFile;
+                         }
                          
-                         NSDecimalNumber *exifFlashEnergy = CFDictionaryGetValue(exif, kCGImagePropertyExifFlashEnergy);
-                         self.exifFlashEnergy.text = [NSString stringWithFormat:@"%@", exifFlashEnergy];
+                         NSString *exifFlashEnergy = CFDictionaryGetValue(exif, kCGImagePropertyExifFlashEnergy);
+                         if(!exifRelatedSoundFile) {
+                             self.exifFlashEnergy.text = @"";
+                         }
+                         else {
+                             self.exifFlashEnergy.text = exifFlashEnergy;
+                         }
                          
-                         NSDecimalNumber *exifSpatialFrequencyResponse = CFDictionaryGetValue(exif, kCGImagePropertyExifSpatialFrequencyResponse);
-                         self.exifSpatialFrequencyResponse.text = [NSString stringWithFormat:@"%@", exifSpatialFrequencyResponse];
+                         NSString *exifSpatialFrequencyResponse = CFDictionaryGetValue(exif, kCGImagePropertyExifSpatialFrequencyResponse);
+                         if(!exifSpatialFrequencyResponse) {
+                             self.exifSpatialFrequencyResponse.text = @"";
+                         }
+                         else {
+                             self.exifSpatialFrequencyResponse.text = exifSpatialFrequencyResponse;
+                         }
                          
-                         NSDecimalNumber *exifFocalPlaneXResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneXResolution);
-                         self.exifFocalPlaneXResolution.text = [NSString stringWithFormat:@"%@", exifFocalPlaneXResolution];
+                         NSString *exifFocalPlaneXResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneXResolution);
+                         if(!exifFocalPlaneXResolution) {
+                             self.exifFocalPlaneXResolution.text = @"";
+                         }
+                         else {
+                             self.exifFocalPlaneXResolution.text = exifFocalPlaneXResolution;
+                         }
                          
-                         NSDecimalNumber *exifFocalPlaneYResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneYResolution);
-                         self.exifFocalPlaneYResolution.text = [NSString stringWithFormat:@"%@", exifFocalPlaneYResolution];
+                         NSString *exifFocalPlaneYResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneYResolution);
+                         if(!exifFocalPlaneYResolution) {
+                             self.exifFocalPlaneYResolution.text = @"";
+                         }
+                         else {
+                             self.exifFocalPlaneYResolution.text = exifFocalPlaneYResolution;
+                         }
                          
-                         NSDecimalNumber *exifFocalPlaneResolutionUnit = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneResolutionUnit);
-                         self.exifFocalPlaneResolutionUnit.text = [NSString stringWithFormat:@"%@", exifFocalPlaneResolutionUnit];
+                         NSString *exifFocalPlaneResolutionUnit = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneResolutionUnit);
+                         if(!exifFocalPlaneResolutionUnit) {
+                             self.exifFocalPlaneResolutionUnit.text = @"";
+                         }
+                         else {
+                             self.exifFocalPlaneResolutionUnit.text = exifFocalPlaneResolutionUnit;
+                         }
                          
-                         NSDecimalNumber *exifSubjectLocation = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectLocation);
-                         self.exifSubjectLocation.text = [NSString stringWithFormat:@"%@", exifSubjectLocation];
+                         NSString *exifSubjectLocation = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectLocation);
+                         if(!exifSubjectLocation) {
+                             self.exifSubjectLocation.text = @"";
+                         }
+                         else {
+                             self.exifSubjectLocation.text = exifSubjectLocation;
+                         }
                          
-                         NSDecimalNumber *exifExposureIndex = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureIndex);
-                         self.exifExposureIndex.text = [NSString stringWithFormat:@"%@", exifExposureIndex];
+                         NSString *exifExposureIndex = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureIndex);
+                         if(!exifExposureIndex) {
+                             self.exifExposureIndex.text = @"";
+                         }
+                         else {
+                             self.exifExposureIndex.text = exifExposureIndex;
+                         }
                          
                          NSDecimalNumber *exifSensingMethod = CFDictionaryGetValue(exif, kCGImagePropertyExifSensingMethod);
                          self.exifSensingMethod.text = [NSString stringWithFormat:@"%@", exifSensingMethod];
                          
-                         NSDecimalNumber *exifFileSource = CFDictionaryGetValue(exif, kCGImagePropertyExifFileSource);
-                         self.exifFileSource.text = [NSString stringWithFormat:@"%@", exifFileSource];
+                         NSString *exifFileSource = CFDictionaryGetValue(exif, kCGImagePropertyExifFileSource);
+                         if(!exifFileSource) {
+                             self.exifFileSource.text = @"";
+                         }
+                         else {
+                             self.exifFileSource.text = exifFileSource;
+                         }
                          
                          NSDecimalNumber *exifSceneType = CFDictionaryGetValue(exif, kCGImagePropertyExifSceneType);
                          self.exifSceneType.text = [NSString stringWithFormat:@"%@", exifSceneType];
                          
                          NSDecimalNumber *exifCFAPattern = CFDictionaryGetValue(exif, kCGImagePropertyExifCFAPattern);
-                         self.exifCFAPattern.text = [NSString stringWithFormat:@"%@", exifCFAPattern];
+                         if(!exifCFAPattern) {
+                             self.exifCFAPattern.text = @"";
+                         }
+                         else {
+                             self.exifCFAPattern.text = [NSString stringWithFormat:@"%@", exifCFAPattern];
+                         }
                          
                          NSDecimalNumber *exifCustomRendered = CFDictionaryGetValue(exif, kCGImagePropertyExifCustomRendered);
-                         self.exifCustomRendered.text = [NSString stringWithFormat:@"%@", exifCustomRendered];
+                         if(!exifCustomRendered) {
+                             self.exifCustomRendered.text = @"";
+                         }
+                         else {
+                             self.exifCustomRendered.text = [NSString stringWithFormat:@"%@", exifCustomRendered];
+                         }
                          
                          NSDecimalNumber *exifExposureMode = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureMode);
                          self.exifExposureMode.text = [NSString stringWithFormat:@"%@", exifExposureMode];
@@ -354,7 +440,12 @@
                          self.exifWhiteBalance.text = [NSString stringWithFormat:@"%@", exifWhiteBalance];
                          
                          NSDecimalNumber *exifDigitalZoomRatio = CFDictionaryGetValue(exif, kCGImagePropertyExifDigitalZoomRatio);
-                         self.exifDigitalZoomRatio.text = [NSString stringWithFormat:@"%@", exifDigitalZoomRatio];
+                         if(!exifDigitalZoomRatio) {
+                             self.exifDigitalZoomRatio.text = @"";
+                         }
+                         else {
+                             self.exifDigitalZoomRatio.text = [NSString stringWithFormat:@"%@", exifDigitalZoomRatio];
+                         }
                          
                          NSDecimalNumber *exifFocalLenIn35mmFilm = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalLenIn35mmFilm);
                          self.exifFocalLenIn35mmFilm.text = [NSString stringWithFormat:@"%@", exifFocalLenIn35mmFilm];
@@ -363,34 +454,84 @@
                          self.exifSceneCaptureType.text = [NSString stringWithFormat:@"%@", exifSceneCaptureType];
                          
                          NSDecimalNumber *exifGainControl = CFDictionaryGetValue(exif, kCGImagePropertyExifGainControl);
-                         self.exifGainControl.text = [NSString stringWithFormat:@"%@", exifGainControl];
-                         
+                         if(!exifGainControl) {
+                             self.exifGainControl.text = @"";
+                         }
+                         else {
+                             self.exifGainControl.text = self.exifContrast.text = [NSString stringWithFormat:@"%@", exifGainControl];
+                         }
+
                          NSDecimalNumber *exifContrast = CFDictionaryGetValue(exif, kCGImagePropertyExifContrast);
-                         self.exifContrast.text = [NSString stringWithFormat:@"%@", exifContrast];
+                         if(!exifContrast) {
+                             self.exifContrast.text = @"";
+                         }
+                         else {
+                             self.exifContrast.text = [NSString stringWithFormat:@"%@", exifContrast];
+                         }
                          
                          NSDecimalNumber *exifSaturation = CFDictionaryGetValue(exif, kCGImagePropertyExifSaturation);
-                         self.exifSaturation.text = [NSString stringWithFormat:@"%@", exifSaturation];
+                         if(!exifSaturation) {
+                             self.exifSaturation.text = @"";
+                         }
+                         else {
+                             self.exifSaturation.text = [NSString stringWithFormat:@"%@", exifSaturation];
+                         }
                          
                          NSDecimalNumber *exifSharpness = CFDictionaryGetValue(exif, kCGImagePropertyExifSharpness);
-                         self.exifSharpness.text = [NSString stringWithFormat:@"%@", exifSharpness];
+                         if(!exifSharpness) {
+                             self.exifSharpness.text = @"";
+                         }
+                         else {
+                             self.exifSharpness.text = [NSString stringWithFormat:@"%@", exifSharpness];
+                         }
                          
                          NSDecimalNumber *exifDeviceSettingDescription = CFDictionaryGetValue(exif, kCGImagePropertyExifDeviceSettingDescription);
-                         self.exifDeviceSettingDescription.text = [NSString stringWithFormat:@"%@", exifDeviceSettingDescription];
+                         if(!exifDeviceSettingDescription) {
+                             self.exifDeviceSettingDescription.text = @"";
+                         }
+                         else {
+                             self.exifDeviceSettingDescription.text = [NSString stringWithFormat:@"%@", exifDeviceSettingDescription];
+                         }
                          
                          NSDecimalNumber *exifSubjectDistRange = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectDistRange);
-                         self.exifSubjectDistRange.text = [NSString stringWithFormat:@"%@", exifSubjectDistRange];
+                         if(!exifSubjectDistRange) {
+                             self.exifSubjectDistRange.text = @"";
+                         }
+                         else {
+                             self.exifSubjectDistRange.text = [NSString stringWithFormat:@"%@", exifSubjectDistRange];
+                         }
                          
                          NSDecimalNumber *exifImageUniqueID = CFDictionaryGetValue(exif, kCGImagePropertyExifImageUniqueID);
-                         self.exifImageUniqueID.text = [NSString stringWithFormat:@"%@", exifImageUniqueID];
+                         if(!exifSubjectDistRange) {
+                             self.exifImageUniqueID.text = @"";
+                         }
+                         else {
+                             self.exifImageUniqueID.text = [NSString stringWithFormat:@"%@", exifImageUniqueID];
+                         }
                          
                          NSDecimalNumber *exifGamma = CFDictionaryGetValue(exif, kCGImagePropertyExifGamma);
-                         self.exifGamma.text = [NSString stringWithFormat:@"%@", exifGamma];
+                         if(!exifGamma) {
+                             self.exifGamma.text = @"";
+                         }
+                         else {
+                             self.exifGamma.text = [NSString stringWithFormat:@"%@", exifGamma];
+                         }
                          
                          NSDecimalNumber *exifCameraOwnerName = CFDictionaryGetValue(exif, kCGImagePropertyExifCameraOwnerName);
-                         self.exifCameraOwnerName.text = [NSString stringWithFormat:@"%@", exifCameraOwnerName];
+                         if(!exifCameraOwnerName) {
+                             self.exifCameraOwnerName.text = @"";
+                         }
+                         else {
+                             self.exifCameraOwnerName.text = [NSString stringWithFormat:@"%@", exifCameraOwnerName];
+                         }
                          
                          NSDecimalNumber *exifBodySerialNumber = CFDictionaryGetValue(exif, kCGImagePropertyExifBodySerialNumber);
-                         self.exifBodySerialNumber.text = [NSString stringWithFormat:@"%@", exifBodySerialNumber];
+                         if(!exifBodySerialNumber) {
+                             self.exifBodySerialNumber.text = @"";
+                         }
+                         else {
+                             self.exifBodySerialNumber.text = [NSString stringWithFormat:@"%@", exifBodySerialNumber];
+                         }
                          
                          NSDecimalNumber *exifLensSpecification = CFDictionaryGetValue(exif, kCGImagePropertyExifLensSpecification);
                          self.exifLensSpecification.text = [NSString stringWithFormat:@"%@", exifLensSpecification];
@@ -402,26 +543,18 @@
                          self.exifLensModel.text = [NSString stringWithFormat:@"%@", exifLensModel];
                          
                          NSDecimalNumber *exifLensSerialNumber = CFDictionaryGetValue(exif, kCGImagePropertyExifLensSerialNumber);
-                         self.exifLensSerialNumber.text = [NSString stringWithFormat:@"%@", exifLensSerialNumber];
+                         if(!exifLensSerialNumber) {
+                             self.exifLensSerialNumber.text = @"";
+                         }
+                         else {
+                             self.exifLensSerialNumber.text = [NSString stringWithFormat:@"%@", exifLensSerialNumber];
+                         }
                      }
-                     
-                     // Get digitized time stamp
-                     //                     if (exif){
-                     //                         NSString *timestamp = (NSString *)CFBridgingRelease(CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeOriginal));
-                     //                         if (timestamp){
-                     //                             NSLog(@"timestamp: %@", timestamp);
-                     //                             self.dateTimeDigitized.text = timestamp;
-                     //                         } else {
-                     //                             self.dateTimeDigitized.text = @"N/A";
-                     //                             NSLog(@"timestamp not found in the exif dic %@", exif);
-                     //                         }
-                     //                     } else {
-                     //                     }
                      
                      // Get video duration
                      NSString *duration = [asset valueForProperty:ALAssetPropertyDuration];
                      if([duration isEqualToString: @"ALErrorInvalidProperty"]) {
-                         self.duration.text = @"N/A";
+                         self.duration.text = @"";
                      }
                      else {
                          self.duration.text = duration;
@@ -434,74 +567,197 @@
                      
                      if(gps_dict) {
                          NSDecimalNumber *version = CFDictionaryGetValue(gps, kCGImagePropertyGPSVersion);
-                         self.gpsVersion.text = [NSString stringWithFormat:@"%@", version];;
+                         if(!version) {
+                             self.gpsVersion.text = @"";
+                         }
+                         else {
+                             self.gpsVersion.text = [NSString stringWithFormat:@"%@", version];
+                         }
                          
-                         NSString *latitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitudeRef);
-                         self.gpsLatitudeRef.text = latitudeRef;
+                         NSDecimalNumber *latitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitudeRef);
+                         self.gpsLatitudeRef.text = [NSString stringWithFormat:@"%@", latitudeRef];
                          
                          NSDecimalNumber *latitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLatitude);
-                         self.gpsLatitude.text = [NSString stringWithFormat:@"%@", latitude];;
+                         self.gpsLatitude.text = [NSString stringWithFormat:@"%@", latitude];
                          
-                         NSString *longitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitudeRef);
-                         self.gpsLongitudeRef.text = longitudeRef;
+                         NSDecimalNumber *longitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitudeRef);
+                         self.gpsLongitudeRef.text = [NSString stringWithFormat:@"%@", longitudeRef];
                          
                          NSDecimalNumber *longitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSLongitude);
-                         self.gpsLongitude.text = [NSString stringWithFormat:@"%@", longitude];;
+                         self.gpsLongitude.text = [NSString stringWithFormat:@"%@", longitude];
                          
                          NSDecimalNumber *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
-                         self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];;
+                         self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];
                          
                          NSDecimalNumber *altitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitude);
-                         self.gpsAltitude.text = [NSString stringWithFormat:@"%@", altitude];;
+                         self.gpsAltitude.text = [NSString stringWithFormat:@"%@", altitude];
                          
-                         NSString *timeStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSTimeStamp);
-                         self.gpsTimeStamp.text = timeStamp;
-                         NSString *satellites = CFDictionaryGetValue(gps, kCGImagePropertyGPSSatellites);
-                         self.gpsSatellites.text = satellites;
-                         NSString *status = CFDictionaryGetValue(gps, kCGImagePropertyGPSStatus);
-                         self.gpsStatus.text = status;
-                         NSString *measureMode = CFDictionaryGetValue(gps, kCGImagePropertyGPSMeasureMode);
-                         self.gpsMeasureMode.text = measureMode;
-                         NSString *degreeOfPrecision = CFDictionaryGetValue(gps, kCGImagePropertyGPSDOP);
-                         self.gpsDegreeOfPrecision.text = degreeOfPrecision;
-                         NSString *speedRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSSpeedRef);
-                         self.gpsSpeedRef.text = speedRef;
-                         NSString *speed = CFDictionaryGetValue(gps, kCGImagePropertyGPSSpeed);
-                         self.gpsSpeed.text = speed;
-                         NSString *trackRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSTrackRef);
-                         self.gpsTrackRef.text = trackRef;
-                         NSString *track = CFDictionaryGetValue(gps, kCGImagePropertyGPSTrack);
-                         self.gpsTrack.text = track;
+                         NSDecimalNumber *timeStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSTimeStamp);
+                         self.gpsTimeStamp.text = [NSString stringWithFormat:@"%@", timeStamp];
+                         
+                         NSDecimalNumber *satellites = CFDictionaryGetValue(gps, kCGImagePropertyGPSSatellites);
+                         if(!satellites) {
+                             self.gpsSatellites.text = @"";
+                         }
+                         else {
+                             self.gpsSatellites.text = [NSString stringWithFormat:@"%@", satellites];
+                         }
+                         
+                         NSDecimalNumber *status = CFDictionaryGetValue(gps, kCGImagePropertyGPSStatus);
+                         if(!status) {
+                             self.gpsStatus.text = @"";
+                         }
+                         else {
+                             self.gpsStatus.text = [NSString stringWithFormat:@"%@", status];
+                         }
+                         
+                         NSDecimalNumber *measureMode = CFDictionaryGetValue(gps, kCGImagePropertyGPSMeasureMode);
+                         if(!measureMode) {
+                             self.gpsMeasureMode.text = @"";
+                         }
+                         else {
+                             self.gpsMeasureMode.text = [NSString stringWithFormat:@"%@", measureMode];
+                         }
+                         
+                         NSDecimalNumber *degreeOfPrecision = CFDictionaryGetValue(gps, kCGImagePropertyGPSDOP);
+                         if(!degreeOfPrecision) {
+                             self.gpsDegreeOfPrecision.text = @"";
+                         }
+                         else {
+                             self.gpsDegreeOfPrecision.text = [NSString stringWithFormat:@"%@", degreeOfPrecision];
+                         }
+                         
+                         NSDecimalNumber *speedRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSSpeedRef);
+                         if(!speedRef) {
+                             self.gpsSpeedRef.text = @"";
+                         }
+                         else {
+                             self.gpsSpeedRef.text = [NSString stringWithFormat:@"%@", speedRef];
+                         }
+                         
+                         NSDecimalNumber *speed = CFDictionaryGetValue(gps, kCGImagePropertyGPSSpeed);
+                         if(!speed) {
+                             self.gpsSpeed.text = @"";
+                         }
+                         else {
+                             self.gpsSpeed.text = [NSString stringWithFormat:@"%@", speed];
+                         }
+                         
+                         NSDecimalNumber *trackRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSTrackRef);
+                         if(!trackRef) {
+                             self.gpsTrackRef.text = @"";
+                         }
+                         else {
+                             self.gpsTrackRef.text = [NSString stringWithFormat:@"%@", trackRef];
+                         }
+                         
+                         NSDecimalNumber *track = CFDictionaryGetValue(gps, kCGImagePropertyGPSTrack);
+                         if(!track) {
+                             self.gpsTrack.text = @"";
+                         }
+                         else {
+                             self.gpsTrack.text = [NSString stringWithFormat:@"%@", track];
+                         }
+                         
                          NSString *imgDirectionRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSImgDirectionRef);
                          self.gpsImgDirectionRef.text = imgDirectionRef;
-                         NSString *imgDirection = CFDictionaryGetValue(gps, kCGImagePropertyGPSImgDirection);
-                         self.gpsImgDirection.text = imgDirection;
-                         NSString *mapDatum = CFDictionaryGetValue(gps, kCGImagePropertyGPSMapDatum);
-                         self.gpsMapDatum.text = mapDatum;
-                         NSString *destLatRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLatitudeRef);
-                         self.gpsDestLatRef.text = destLatRef;
-                         NSString *destLat = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLatitude);
-                         self.gpsDestLat.text = destLat;
-                         NSString *destLongRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLongitudeRef);
-                         self.gpsDestLongRef.text = destLongRef;
-                         NSString *destLong = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLongitude);
-                         self.gpsDestLong.text = destLong;
+                         
+                         NSDecimalNumber *imgDirection = CFDictionaryGetValue(gps, kCGImagePropertyGPSImgDirection);
+                         self.gpsImgDirection.text = [NSString stringWithFormat:@"%@", imgDirection];
+                         
+                         NSDecimalNumber *mapDatum = CFDictionaryGetValue(gps, kCGImagePropertyGPSMapDatum);
+                         if(!mapDatum) {
+                             self.gpsMapDatum.text = @"";
+                         }
+                         else {
+                             self.gpsMapDatum.text = [NSString stringWithFormat:@"%@", mapDatum];
+                         }
+                         
+                         NSDecimalNumber *destLatRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLatitudeRef);
+                         if(!destLatRef) {
+                             self.gpsDestLatRef.text = @"";
+                         }
+                         else {
+                             self.gpsDestLatRef.text = [NSString stringWithFormat:@"%@", destLatRef];
+                         }
+                         
+                         NSDecimalNumber *destLat = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLatitude);
+                         if(!destLat) {
+                             self.gpsDestLat.text = @"";
+                         }
+                         else {
+                             self.gpsDestLat.text = [NSString stringWithFormat:@"%@", destLat];
+                         }
+                         
+                         NSDecimalNumber *destLongRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLongitudeRef);
+                         if(!destLongRef) {
+                             self.gpsDestLongRef.text = @"";
+                         }
+                         else {
+                             self.gpsDestLongRef.text = [NSString stringWithFormat:@"%@", destLongRef];
+                         }
+                         
+                         NSDecimalNumber *destLong = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestLongitude);
+                         if(!destLong) {
+                             self.gpsDestLong.text = @"";
+                         }
+                         else {
+                             self.gpsDestLong.text = [NSString stringWithFormat:@"%@", destLong];
+                         }
+                         
                          NSString *destBearingRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestBearingRef);
                          self.gpsDestBearingRef.text = destBearingRef;
-                         NSString *destBearing = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestBearing);
-                         self.gpsDestBearing.text = destBearing;
-                         NSString *destDistanceRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistanceRef);
-                         self.gpsDestDistanceRef.text = destDistanceRef;
-                         NSString *destDistance = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistance);
-                         self.gpsDestDistance.text = destDistance;
-                         NSString *processingMethod = CFDictionaryGetValue(gps, kCGImagePropertyGPSProcessingMethod);
-                         self.gpsProcessingMethod.text = processingMethod;
-                         NSString *areaInformation = CFDictionaryGetValue(gps, kCGImagePropertyGPSAreaInformation);
-                         self.gpsAreaInformation.text = areaInformation;
-                         NSString *dateStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSDateStamp);
-                         self.gpsDateStamp.text = dateStamp;
-                         NSString *differental = CFDictionaryGetValue(gps, kCGImagePropertyGPSDifferental);
-                         self.gpsDifferental.text = differental;
+                         
+                         NSDecimalNumber *destBearing = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestBearing);
+                         self.gpsDestBearing.text = [NSString stringWithFormat:@"%@", destBearing];
+                         
+                         NSDecimalNumber *destDistanceRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistanceRef);
+                         if(!destDistanceRef) {
+                             self.gpsDestDistanceRef.text = @"";
+                         }
+                         else {
+                             self.gpsDestDistanceRef.text = [NSString stringWithFormat:@"%@", destDistanceRef];
+                         }
+                         
+                         NSDecimalNumber *destDistance = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistance);
+                         if(!destDistance) {
+                             self.gpsDestDistance.text = @"";
+                         }
+                         else {
+                             self.gpsDestDistance.text = [NSString stringWithFormat:@"%@", destDistance];
+                         }
+                         
+                         NSDecimalNumber *processingMethod = CFDictionaryGetValue(gps, kCGImagePropertyGPSProcessingMethod);
+                         if(!processingMethod) {
+                             self.gpsProcessingMethod.text = @"";
+                         }
+                         else {
+                             self.gpsProcessingMethod.text = [NSString stringWithFormat:@"%@", processingMethod];
+                         }
+                         
+                         NSDecimalNumber *areaInformation = CFDictionaryGetValue(gps, kCGImagePropertyGPSAreaInformation);
+                         if(!areaInformation) {
+                             self.gpsAreaInformation.text = @"";
+                         }
+                         else {
+                             self.gpsAreaInformation.text = [NSString stringWithFormat:@"%@", areaInformation];
+                         }
+                         
+                         NSDecimalNumber *dateStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSDateStamp);
+                         if(!dateStamp) {
+                             self.gpsDateStamp.text = @"";
+                         }
+                         else {
+                             self.gpsDateStamp.text = [NSString stringWithFormat:@"%@", dateStamp];
+                         }
+                         
+                         NSDecimalNumber *differental = CFDictionaryGetValue(gps, kCGImagePropertyGPSDifferental);
+                         if(!differental) {
+                             self.gpsDifferental.text = @"";
+                         }
+                         else {
+                             self.gpsDifferental.text = [NSString stringWithFormat:@"%@", differental];
+                         }
                      }
                      
                      
@@ -848,6 +1104,102 @@ CGPoint pointFromRectangle(CGRect rect) {
     else if(textField == self.exifLensModel) {
         [self.exifLensSerialNumber becomeFirstResponder];
     }
+    else if(textField == self.exifLensSerialNumber) {
+        [self.gpsVersion becomeFirstResponder];
+    }
+    else if(textField == self.gpsVersion) {
+        [self.gpsLatitudeRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsLatitudeRef) {
+        [self.gpsLatitude becomeFirstResponder];
+    }
+    else if(textField == self.gpsLatitude) {
+        [self.gpsLongitudeRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsLongitudeRef) {
+        [self.gpsLongitude becomeFirstResponder];
+    }
+    else if(textField == self.gpsLongitude) {
+        [self.gpsAltitudeRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsAltitudeRef) {
+        [self.gpsAltitude becomeFirstResponder];
+    }
+    else if(textField == self.gpsAltitude) {
+        [self.gpsTimeStamp becomeFirstResponder];
+    }
+    else if(textField == self.gpsTimeStamp) {
+        [self.gpsSatellites becomeFirstResponder];
+    }
+    else if(textField == self.gpsSatellites) {
+        [self.gpsStatus becomeFirstResponder];
+    }
+    else if(textField == self.gpsStatus) {
+        [self.gpsMeasureMode becomeFirstResponder];
+    }
+    else if(textField == self.gpsMeasureMode) {
+        [self.gpsDegreeOfPrecision becomeFirstResponder];
+    }
+    else if(textField == self.gpsDegreeOfPrecision) {
+        [self.gpsSpeedRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsSpeedRef) {
+        [self.gpsSpeed becomeFirstResponder];
+    }
+    else if(textField == self.gpsSpeed) {
+        [self.gpsTrackRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsTrackRef) {
+        [self.gpsTrack becomeFirstResponder];
+    }
+    else if(textField == self.gpsTrack) {
+        [self.gpsImgDirectionRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsImgDirectionRef) {
+        [self.gpsImgDirection becomeFirstResponder];
+    }
+    else if(textField == self.gpsImgDirection) {
+        [self.gpsMapDatum becomeFirstResponder];
+    }
+    else if(textField == self.gpsMapDatum) {
+        [self.gpsDestLatRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestLatRef) {
+        [self.gpsDestLat becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestLat) {
+        [self.gpsDestLongRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestLongRef) {
+        [self.gpsDestLong becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestLong) {
+        [self.gpsDestBearingRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestBearingRef) {
+        [self.gpsDestBearing becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestBearing) {
+        [self.gpsDestDistanceRef becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestDistanceRef) {
+        [self.gpsDestDistance becomeFirstResponder];
+    }
+    else if(textField == self.gpsDestDistance) {
+        [self.gpsProcessingMethod becomeFirstResponder];
+    }
+    else if(textField == self.gpsProcessingMethod) {
+        [self.gpsAreaInformation becomeFirstResponder];
+    }
+    else if(textField == self.gpsAreaInformation) {
+        [self.gpsDateStamp becomeFirstResponder];
+    }
+    else if(textField == self.gpsDateStamp) {
+        [self.gpsDifferental becomeFirstResponder];
+    }
+    else {
+        NSLog(@"other option");
+    }
     return YES;
 }
 
@@ -871,7 +1223,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Scroll view
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, self.scrollView.bounds.size.height*6)];
+//    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, self.scrollView.bounds.size.height*10)];
+    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, 4708)];
+    
     [self.view addSubview:self.scrollView];
     
     // Width of scroll view
@@ -942,24 +1296,6 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.imageView setUserInteractionEnabled:YES];
     [self.imageView addGestureRecognizer:newTap];
     
-    // Table view to hold the data
-//    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, h*6-420)];
-    self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, 2860)];
-    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
-    [self.scrollView addSubview:self.exifTableView];
-    [self.scrollView addSubview:self.gpsTableView];
-    
-    // Exif title banner
-    UIView *exifTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 332, w, 44)];
-    exifTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
-    [self.scrollView addSubview:exifTitle];
-    
-    // Exif title banner text
-    UILabel *exifTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 344, 40, 20)];
-    exifTitleLabel.text = @"EXIF";
-    exifTitleLabel.textColor = [UIColor whiteColor];
-    [self.scrollView addSubview:exifTitleLabel];
-    
     // File name label
     UILabel *fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 388, 400, 20)];
     fileNameLabel.text = @"File name";
@@ -969,11 +1305,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // File name
     self.fileName = [[UITextField alloc] init];
+    self.fileName.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileName.delegate = self;
-    self.fileName.frame = CGRectMake(w/2, 388, 400, 20);
+    self.fileName.frame = CGRectMake(w/2, 388, w/2, 20);
     self.fileName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileName.textColor = [UIColor blackColor];
-    [self.fileName setReturnKeyType:UIReturnKeyDone];
+    [self.fileName setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.fileName];
     
     // Width label
@@ -985,11 +1322,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Width
     self.width = [[UITextField alloc] init];
+    self.width.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.width.delegate = self;
-    self.width.frame = CGRectMake(w/2, 432, 400, 20);
+    self.width.frame = CGRectMake(w/2, 432, w/2, 20);
     self.width.keyboardAppearance = UIKeyboardAppearanceDark;
     self.width.textColor = [UIColor blackColor];
-    [self.width setReturnKeyType:UIReturnKeyDone];
+    [self.width setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.width];
     
     // Height label
@@ -1001,11 +1339,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Height
     self.height = [[UITextField alloc] init];
+    self.height.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.height.delegate = self;
-    self.height.frame = CGRectMake(w/2, 476, 400, 20);
+    self.height.frame = CGRectMake(w/2, 476, w/2, 20);
     self.height.keyboardAppearance = UIKeyboardAppearanceDark;
     self.height.textColor = [UIColor blackColor];
-    [self.height setReturnKeyType:UIReturnKeyDone];
+    [self.height setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.height];
     
     // File size label
@@ -1017,11 +1356,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // File size
     self.fileSize = [[UITextField alloc] init];
+    self.fileSize.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileSize.delegate = self;
-    self.fileSize.frame = CGRectMake(w/2, 520, 400, 20);
+    self.fileSize.frame = CGRectMake(w/2, 520, w/2, 20);
     self.fileSize.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileSize.textColor = [UIColor blackColor];
-    [self.height setReturnKeyType:UIReturnKeyDone];
+    [self.fileSize setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.fileSize];
     
     // Date label. created or modified?
@@ -1033,12 +1373,31 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Date
     self.dateTimeDigitized = [[UITextField alloc] init];
+    self.dateTimeDigitized.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.dateTimeDigitized.delegate = self;
-    self.dateTimeDigitized.frame = CGRectMake(w/2, 564, 400, 20);
+    self.dateTimeDigitized.frame = CGRectMake(w/2, 564, w/2, 20);
     self.dateTimeDigitized.keyboardAppearance = UIKeyboardAppearanceDark;
     self.dateTimeDigitized.textColor = [UIColor blackColor];
-    [self.dateTimeDigitized setReturnKeyType:UIReturnKeyDone];
+    [self.dateTimeDigitized setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.dateTimeDigitized];
+    
+    // Table view to hold the data
+    //    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 376, w, h*6-420)];
+    self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 552, w, 2860)];
+    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
+    [self.scrollView addSubview:self.exifTableView];
+    [self.scrollView addSubview:self.gpsTableView];
+    
+    // Exif title banner
+    UIView *exifTitle = [[UIView alloc] initWithFrame:CGRectMake(0, 552, w, 44)];
+    exifTitle.backgroundColor = UIColorFromRGB(0x1b81c8);
+    [self.scrollView addSubview:exifTitle];
+    
+    // Exif title banner text
+    UILabel *exifTitleLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2-20, 564, 40, 20)];
+    exifTitleLabel.text = @"EXIF";
+    exifTitleLabel.textColor = [UIColor whiteColor];
+    [self.scrollView addSubview:exifTitleLabel];
     
     // Exif exposure time label
     UILabel *exifExposureTimeLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 608, 400, 20)];
@@ -1049,11 +1408,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Exif exposure time
     self.exifExposureTime = [[UITextField alloc] init];
+    self.exifExposureTime.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifExposureTime.delegate = self;
-    self.exifExposureTime.frame = CGRectMake(w/2, 608, 400, 20);
+    self.exifExposureTime.frame = CGRectMake(w/2, 608, w/2, 20);
     self.exifExposureTime.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureTime.textColor = [UIColor blackColor];
-    [self.exifExposureTime setReturnKeyType:UIReturnKeyDone];
+    [self.exifExposureTime setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifExposureTime];
     
     // F number label
@@ -1065,11 +1425,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // F number
     self.exifFNumber = [[UITextField alloc] init];
+    self.exifFNumber.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFNumber.delegate = self;
-    self.exifFNumber.frame = CGRectMake(w/2, 652, 400, 20);
+    self.exifFNumber.frame = CGRectMake(w/2, 652, w/2, 20);
     self.exifFNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFNumber.textColor = [UIColor blackColor];
-    [self.exifFNumber setReturnKeyType:UIReturnKeyDone];
+    [self.exifFNumber setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFNumber];
     
     // Exposure program label
@@ -1081,11 +1442,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Exposure program
     self.exifExposureProgram = [[UITextField alloc] init];
+    self.exifExposureProgram.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifExposureProgram.delegate = self;
-    self.exifExposureProgram.frame = CGRectMake(w/2, 696, 400, 20);
+    self.exifExposureProgram.frame = CGRectMake(w/2, 696, w/2, 20);
     self.exifExposureProgram.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureProgram.textColor = [UIColor blackColor];
-    [self.exifExposureProgram setReturnKeyType:UIReturnKeyDone];
+    [self.exifExposureProgram setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifExposureProgram];
     
     // Spectral sensitivity label
@@ -1097,11 +1459,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Spectral sensitivity
     self.exifSpectralSensitivity = [[UITextField alloc] init];
+    self.exifSpectralSensitivity.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSpectralSensitivity.delegate = self;
-    self.exifSpectralSensitivity.frame = CGRectMake(w/2, 740, 400, 20);
+    self.exifSpectralSensitivity.frame = CGRectMake(w/2, 740, w/2, 20);
     self.exifSpectralSensitivity.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSpectralSensitivity.textColor = [UIColor blackColor];
-    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyDone];
+    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSpectralSensitivity];
     
     // ISO speed ratings label
@@ -1113,11 +1476,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // ISO speed ratings
     self.exifISOSpeedRatings = [[UITextField alloc] init];
+    self.exifISOSpeedRatings.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifISOSpeedRatings.delegate = self;
-    self.exifISOSpeedRatings.frame = CGRectMake(w/2, 784, 400, 20);
+    self.exifISOSpeedRatings.frame = CGRectMake(w/2, 784, w/2, 20);
     self.exifISOSpeedRatings.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifISOSpeedRatings.textColor = [UIColor blackColor];
-    [self.exifSpectralSensitivity setReturnKeyType:UIReturnKeyDone];
+    [self.exifISOSpeedRatings setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifISOSpeedRatings];
     
     // OECF label
@@ -1129,11 +1493,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // OECF
     self.exifOECF = [[UITextField alloc] init];
+    self.exifOECF.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifOECF.delegate = self;
-    self.exifOECF.frame = CGRectMake(w/2, 828, 400, 20);
+    self.exifOECF.frame = CGRectMake(w/2, 828, w/2, 20);
     self.exifOECF.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifOECF.textColor = [UIColor blackColor];
-    [self.exifOECF setReturnKeyType:UIReturnKeyDone];
+    [self.exifOECF setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifOECF];
     
     // Version label
@@ -1145,11 +1510,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Version
     self.exifVersion = [[UITextField alloc] init];
+    self.exifVersion.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifVersion.delegate = self;
-    self.exifVersion.frame = CGRectMake(w/2, 872, 400, 20);
+    self.exifVersion.frame = CGRectMake(w/2, 872, w/2, 20);
     self.exifVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifVersion.textColor = [UIColor blackColor];
-    [self.exifVersion setReturnKeyType:UIReturnKeyDone];
+    [self.exifVersion setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifVersion];
     
     // Components configuration label
@@ -1161,11 +1527,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Components configuration
     self.exifComponentsConfiguration = [[UITextField alloc] init];
+    self.exifComponentsConfiguration.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifComponentsConfiguration.delegate = self;
-    self.exifComponentsConfiguration.frame = CGRectMake(w/2, 916, 400, 20);
+    self.exifComponentsConfiguration.frame = CGRectMake(w/2, 916, w/2, 20);
     self.exifComponentsConfiguration.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifComponentsConfiguration.textColor = [UIColor blackColor];
-    [self.exifComponentsConfiguration setReturnKeyType:UIReturnKeyDone];
+    [self.exifComponentsConfiguration setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifComponentsConfiguration];
     
     // Shutter speed value label
@@ -1177,11 +1544,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Shutter speed value
     self.exifShutterSpeedValue = [[UITextField alloc] init];
+    self.exifShutterSpeedValue.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifShutterSpeedValue.delegate = self;
-    self.exifShutterSpeedValue.frame = CGRectMake(w/2, 960, 400, 20);
+    self.exifShutterSpeedValue.frame = CGRectMake(w/2, 960, w/2, 20);
     self.exifShutterSpeedValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifShutterSpeedValue.textColor = [UIColor blackColor];
-    [self.exifShutterSpeedValue setReturnKeyType:UIReturnKeyDone];
+    [self.exifShutterSpeedValue setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifShutterSpeedValue];
     
     // Aperture value label
@@ -1193,11 +1561,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Aperture value
     self.exifApertureValue = [[UITextField alloc] init];
+    self.exifApertureValue.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifApertureValue.delegate = self;
-    self.exifApertureValue.frame = CGRectMake(w/2, 1004, 400, 20);
+    self.exifApertureValue.frame = CGRectMake(w/2, 1004, w/2, 20);
     self.exifApertureValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifApertureValue.textColor = [UIColor blackColor];
-    [self.exifApertureValue setReturnKeyType:UIReturnKeyDone];
+    [self.exifApertureValue setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifApertureValue];
     
     // Brightness value label
@@ -1209,11 +1578,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Brightness value
     self.exifBrightnessValue = [[UITextField alloc] init];
+    self.exifBrightnessValue.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifBrightnessValue.delegate = self;
-    self.exifBrightnessValue.frame = CGRectMake(w/2, 1048, 400, 20);
+    self.exifBrightnessValue.frame = CGRectMake(w/2, 1048, w/2, 20);
     self.exifBrightnessValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifBrightnessValue.textColor = [UIColor blackColor];
-    [self.exifBrightnessValue setReturnKeyType:UIReturnKeyDone];
+    [self.exifBrightnessValue setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifBrightnessValue];
     
     // Exposure bias value label
@@ -1225,11 +1595,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Exposure bias value
     self.exifExposureBiasValue = [[UITextField alloc] init];
+    self.exifExposureBiasValue.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifExposureBiasValue.delegate = self;
-    self.exifExposureBiasValue.frame = CGRectMake(w/2, 1092, 400, 20);
+    self.exifExposureBiasValue.frame = CGRectMake(w/2, 1092, w/2, 20);
     self.exifExposureBiasValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureBiasValue.textColor = [UIColor blackColor];
-    [self.exifExposureBiasValue setReturnKeyType:UIReturnKeyDone];
+    [self.exifExposureBiasValue setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifExposureBiasValue];
     
     // Max aperture value label
@@ -1241,11 +1612,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Max aperture value
     self.exifMaxApertureValue = [[UITextField alloc] init];
+    self.exifMaxApertureValue.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifMaxApertureValue.delegate = self;
-    self.exifMaxApertureValue.frame = CGRectMake(w/2, 1136, 400, 20);
+    self.exifMaxApertureValue.frame = CGRectMake(w/2, 1136, w/2, 20);
     self.exifMaxApertureValue.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMaxApertureValue.textColor = [UIColor blackColor];
-    [self.exifMaxApertureValue setReturnKeyType:UIReturnKeyDone];
+    [self.exifMaxApertureValue setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifMaxApertureValue];
     
     // Subject distance label
@@ -1257,11 +1629,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subject distance
     self.exifSubjectDistance = [[UITextField alloc] init];
+    self.exifSubjectDistance.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubjectDistance.delegate = self;
-    self.exifSubjectDistance.frame = CGRectMake(w/2, 1180, 400, 20);
+    self.exifSubjectDistance.frame = CGRectMake(w/2, 1180, w/2, 20);
     self.exifSubjectDistance.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectDistance.textColor = [UIColor blackColor];
-    [self.exifSubjectDistance setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubjectDistance setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubjectDistance];
     
     // Metering mode label
@@ -1273,11 +1646,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Metering mode
     self.exifMeteringMode = [[UITextField alloc] init];
+    self.exifMeteringMode.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifMeteringMode.delegate = self;
-    self.exifMeteringMode.frame = CGRectMake(w/2, 1224, 400, 20);
+    self.exifMeteringMode.frame = CGRectMake(w/2, 1224, w/2, 20);
     self.exifMeteringMode.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMeteringMode.textColor = [UIColor blackColor];
-    [self.exifMeteringMode setReturnKeyType:UIReturnKeyDone];
+    [self.exifMeteringMode setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifMeteringMode];
     
     // Light source label
@@ -1289,11 +1663,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Light source
     self.exifLightSource = [[UITextField alloc] init];
+    self.exifLightSource.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifLightSource.delegate = self;
-    self.exifLightSource.frame = CGRectMake(w/2, 1268, 400, 20);
+    self.exifLightSource.frame = CGRectMake(w/2, 1268, w/2, 20);
     self.exifLightSource.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLightSource.textColor = [UIColor blackColor];
-    [self.exifLightSource setReturnKeyType:UIReturnKeyDone];
+    [self.exifLightSource setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifLightSource];
     
     // Flash label
@@ -1305,11 +1680,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Flash
     self.exifFlash = [[UITextField alloc] init];
+    self.exifFlash.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFlash.delegate = self;
-    self.exifFlash.frame = CGRectMake(w/2, 1312, 400, 20);
+    self.exifFlash.frame = CGRectMake(w/2, 1312, w/2, 20);
     self.exifFlash.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlash.textColor = [UIColor blackColor];
-    [self.exifFlash setReturnKeyType:UIReturnKeyDone];
+    [self.exifFlash setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFlash];
     
     // Focal length label
@@ -1321,11 +1697,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Focal length
     self.exifFocalLength = [[UITextField alloc] init];
+    self.exifFocalLength.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFocalLength.delegate = self;
-    self.exifFocalLength.frame = CGRectMake(w/2, 1356, 400, 20);
+    self.exifFocalLength.frame = CGRectMake(w/2, 1356, w/2, 20);
     self.exifFocalLength.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalLength.textColor = [UIColor blackColor];
-    [self.exifFocalLength setReturnKeyType:UIReturnKeyDone];
+    [self.exifFocalLength setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFocalLength];
     
     // Subject area label
@@ -1337,11 +1714,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subject area
     self.exifSubjectArea = [[UITextField alloc] init];
+    self.exifSubjectArea.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubjectArea.delegate = self;
-    self.exifSubjectArea.frame = CGRectMake(w/2, 1400, 400, 20);
+    self.exifSubjectArea.frame = CGRectMake(w/2, 1400, w/2, 20);
     self.exifSubjectArea.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectArea.textColor = [UIColor blackColor];
-    [self.exifSubjectArea setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubjectArea setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubjectArea];
     
     // Maker note label
@@ -1353,11 +1731,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Maker note
     self.exifMakerNote = [[UITextField alloc] init];
+    self.exifMakerNote.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifMakerNote.delegate = self;
-    self.exifMakerNote.frame = CGRectMake(w/2, 1444, 400, 20);
+    self.exifMakerNote.frame = CGRectMake(w/2, 1444, w/2, 20);
     self.exifMakerNote.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifMakerNote.textColor = [UIColor blackColor];
-    [self.exifMakerNote setReturnKeyType:UIReturnKeyDone];
+    [self.exifMakerNote setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifMakerNote];
     
     // User comment label
@@ -1369,11 +1748,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // User comment
     self.exifUserComment = [[UITextField alloc] init];
+    self.exifUserComment.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifUserComment.delegate = self;
-    self.exifUserComment.frame = CGRectMake(w/2, 1488, 400, 20);
+    self.exifUserComment.frame = CGRectMake(w/2, 1488, w/2, 20);
     self.exifUserComment.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifUserComment.textColor = [UIColor blackColor];
-    [self.exifUserComment setReturnKeyType:UIReturnKeyDone];
+    [self.exifUserComment setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifUserComment];
     
     // Subsec time label
@@ -1385,11 +1765,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subsec time
     self.exifSubsecTime = [[UITextField alloc] init];
+    self.exifSubsecTime.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubsecTime.delegate = self;
-    self.exifSubsecTime.frame = CGRectMake(w/2, 1532, 400, 20);
+    self.exifSubsecTime.frame = CGRectMake(w/2, 1532, w/2, 20);
     self.exifSubsecTime.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTime.textColor = [UIColor blackColor];
-    [self.exifSubsecTime setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubsecTime setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubsecTime];
     
     // Subsec time original label
@@ -1401,11 +1782,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subsec time original
     self.exifSubsecTimeOrginal = [[UITextField alloc] init];
+    self.exifSubsecTimeOrginal.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubsecTimeOrginal.delegate = self;
-    self.exifSubsecTimeOrginal.frame = CGRectMake(w/2, 1576, 400, 20);
+    self.exifSubsecTimeOrginal.frame = CGRectMake(w/2, 1576, w/2, 20);
     self.exifSubsecTimeOrginal.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTimeOrginal.textColor = [UIColor blackColor];
-    [self.exifSubsecTimeOrginal setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubsecTimeOrginal setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubsecTimeOrginal];
     
     // Subsec time digitized label
@@ -1417,11 +1799,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subsec time digitized
     self.exifSubsecTimeDigitized = [[UITextField alloc] init];
+    self.exifSubsecTimeDigitized.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubsecTimeDigitized.delegate = self;
-    self.exifSubsecTimeDigitized.frame = CGRectMake(w/2, 1620, 400, 20);
+    self.exifSubsecTimeDigitized.frame = CGRectMake(w/2, 1620, w/2, 20);
     self.exifSubsecTimeDigitized.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubsecTimeDigitized.textColor = [UIColor blackColor];
-    [self.exifSubsecTimeDigitized setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubsecTimeDigitized setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubsecTimeDigitized];
     
     // Flash pix version label
@@ -1433,11 +1816,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Flash pix version
     self.exifFlashPixVersion = [[UITextField alloc] init];
+    self.exifFlashPixVersion.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFlashPixVersion.delegate = self;
-    self.exifFlashPixVersion.frame = CGRectMake(w/2, 1664, 400, 20);
+    self.exifFlashPixVersion.frame = CGRectMake(w/2, 1664, w/2, 20);
     self.exifFlashPixVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlashPixVersion.textColor = [UIColor blackColor];
-    [self.exifFlashPixVersion setReturnKeyType:UIReturnKeyDone];
+    [self.exifFlashPixVersion setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFlashPixVersion];
     
     // Color space label
@@ -1449,11 +1833,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Color space
     self.exifColorSpace = [[UITextField alloc] init];
+    self.exifColorSpace.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifColorSpace.delegate = self;
-    self.exifColorSpace.frame = CGRectMake(w/2, 1708, 400, 20);
+    self.exifColorSpace.frame = CGRectMake(w/2, 1708, w/2, 20);
     self.exifColorSpace.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifColorSpace.textColor = [UIColor blackColor];
-    [self.exifColorSpace setReturnKeyType:UIReturnKeyDone];
+    [self.exifColorSpace setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifColorSpace];
     
     // Pixel X dimension label
@@ -1465,11 +1850,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Pixel X dimension
     self.exifPixelXDimension = [[UITextField alloc] init];
+    self.exifPixelXDimension.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifPixelXDimension.delegate = self;
-    self.exifPixelXDimension.frame = CGRectMake(w/2, 1752, 400, 20);
+    self.exifPixelXDimension.frame = CGRectMake(w/2, 1752, w/2, 20);
     self.exifPixelXDimension.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifPixelXDimension.textColor = [UIColor blackColor];
-    [self.exifPixelXDimension setReturnKeyType:UIReturnKeyDone];
+    [self.exifPixelXDimension setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifPixelXDimension];
     
     // Pixel Y dimension label
@@ -1481,11 +1867,12 @@ CGPoint pointFromRectangle(CGRect rect) {
 
     // Pixel Y dimension
     self.exifPixelYDimension = [[UITextField alloc] init];
+    self.exifPixelYDimension.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifPixelYDimension.delegate = self;
-    self.exifPixelYDimension.frame = CGRectMake(w/2, 1796, 400, 20);
+    self.exifPixelYDimension.frame = CGRectMake(w/2, 1796, w/2, 20);
     self.exifPixelYDimension.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifPixelYDimension.textColor = [UIColor blackColor];
-    [self.exifPixelYDimension setReturnKeyType:UIReturnKeyDone];
+    [self.exifPixelYDimension setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifPixelYDimension];
     
     // Related sound file label
@@ -1497,11 +1884,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Related sound file
     self.exifRelatedSoundFile = [[UITextField alloc] init];
+    self.exifRelatedSoundFile.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifRelatedSoundFile.delegate = self;
-    self.exifRelatedSoundFile.frame = CGRectMake(w/2, 1840, 400, 20);
+    self.exifRelatedSoundFile.frame = CGRectMake(w/2, 1840, w/2, 20);
     self.exifRelatedSoundFile.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifRelatedSoundFile.textColor = [UIColor blackColor];
-    [self.exifRelatedSoundFile setReturnKeyType:UIReturnKeyDone];
+    [self.exifRelatedSoundFile setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifRelatedSoundFile];
     
     // Flash energy label
@@ -1513,11 +1901,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Flash energy
     self.exifFlashEnergy = [[UITextField alloc] init];
+    self.exifFlashEnergy.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFlashEnergy.delegate = self;
-    self.exifFlashEnergy.frame = CGRectMake(w/2, 1884, 400, 20);
+    self.exifFlashEnergy.frame = CGRectMake(w/2, 1884, w/2, 20);
     self.exifFlashEnergy.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFlashEnergy.textColor = [UIColor blackColor];
-    [self.exifFlashEnergy setReturnKeyType:UIReturnKeyDone];
+    [self.exifFlashEnergy setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFlashEnergy];
     
     // Spatial frequency response label
@@ -1529,11 +1918,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Spatial frequency response
     self.exifSpatialFrequencyResponse = [[UITextField alloc] init];
+    self.exifSpatialFrequencyResponse.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSpatialFrequencyResponse.delegate = self;
-    self.exifSpatialFrequencyResponse.frame = CGRectMake(w/2, 1928, 400, 20);
+    self.exifSpatialFrequencyResponse.frame = CGRectMake(w/2, 1928, w/2, 20);
     self.exifSpatialFrequencyResponse.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSpatialFrequencyResponse.textColor = [UIColor blackColor];
-    [self.exifSpatialFrequencyResponse setReturnKeyType:UIReturnKeyDone];
+    [self.exifSpatialFrequencyResponse setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSpatialFrequencyResponse];
     
     // Focal plane X resolution label
@@ -1545,11 +1935,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Focal plane X resolution
     self.exifFocalPlaneXResolution = [[UITextField alloc] init];
+    self.exifFocalPlaneXResolution.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFocalPlaneXResolution.delegate = self;
-    self.exifFocalPlaneXResolution.frame = CGRectMake(w/2, 1972, 400, 20);
+    self.exifFocalPlaneXResolution.frame = CGRectMake(w/2, 1972, w/2, 20);
     self.exifFocalPlaneXResolution.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneXResolution.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneXResolution setReturnKeyType:UIReturnKeyDone];
+    [self.exifFocalPlaneXResolution setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFocalPlaneXResolution];
     
     // Focal plane Y resolution label
@@ -1561,11 +1952,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Focal plane Y resolution
     self.exifFocalPlaneYResolution = [[UITextField alloc] init];
+    self.exifFocalPlaneYResolution.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFocalPlaneYResolution.delegate = self;
-    self.exifFocalPlaneYResolution.frame = CGRectMake(w/2, 2016, 400, 20);
+    self.exifFocalPlaneYResolution.frame = CGRectMake(w/2, 2016, w/2, 20);
     self.exifFocalPlaneYResolution.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneYResolution.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneYResolution setReturnKeyType:UIReturnKeyDone];
+    [self.exifFocalPlaneYResolution setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFocalPlaneYResolution];
     
     // Focal plane resolution unit label
@@ -1577,11 +1969,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Focal plane resolution unit
     self.exifFocalPlaneResolutionUnit = [[UITextField alloc] init];
+    self.exifFocalPlaneResolutionUnit.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFocalPlaneResolutionUnit.delegate = self;
-    self.exifFocalPlaneResolutionUnit.frame = CGRectMake(w/2, 2060, 400, 20);
+    self.exifFocalPlaneResolutionUnit.frame = CGRectMake(w/2, 2060, w/2, 20);
     self.exifFocalPlaneResolutionUnit.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalPlaneResolutionUnit.textColor = [UIColor blackColor];
-    [self.exifFocalPlaneResolutionUnit setReturnKeyType:UIReturnKeyDone];
+    [self.exifFocalPlaneResolutionUnit setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFocalPlaneResolutionUnit];
     
     // Subject location label
@@ -1593,11 +1986,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subject location
     self.exifSubjectLocation = [[UITextField alloc] init];
+    self.exifSubjectLocation.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubjectLocation.delegate = self;
-    self.exifSubjectLocation.frame = CGRectMake(w/2, 2104, 400, 20);
+    self.exifSubjectLocation.frame = CGRectMake(w/2, 2104, w/2, 20);
     self.exifSubjectLocation.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectLocation.textColor = [UIColor blackColor];
-    [self.exifSubjectLocation setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubjectLocation setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubjectLocation];
     
     // Exposure index label
@@ -1609,11 +2003,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Exposure index
     self.exifExposureIndex = [[UITextField alloc] init];
+    self.exifExposureIndex.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifExposureIndex.delegate = self;
-    self.exifExposureIndex.frame = CGRectMake(w/2, 2148, 400, 20);
+    self.exifExposureIndex.frame = CGRectMake(w/2, 2148, w/2, 20);
     self.exifExposureIndex.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureIndex.textColor = [UIColor blackColor];
-    [self.exifExposureIndex setReturnKeyType:UIReturnKeyDone];
+    [self.exifExposureIndex setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifExposureIndex];
     
     // Sensing method label
@@ -1625,11 +2020,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Sensing method
     self.exifSensingMethod = [[UITextField alloc] init];
+    self.exifSensingMethod.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSensingMethod.delegate = self;
-    self.exifSensingMethod.frame = CGRectMake(w/2, 2192, 400, 20);
+    self.exifSensingMethod.frame = CGRectMake(w/2, 2192, w/2, 20);
     self.exifSensingMethod.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSensingMethod.textColor = [UIColor blackColor];
-    [self.exifSensingMethod setReturnKeyType:UIReturnKeyDone];
+    [self.exifSensingMethod setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSensingMethod];
     
     // File source label
@@ -1641,11 +2037,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // File source
     self.exifFileSource = [[UITextField alloc] init];
+    self.exifFileSource.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFileSource.delegate = self;
-    self.exifFileSource.frame = CGRectMake(w/2, 2236, 400, 20);
+    self.exifFileSource.frame = CGRectMake(w/2, 2236, w/2, 20);
     self.exifFileSource.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFileSource.textColor = [UIColor blackColor];
-    [self.exifFileSource setReturnKeyType:UIReturnKeyDone];
+    [self.exifFileSource setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFileSource];
     
     // Scene type label
@@ -1657,11 +2054,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Scene type
     self.exifSceneType = [[UITextField alloc] init];
+    self.exifSceneType.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSceneType.delegate = self;
-    self.exifSceneType.frame = CGRectMake(w/2, 2280, 400, 20);
+    self.exifSceneType.frame = CGRectMake(w/2, 2280, w/2, 20);
     self.exifSceneType.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSceneType.textColor = [UIColor blackColor];
-    [self.exifSceneType setReturnKeyType:UIReturnKeyDone];
+    [self.exifSceneType setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSceneType];
     
     // CFA pattern label
@@ -1673,11 +2071,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // CFA pattern
     self.exifCFAPattern = [[UITextField alloc] init];
+    self.exifCFAPattern.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifCFAPattern.delegate = self;
-    self.exifCFAPattern.frame = CGRectMake(w/2, 2324, 400, 20);
+    self.exifCFAPattern.frame = CGRectMake(w/2, 2324, w/2, 20);
     self.exifCFAPattern.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCFAPattern.textColor = [UIColor blackColor];
-    [self.exifCFAPattern setReturnKeyType:UIReturnKeyDone];
+    [self.exifCFAPattern setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifCFAPattern];
     
     // Custom rendered label
@@ -1689,11 +2088,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Custom rendered
     self.exifCustomRendered = [[UITextField alloc] init];
+    self.exifCustomRendered.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifCustomRendered.delegate = self;
-    self.exifCustomRendered.frame = CGRectMake(w/2, 2368, 400, 20);
+    self.exifCustomRendered.frame = CGRectMake(w/2, 2368, w/2, 20);
     self.exifCustomRendered.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCustomRendered.textColor = [UIColor blackColor];
-    [self.exifCustomRendered setReturnKeyType:UIReturnKeyDone];
+    [self.exifCustomRendered setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifCustomRendered];
     
     // Exposure mode label
@@ -1705,11 +2105,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Exposure mode
     self.exifExposureMode = [[UITextField alloc] init];
+    self.exifExposureMode.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifExposureMode.delegate = self;
-    self.exifExposureMode.frame = CGRectMake(w/2, 2412, 400, 20);
+    self.exifExposureMode.frame = CGRectMake(w/2, 2412, w/2, 20);
     self.exifExposureMode.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifExposureMode.textColor = [UIColor blackColor];
-    [self.exifExposureMode setReturnKeyType:UIReturnKeyDone];
+    [self.exifExposureMode setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifExposureMode];
     
     // White balance label
@@ -1721,11 +2122,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // White balance
     self.exifWhiteBalance = [[UITextField alloc] init];
+    self.exifWhiteBalance.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifWhiteBalance.delegate = self;
-    self.exifWhiteBalance.frame = CGRectMake(w/2, 2456, 400, 20);
+    self.exifWhiteBalance.frame = CGRectMake(w/2, 2456, w/2, 20);
     self.exifWhiteBalance.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifWhiteBalance.textColor = [UIColor blackColor];
-    [self.exifWhiteBalance setReturnKeyType:UIReturnKeyDone];
+    [self.exifWhiteBalance setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifWhiteBalance];
     
     // Digital zoom ratio label
@@ -1737,11 +2139,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Digital zoom ratio
     self.exifDigitalZoomRatio = [[UITextField alloc] init];
+    self.exifDigitalZoomRatio.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifDigitalZoomRatio.delegate = self;
-    self.exifDigitalZoomRatio.frame = CGRectMake(w/2, 2500, 400, 20);
+    self.exifDigitalZoomRatio.frame = CGRectMake(w/2, 2500, w/2, 20);
     self.exifDigitalZoomRatio.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifDigitalZoomRatio.textColor = [UIColor blackColor];
-    [self.exifDigitalZoomRatio setReturnKeyType:UIReturnKeyDone];
+    [self.exifDigitalZoomRatio setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifDigitalZoomRatio];
     
     // Focal length in 35 mm label
@@ -1753,11 +2156,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Focal length in 35 mm
     self.exifFocalLenIn35mmFilm = [[UITextField alloc] init];
+    self.exifFocalLenIn35mmFilm.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFocalLenIn35mmFilm.delegate = self;
-    self.exifFocalLenIn35mmFilm.frame = CGRectMake(w/2, 2544, 400, 20);
+    self.exifFocalLenIn35mmFilm.frame = CGRectMake(w/2, 2544, w/2, 20);
     self.exifFocalLenIn35mmFilm.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFocalLenIn35mmFilm.textColor = [UIColor blackColor];
-    [self.exifFocalLenIn35mmFilm setReturnKeyType:UIReturnKeyDone];
+    [self.exifFocalLenIn35mmFilm setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifFocalLenIn35mmFilm];
     
     // Scene capture type label
@@ -1769,11 +2173,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Scene capture type
     self.exifSceneCaptureType = [[UITextField alloc] init];
+    self.exifSceneCaptureType.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSceneCaptureType.delegate = self;
-    self.exifSceneCaptureType.frame = CGRectMake(w/2, 2588, 400, 20);
+    self.exifSceneCaptureType.frame = CGRectMake(w/2, 2588, w/2, 20);
     self.exifSceneCaptureType.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSceneCaptureType.textColor = [UIColor blackColor];
-    [self.exifSceneCaptureType setReturnKeyType:UIReturnKeyDone];
+    [self.exifSceneCaptureType setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSceneCaptureType];
     
     // Gain control label
@@ -1785,11 +2190,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Gain control
     self.exifGainControl = [[UITextField alloc] init];
+    self.exifGainControl.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifGainControl.delegate = self;
-    self.exifGainControl.frame = CGRectMake(w/2, 2632, 400, 20);
+    self.exifGainControl.frame = CGRectMake(w/2, 2632, w/2, 20);
     self.exifGainControl.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifGainControl.textColor = [UIColor blackColor];
-    [self.exifGainControl setReturnKeyType:UIReturnKeyDone];
+    [self.exifGainControl setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifGainControl];
     
     // Contrast label
@@ -1801,11 +2207,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Contrast
     self.exifContrast = [[UITextField alloc] init];
+    self.exifContrast.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifContrast.delegate = self;
-    self.exifContrast.frame = CGRectMake(w/2, 2676, 400, 20);
+    self.exifContrast.frame = CGRectMake(w/2, 2676, w/2, 20);
     self.exifContrast.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifContrast.textColor = [UIColor blackColor];
-    [self.exifContrast setReturnKeyType:UIReturnKeyDone];
+    [self.exifContrast setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifContrast];
     
     // Saturation label
@@ -1817,11 +2224,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Saturation
     self.exifSaturation = [[UITextField alloc] init];
+    self.exifSaturation.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSaturation.delegate = self;
-    self.exifSaturation.frame = CGRectMake(w/2, 2720, 400, 20);
+    self.exifSaturation.frame = CGRectMake(w/2, 2720, w/2, 20);
     self.exifSaturation.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSaturation.textColor = [UIColor blackColor];
-    [self.exifSaturation setReturnKeyType:UIReturnKeyDone];
+    [self.exifSaturation setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSaturation];
     
     // Sharpness label
@@ -1833,11 +2241,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Sharpness
     self.exifSharpness = [[UITextField alloc] init];
+    self.exifSharpness.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSharpness.delegate = self;
-    self.exifSharpness.frame = CGRectMake(w/2, 2764, 400, 20);
+    self.exifSharpness.frame = CGRectMake(w/2, 2764, w/2, 20);
     self.exifSharpness.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSharpness.textColor = [UIColor blackColor];
-    [self.exifSharpness setReturnKeyType:UIReturnKeyDone];
+    [self.exifSharpness setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSharpness];
     
     // Device setting description label
@@ -1849,11 +2258,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Device setting description
     self.exifDeviceSettingDescription = [[UITextField alloc] init];
+    self.exifDeviceSettingDescription.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifDeviceSettingDescription.delegate = self;
-    self.exifDeviceSettingDescription.frame = CGRectMake(w/2, 2808, 400, 20);
+    self.exifDeviceSettingDescription.frame = CGRectMake(w/2, 2808, w/2, 20);
     self.exifDeviceSettingDescription.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifDeviceSettingDescription.textColor = [UIColor blackColor];
-    [self.exifDeviceSettingDescription setReturnKeyType:UIReturnKeyDone];
+    [self.exifDeviceSettingDescription setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifDeviceSettingDescription];
     
     // Subject dist range label
@@ -1865,11 +2275,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Subject dist range
     self.exifSubjectDistRange = [[UITextField alloc] init];
+    self.exifSubjectDistRange.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifSubjectDistRange.delegate = self;
-    self.exifSubjectDistRange.frame = CGRectMake(w/2, 2852, 400, 20);
+    self.exifSubjectDistRange.frame = CGRectMake(w/2, 2852, w/2, 20);
     self.exifSubjectDistRange.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifSubjectDistRange.textColor = [UIColor blackColor];
-    [self.exifSubjectDistRange setReturnKeyType:UIReturnKeyDone];
+    [self.exifSubjectDistRange setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifSubjectDistRange];
     
     // Image unique ID label
@@ -1881,11 +2292,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Image unique ID
     self.exifImageUniqueID = [[UITextField alloc] init];
+    self.exifImageUniqueID.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifImageUniqueID.delegate = self;
-    self.exifImageUniqueID.frame = CGRectMake(w/2, 2896, 400, 20);
+    self.exifImageUniqueID.frame = CGRectMake(w/2, 2896, w/2, 20);
     self.exifImageUniqueID.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifImageUniqueID.textColor = [UIColor blackColor];
-    [self.exifImageUniqueID setReturnKeyType:UIReturnKeyDone];
+    [self.exifImageUniqueID setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifImageUniqueID];
     
     // Gamma label
@@ -1897,11 +2309,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Gamma
     self.exifGamma = [[UITextField alloc] init];
+    self.exifGamma.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifGamma.delegate = self;
-    self.exifGamma.frame = CGRectMake(w/2, 2940, 400, 20);
+    self.exifGamma.frame = CGRectMake(w/2, 2940, w/2, 20);
     self.exifGamma.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifGamma.textColor = [UIColor blackColor];
-    [self.exifGamma setReturnKeyType:UIReturnKeyDone];
+    [self.exifGamma setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifGamma];
     
     // Camera owner name label
@@ -1913,11 +2326,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Camera owner name
     self.exifCameraOwnerName = [[UITextField alloc] init];
+    self.exifCameraOwnerName.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifCameraOwnerName.delegate = self;
-    self.exifCameraOwnerName.frame = CGRectMake(w/2, 2984, 400, 20);
+    self.exifCameraOwnerName.frame = CGRectMake(w/2, 2984, w/2, 20);
     self.exifCameraOwnerName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifCameraOwnerName.textColor = [UIColor blackColor];
-    [self.exifCameraOwnerName setReturnKeyType:UIReturnKeyDone];
+    [self.exifCameraOwnerName setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifCameraOwnerName];
     
     // Body serial number label
@@ -1929,11 +2343,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Body serial number
     self.exifBodySerialNumber = [[UITextField alloc] init];
+    self.exifBodySerialNumber.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifBodySerialNumber.delegate = self;
-    self.exifBodySerialNumber.frame = CGRectMake(w/2, 3028, 400, 20);
+    self.exifBodySerialNumber.frame = CGRectMake(w/2, 3028, w/2, 20);
     self.exifBodySerialNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifBodySerialNumber.textColor = [UIColor blackColor];
-    [self.exifBodySerialNumber setReturnKeyType:UIReturnKeyDone];
+    [self.exifBodySerialNumber setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifBodySerialNumber];
     
     // Lens specification label
@@ -1945,11 +2360,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Lens specification
     self.exifLensSpecification = [[UITextField alloc] init];
+    self.exifLensSpecification.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifLensSpecification.delegate = self;
-    self.exifLensSpecification.frame = CGRectMake(w/2, 3072, 400, 20);
+    self.exifLensSpecification.frame = CGRectMake(w/2, 3072, w/2, 20);
     self.exifLensSpecification.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensSpecification.textColor = [UIColor blackColor];
-    [self.exifLensSpecification setReturnKeyType:UIReturnKeyDone];
+    [self.exifLensSpecification setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifLensSpecification];
     
     // Lens make label
@@ -1961,11 +2377,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Lens make
     self.exifLensMake = [[UITextField alloc] init];
+    self.exifLensMake.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifLensMake.delegate = self;
-    self.exifLensMake.frame = CGRectMake(w/2, 3116, 400, 20);
+    self.exifLensMake.frame = CGRectMake(w/2, 3116, w/2, 20);
     self.exifLensMake.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensMake.textColor = [UIColor blackColor];
-    [self.exifLensMake setReturnKeyType:UIReturnKeyDone];
+    [self.exifLensMake setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifLensMake];
     
     // Lens model label
@@ -1977,11 +2394,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Lens model
     self.exifLensModel = [[UITextField alloc] init];
+    self.exifLensModel.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifLensModel.delegate = self;
-    self.exifLensModel.frame = CGRectMake(w/2, 3160, 400, 20);
+    self.exifLensModel.frame = CGRectMake(w/2, 3160, w/2, 20);
     self.exifLensModel.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensModel.textColor = [UIColor blackColor];
-    [self.exifLensModel setReturnKeyType:UIReturnKeyDone];
+    [self.exifLensModel setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifLensModel];
     
     // Lens serial number label
@@ -1993,11 +2411,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Lens serial number
     self.exifLensSerialNumber = [[UITextField alloc] init];
+    self.exifLensSerialNumber.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifLensSerialNumber.delegate = self;
-    self.exifLensSerialNumber.frame = CGRectMake(w/2, 3204, 400, 20);
+    self.exifLensSerialNumber.frame = CGRectMake(w/2, 3204, w/2, 20);
     self.exifLensSerialNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifLensSerialNumber.textColor = [UIColor blackColor];
-    [self.exifLensSerialNumber setReturnKeyType:UIReturnKeyDone];
+    [self.exifLensSerialNumber setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.exifLensSerialNumber];
     
     // GPS title banner
@@ -2020,11 +2439,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // GPS version
     self.gpsVersion = [[UITextField alloc] init];
+    self.gpsVersion.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsVersion.delegate = self;
-    self.gpsVersion.frame = CGRectMake(w/2, 3292, 400, 20);
+    self.gpsVersion.frame = CGRectMake(w/2, 3292, w/2, 20);
     self.gpsVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsVersion.textColor = [UIColor blackColor];
-    [self.gpsVersion setReturnKeyType:UIReturnKeyDone];
+    [self.gpsVersion setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsVersion];
     
     // Latitude ref label
@@ -2036,11 +2456,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Latitude ref
     self.gpsLatitudeRef = [[UITextField alloc] init];
+    self.gpsLatitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLatitudeRef.delegate = self;
-    self.gpsLatitudeRef.frame = CGRectMake(w/2, 3336, 400, 20);
+    self.gpsLatitudeRef.frame = CGRectMake(w/2, 3336, w/2, 20);
     self.gpsLatitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLatitudeRef.textColor = [UIColor blackColor];
-    [self.gpsLatitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.gpsLatitudeRef setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsLatitudeRef];
     
     // Latitude label
@@ -2052,11 +2473,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Latitude
     self.gpsLatitude = [[UITextField alloc] init];
+    self.gpsLatitude.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLatitude.delegate = self;
-    self.gpsLatitude.frame = CGRectMake(w/2, 3380, 400, 20);
+    self.gpsLatitude.frame = CGRectMake(w/2, 3380, w/2, 20);
     self.gpsLatitude.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLatitude.textColor = [UIColor blackColor];
-    [self.gpsLatitude setReturnKeyType:UIReturnKeyDone];
+    [self.gpsLatitude setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsLatitude];
     
     // Latitude ref label
@@ -2068,11 +2490,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Latitude ref
     self.gpsLongitudeRef = [[UITextField alloc] init];
+    self.gpsLongitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLongitudeRef.delegate = self;
-    self.gpsLongitudeRef.frame = CGRectMake(w/2, 3424, 400, 20);
+    self.gpsLongitudeRef.frame = CGRectMake(w/2, 3424, w/2, 20);
     self.gpsLongitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLongitudeRef.textColor = [UIColor blackColor];
-    [self.gpsLongitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.gpsLongitudeRef setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsLongitudeRef];
     
     // Latitude label
@@ -2084,11 +2507,12 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Latitude
     self.gpsLongitude = [[UITextField alloc] init];
+    self.gpsLongitude.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLongitude.delegate = self;
-    self.gpsLongitude.frame = CGRectMake(w/2, 3468, 400, 20);
+    self.gpsLongitude.frame = CGRectMake(w/2, 3468, w/2, 20);
     self.gpsLongitude.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLongitude.textColor = [UIColor blackColor];
-    [self.gpsLongitude setReturnKeyType:UIReturnKeyDone];
+    [self.gpsLongitude setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsLongitude];
     
     // Altitude ref label
@@ -2100,12 +2524,438 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Altitude ref
     self.gpsAltitudeRef = [[UITextField alloc] init];
+    self.gpsAltitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsAltitudeRef.delegate = self;
-    self.gpsAltitudeRef.frame = CGRectMake(w/2, 3512, 400, 20);
+    self.gpsAltitudeRef.frame = CGRectMake(w/2, 3512, w/2, 20);
     self.gpsAltitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsAltitudeRef.textColor = [UIColor blackColor];
-    [self.gpsAltitudeRef setReturnKeyType:UIReturnKeyDone];
+    [self.gpsAltitudeRef setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsAltitudeRef];
+    
+    // Altitude label
+    UILabel *gpsAltitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3556, 400, 20)];
+    gpsAltitude.text = @"Altitude";
+    gpsAltitude.textColor = [UIColor grayColor];
+    [gpsAltitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsAltitude];
+    
+    // Altitude
+    self.gpsAltitude = [[UITextField alloc] init];
+    self.gpsAltitude.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsAltitude.delegate = self;
+    self.gpsAltitude.frame = CGRectMake(w/2, 3556, w/2, 20);
+    self.gpsAltitude.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsAltitude.textColor = [UIColor blackColor];
+    [self.gpsAltitude setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsAltitude];
+    
+    // Time stamp label
+    UILabel *gpsTimeStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 3600, 400, 20)];
+    gpsTimeStamp.text = @"Time stamp";
+    gpsTimeStamp.textColor = [UIColor grayColor];
+    [gpsTimeStamp setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsTimeStamp];
+    
+    // Time stamp
+    self.gpsTimeStamp = [[UITextField alloc] init];
+    self.gpsTimeStamp.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsTimeStamp.delegate = self;
+    self.gpsTimeStamp.frame = CGRectMake(w/2, 3600, w/2, 20);
+    self.gpsTimeStamp.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsTimeStamp.textColor = [UIColor blackColor];
+    [self.gpsTimeStamp setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsTimeStamp];
+    
+    // Satellites label
+    UILabel *gpsSatellites = [[UILabel alloc] initWithFrame:CGRectMake(10, 3644, 400, 20)];
+    gpsSatellites.text = @"Satellites";
+    gpsSatellites.textColor = [UIColor grayColor];
+    [gpsSatellites setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsSatellites];
+    
+    // Satellites
+    self.gpsSatellites = [[UITextField alloc] init];
+    self.gpsSatellites.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsSatellites.delegate = self;
+    self.gpsSatellites.frame = CGRectMake(w/2, 3644, w/2, 20);
+    self.gpsSatellites.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsSatellites.textColor = [UIColor blackColor];
+    [self.gpsSatellites setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsSatellites];
+    
+    // Status label
+    UILabel *gpsStatus = [[UILabel alloc] initWithFrame:CGRectMake(10, 3688, 400, 20)];
+    gpsStatus.text = @"Status";
+    gpsStatus.textColor = [UIColor grayColor];
+    [gpsStatus setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsStatus];
+    
+    // Status
+    self.gpsStatus = [[UITextField alloc] init];
+    self.gpsStatus.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsStatus.delegate = self;
+    self.gpsStatus.frame = CGRectMake(w/2, 3688, w/2, 20);
+    self.gpsStatus.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsStatus.textColor = [UIColor blackColor];
+    [self.gpsStatus setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsStatus];
+    
+    // Measure mode label
+    UILabel *gpsMeasureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 3732, 400, 20)];
+    gpsMeasureMode.text = @"Measure mode";
+    gpsMeasureMode.textColor = [UIColor grayColor];
+    [gpsMeasureMode setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsMeasureMode];
+    
+    // Measure mode
+    self.gpsMeasureMode = [[UITextField alloc] init];
+    self.gpsMeasureMode.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsMeasureMode.delegate = self;
+    self.gpsMeasureMode.frame = CGRectMake(w/2, 3732, w/2, 20);
+    self.gpsMeasureMode.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsMeasureMode.textColor = [UIColor blackColor];
+    [self.gpsMeasureMode setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsMeasureMode];
+    
+    // DOP label
+    UILabel *gpsDegreeOfPrecision = [[UILabel alloc] initWithFrame:CGRectMake(10, 3776, 400, 20)];
+    gpsDegreeOfPrecision.text = @"Degree of precision (DOP)";
+    gpsDegreeOfPrecision.textColor = [UIColor grayColor];
+    [gpsDegreeOfPrecision setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDegreeOfPrecision];
+    
+    // DOP
+    self.gpsDegreeOfPrecision = [[UITextField alloc] init];
+    self.gpsDegreeOfPrecision.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDegreeOfPrecision.delegate = self;
+    self.gpsDegreeOfPrecision.frame = CGRectMake(w/2, 3776, w/2, 20);
+    self.gpsDegreeOfPrecision.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDegreeOfPrecision.textColor = [UIColor blackColor];
+    [self.gpsDegreeOfPrecision setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDegreeOfPrecision];
+    
+    // Speed ref label
+    UILabel *gpsSpeedRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3820, 400, 20)];
+    gpsSpeedRef.text = @"Speed ref";
+    gpsSpeedRef.textColor = [UIColor grayColor];
+    [gpsSpeedRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsSpeedRef];
+    
+    // Speed ref
+    self.gpsSpeedRef = [[UITextField alloc] init];
+    self.gpsSpeedRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsSpeedRef.delegate = self;
+    self.gpsSpeedRef.frame = CGRectMake(w/2, 3820, w/2, 20);
+    self.gpsSpeedRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsSpeedRef.textColor = [UIColor blackColor];
+    [self.gpsSpeedRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsSpeedRef];
+    
+    // Speed label
+    UILabel *gpsSpeed = [[UILabel alloc] initWithFrame:CGRectMake(10, 3864, 400, 20)];
+    gpsSpeed.text = @"Speed";
+    gpsSpeed.textColor = [UIColor grayColor];
+    [gpsSpeed setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsSpeed];
+    
+    // Speed
+    self.gpsSpeed = [[UITextField alloc] init];
+    self.gpsSpeed.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsSpeed.delegate = self;
+    self.gpsSpeed.frame = CGRectMake(w/2, 3864, w/2, 20);
+    self.gpsSpeed.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsSpeed.textColor = [UIColor blackColor];
+    [self.gpsSpeed setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsSpeed];
+    
+    // Track ref label
+    UILabel *gpsTrackRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3908, 400, 20)];
+    gpsTrackRef.text = @"Track ref";
+    gpsTrackRef.textColor = [UIColor grayColor];
+    [gpsTrackRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsTrackRef];
+    
+    // Track ref
+    self.gpsTrackRef = [[UITextField alloc] init];
+    self.gpsTrackRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsTrackRef.delegate = self;
+    self.gpsTrackRef.frame = CGRectMake(w/2, 3908, w/2, 20);
+    self.gpsTrackRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsTrackRef.textColor = [UIColor blackColor];
+    [self.gpsTrackRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsTrackRef];
+    
+    // Track label
+    UILabel *gpsTrack = [[UILabel alloc] initWithFrame:CGRectMake(10, 3952, 400, 20)];
+    gpsTrack.text = @"Track";
+    gpsTrack.textColor = [UIColor grayColor];
+    [gpsTrack setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsTrack];
+    
+    // Track
+    self.gpsTrack = [[UITextField alloc] init];
+    self.gpsTrack.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsTrack.delegate = self;
+    self.gpsTrack.frame = CGRectMake(w/2, 3952, w/2, 20);
+    self.gpsTrack.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsTrack.textColor = [UIColor blackColor];
+    [self.gpsTrack setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsTrack];
+    
+    // Image direction ref label
+    UILabel *gpsImgDirectionRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3996, 400, 20)];
+    gpsImgDirectionRef.text = @"Image direction ref";
+    gpsImgDirectionRef.textColor = [UIColor grayColor];
+    [gpsImgDirectionRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsImgDirectionRef];
+    
+    // Image direction ref
+    self.gpsImgDirectionRef = [[UITextField alloc] init];
+    self.gpsImgDirectionRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsImgDirectionRef.delegate = self;
+    self.gpsImgDirectionRef.frame = CGRectMake(w/2, 3996, w/2, 20);
+    self.gpsImgDirectionRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsImgDirectionRef.textColor = [UIColor blackColor];
+    [self.gpsImgDirectionRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsImgDirectionRef];
+    
+    // Image direction label
+    UILabel *gpsImgDirection = [[UILabel alloc] initWithFrame:CGRectMake(10, 4040, 400, 20)];
+    gpsImgDirection.text = @"Image direction";
+    gpsImgDirection.textColor = [UIColor grayColor];
+    [gpsImgDirection setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsImgDirection];
+    
+    // Image direction
+    self.gpsImgDirection = [[UITextField alloc] init];
+    self.gpsImgDirection.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsImgDirection.delegate = self;
+    self.gpsImgDirection.frame = CGRectMake(w/2, 4040, w/2, 20);
+    self.gpsImgDirection.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsImgDirection.textColor = [UIColor blackColor];
+    [self.gpsImgDirection setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsImgDirection];
+    
+    // Map datum label
+    UILabel *gpsMapDatum = [[UILabel alloc] initWithFrame:CGRectMake(10, 4084, 400, 20)];
+    gpsMapDatum.text = @"Map datum";
+    gpsMapDatum.textColor = [UIColor grayColor];
+    [gpsMapDatum setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsMapDatum];
+    
+    // Map datum
+    self.gpsMapDatum = [[UITextField alloc] init];
+    self.gpsMapDatum.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsMapDatum.delegate = self;
+    self.gpsMapDatum.frame = CGRectMake(w/2, 4084, w/2, 20);
+    self.gpsMapDatum.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsMapDatum.textColor = [UIColor blackColor];
+    [self.gpsMapDatum setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsMapDatum];
+    
+    // Destination latitude ref label
+    UILabel *gpsDestLatRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4128, 400, 20)];
+    gpsDestLatRef.text = @"Destination latitude ref";
+    gpsDestLatRef.textColor = [UIColor grayColor];
+    [gpsDestLatRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestLatRef];
+    
+    // Destination latitude ref
+    self.gpsDestLatRef = [[UITextField alloc] init];
+    self.gpsDestLatRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestLatRef.delegate = self;
+    self.gpsDestLatRef.frame = CGRectMake(w/2, 4128, w/2, 20);
+    self.gpsDestLatRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestLatRef.textColor = [UIColor blackColor];
+    [self.gpsDestLatRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestLatRef];
+    
+    // Destination latitude label
+    UILabel *gpsDestLat = [[UILabel alloc] initWithFrame:CGRectMake(10, 4172, 400, 20)];
+    gpsDestLat.text = @"Destination latitude";
+    gpsDestLat.textColor = [UIColor grayColor];
+    [gpsDestLat setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestLat];
+    
+    // Destination latitude
+    self.gpsDestLat = [[UITextField alloc] init];
+    self.gpsDestLat.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestLat.delegate = self;
+    self.gpsDestLat.frame = CGRectMake(w/2, 4172, w/2, 20);
+    self.gpsDestLat.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestLat.textColor = [UIColor blackColor];
+    [self.gpsDestLat setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestLat];
+    
+    // Destination longitude ref label
+    UILabel *gpsDestLongRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4216, 400, 20)];
+    gpsDestLongRef.text = @"Destination longitude ref";
+    gpsDestLongRef.textColor = [UIColor grayColor];
+    [gpsDestLongRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestLongRef];
+    
+    // Destination longitude ref
+    self.gpsDestLongRef = [[UITextField alloc] init];
+    self.gpsDestLongRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestLongRef.delegate = self;
+    self.gpsDestLongRef.frame = CGRectMake(w/2, 4216, w/2, 20);
+    self.gpsDestLongRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestLongRef.textColor = [UIColor blackColor];
+    [self.gpsDestLongRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestLongRef];
+    
+    // Destination longitude label
+    UILabel *gpsDestLong = [[UILabel alloc] initWithFrame:CGRectMake(10, 4260, 400, 20)];
+    gpsDestLong.text = @"Destination longitude";
+    gpsDestLong.textColor = [UIColor grayColor];
+    [gpsDestLong setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestLong];
+    
+    // Destination longitude
+    self.gpsDestLong = [[UITextField alloc] init];
+    self.gpsDestLong.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestLong.delegate = self;
+    self.gpsDestLong.frame = CGRectMake(w/2, 4260, w/2, 20);
+    self.gpsDestLong.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestLong.textColor = [UIColor blackColor];
+    [self.gpsDestLong setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestLong];
+    
+    // Destination bearing ref label
+    UILabel *gpsDestBearingRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4304, 400, 20)];
+    gpsDestBearingRef.text = @"Destination bearing ref";
+    gpsDestBearingRef.textColor = [UIColor grayColor];
+    [gpsDestBearingRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestBearingRef];
+    
+    // Destination bearing ref
+    self.gpsDestBearingRef = [[UITextField alloc] init];
+    self.gpsDestBearingRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestBearingRef.delegate = self;
+    self.gpsDestBearingRef.frame = CGRectMake(w/2, 4304, w/2, 20);
+    self.gpsDestBearingRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestBearingRef.textColor = [UIColor blackColor];
+    [self.gpsDestBearingRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestBearingRef];
+    
+    // Destination bearing label
+    UILabel *gpsDestBearing = [[UILabel alloc] initWithFrame:CGRectMake(10, 4348, 400, 20)];
+    gpsDestBearing.text = @"Destination bearing";
+    gpsDestBearing.textColor = [UIColor grayColor];
+    [gpsDestBearing setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestBearing];
+    
+    // Destination bearing
+    self.gpsDestBearing = [[UITextField alloc] init];
+    self.gpsDestBearing.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestBearing.delegate = self;
+    self.gpsDestBearing.frame = CGRectMake(w/2, 4348, w/2, 20);
+    self.gpsDestBearing.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestBearing.textColor = [UIColor blackColor];
+    [self.gpsDestBearing setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestBearing];
+    
+    // Destination distance ref label
+    UILabel *gpsDestDistanceRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4392, 400, 20)];
+    gpsDestDistanceRef.text = @"Destination distance ref";
+    gpsDestDistanceRef.textColor = [UIColor grayColor];
+    [gpsDestDistanceRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestDistanceRef];
+    
+    // Destination distance ref
+    self.gpsDestDistanceRef = [[UITextField alloc] init];
+    self.gpsDestDistanceRef.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestDistanceRef.delegate = self;
+    self.gpsDestDistanceRef.frame = CGRectMake(w/2, 4392, w/2, 20);
+    self.gpsDestDistanceRef.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestDistanceRef.textColor = [UIColor blackColor];
+    [self.gpsDestDistanceRef setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestDistanceRef];
+    
+    // Destination distance label
+    UILabel *gpsDestDistance = [[UILabel alloc] initWithFrame:CGRectMake(10, 4436, 400, 20)];
+    gpsDestDistance.text = @"Destination distance";
+    gpsDestDistance.textColor = [UIColor grayColor];
+    [gpsDestDistance setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDestDistance];
+    
+    // Destination distance
+    self.gpsDestDistance = [[UITextField alloc] init];
+    self.gpsDestDistance.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDestDistance.delegate = self;
+    self.gpsDestDistance.frame = CGRectMake(w/2, 4436, w/2, 20);
+    self.gpsDestDistance.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDestDistance.textColor = [UIColor blackColor];
+    [self.gpsDestDistance setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDestDistance];
+    
+    // Processing method label
+    UILabel *gpsProcessingMethod = [[UILabel alloc] initWithFrame:CGRectMake(10, 4480, 400, 20)];
+    gpsProcessingMethod.text = @"Processing method";
+    gpsProcessingMethod.textColor = [UIColor grayColor];
+    [gpsProcessingMethod setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsProcessingMethod];
+    
+    // Processing method
+    self.gpsProcessingMethod = [[UITextField alloc] init];
+    self.gpsProcessingMethod.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsProcessingMethod.delegate = self;
+    self.gpsProcessingMethod.frame = CGRectMake(w/2, 4480, w/2, 20);
+    self.gpsProcessingMethod.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsProcessingMethod.textColor = [UIColor blackColor];
+    [self.gpsProcessingMethod setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsProcessingMethod];
+    
+    // Area information label
+    UILabel *gpsAreaInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 4524, 400, 20)];
+    gpsAreaInformation.text = @"Area information";
+    gpsAreaInformation.textColor = [UIColor grayColor];
+    [gpsAreaInformation setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsAreaInformation];
+    
+    // Area information
+    self.gpsAreaInformation = [[UITextField alloc] init];
+    self.gpsAreaInformation.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsAreaInformation.delegate = self;
+    self.gpsAreaInformation.frame = CGRectMake(w/2, 4524, w/2, 20);
+    self.gpsAreaInformation.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsAreaInformation.textColor = [UIColor blackColor];
+    [self.gpsAreaInformation setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsAreaInformation];
+    
+    // Date stamp label
+    UILabel *gpsDateStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 4568, 400, 20)];
+    gpsDateStamp.text = @"Date stamp";
+    gpsDateStamp.textColor = [UIColor grayColor];
+    [gpsDateStamp setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDateStamp];
+    
+    // Date stamp
+    self.gpsDateStamp = [[UITextField alloc] init];
+    self.gpsDateStamp.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDateStamp.delegate = self;
+    self.gpsDateStamp.frame = CGRectMake(w/2, 4568, w/2, 20);
+    self.gpsDateStamp.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDateStamp.textColor = [UIColor blackColor];
+    [self.gpsDateStamp setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDateStamp];
+    
+    // Differential label
+    UILabel *gpsDifferental = [[UILabel alloc] initWithFrame:CGRectMake(10, 4612, 400, 20)];
+    gpsDifferental.text = @"Differential applied?";
+    gpsDifferental.textColor = [UIColor grayColor];
+    [gpsDifferental setFont:[UIFont fontWithName:@"Avenir" size:14]];
+    [self.scrollView addSubview:gpsDifferental];
+    
+    // Differential
+    self.gpsDifferental = [[UITextField alloc] init];
+    self.gpsDifferental.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.gpsDifferental.delegate = self;
+    self.gpsDifferental.frame = CGRectMake(w/2, 4612, w/2, 20);
+    self.gpsDifferental.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.gpsDifferental.textColor = [UIColor blackColor];
+    [self.gpsDifferental setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.gpsDifferental];
     
     UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
     numberToolbar.barStyle = UIBarStyleBlackTranslucent;
@@ -2113,9 +2963,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     numberToolbar.items = [NSArray arrayWithObjects:
                            [[UIBarButtonItem alloc]initWithTitle:@"Previous" style:UIBarButtonItemStylePlain target:self action:@selector(previousItemPressed)],
                            [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                           [[UIBarButtonItem alloc]initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(resetPressed)],
-                           [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
-                           [[UIBarButtonItem alloc]initWithTitle:@"Erase" style:UIBarButtonItemStylePlain target:self action:@selector(erasePressed)],
+                           [[UIBarButtonItem alloc]initWithTitle:@"Reset" style:UIBarButtonItemStylePlain target:self action:@selector(resetPressed:)],
                            [[UIBarButtonItem alloc]initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil],
                            [[UIBarButtonItem alloc]initWithTitle:@"Next" style:UIBarButtonItemStylePlain target:self action:@selector(nextItemPressed)],
                            nil];
@@ -2129,16 +2977,16 @@ CGPoint pointFromRectangle(CGRect rect) {
     NSLog(@"Going to previous item");
 }
 
-- (void)resetPressed {
+- (void)resetPressed: (id)sender {
     NSLog(@"Resetting");
-}
-
-- (void)erasePressed {
-    NSLog(@"Erasing");
+    UIBarButtonItem *button = (UIBarButtonItem *)sender;
+    NSLog(@"%@", button);
+    [self loadPicture];
 }
 
 - (void)nextItemPressed {
     NSLog(@"Going to next item");
+    
 }
 
 - (void)donePressed {
