@@ -33,6 +33,10 @@
 		FA81D4CA1BA2A76400A867F2 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA81D4C91BA2A76400A867F2 /* Images.xcassets */; };
 		FA81D4CD1BA2A76400A867F2 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FA81D4CB1BA2A76400A867F2 /* LaunchScreen.xib */; };
 		FA81D4D91BA2A76500A867F2 /* Exif_EditorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = FA81D4D81BA2A76500A867F2 /* Exif_EditorTests.m */; };
+		FA84C0011BB1FA24007350E4 /* KLCPopup.m in Sources */ = {isa = PBXBuildFile; fileRef = FA84C0001BB1FA24007350E4 /* KLCPopup.m */; };
+		FA84C0031BB1FC1B007350E4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0021BB1FC1B007350E4 /* QuartzCore.framework */; };
+		FA84C0051BB1FC25007350E4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0041BB1FC25007350E4 /* Foundation.framework */; };
+		FA84C0071BB1FC30007350E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0061BB1FC30007350E4 /* UIKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +84,11 @@
 		FA81D4D21BA2A76500A867F2 /* Exif EditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Exif EditorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA81D4D71BA2A76500A867F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA81D4D81BA2A76500A867F2 /* Exif_EditorTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Exif_EditorTests.m; sourceTree = "<group>"; };
+		FA84BFFF1BB1FA24007350E4 /* KLCPopup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KLCPopup.h; sourceTree = "<group>"; };
+		FA84C0001BB1FA24007350E4 /* KLCPopup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KLCPopup.m; sourceTree = "<group>"; };
+		FA84C0021BB1FC1B007350E4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		FA84C0041BB1FC25007350E4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FA84C0061BB1FC30007350E4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +96,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA84C0071BB1FC30007350E4 /* UIKit.framework in Frameworks */,
+				FA84C0051BB1FC25007350E4 /* Foundation.framework in Frameworks */,
+				FA84C0031BB1FC1B007350E4 /* QuartzCore.framework in Frameworks */,
 				FA019F0D1BA8EA5800D38F5B /* CoreGraphics.framework in Frameworks */,
 				437159D389AB1BAA4FA3F511 /* libPods.a in Frameworks */,
 			);
@@ -114,6 +126,9 @@
 		8F47EEDD85B442863EA38F7F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FA84C0061BB1FC30007350E4 /* UIKit.framework */,
+				FA84C0041BB1FC25007350E4 /* Foundation.framework */,
+				FA84C0021BB1FC1B007350E4 /* QuartzCore.framework */,
 				0524924AB561AD62F5C603EF /* libPods.a */,
 			);
 			name = Frameworks;
@@ -170,6 +185,8 @@
 				FA81D4C11BA2A76400A867F2 /* AppDelegate.m */,
 				FA3D9C371BAE359800CB4BAE /* ViewController.h */,
 				FA3D9C381BAE359800CB4BAE /* ViewController.m */,
+				FA84BFFF1BB1FA24007350E4 /* KLCPopup.h */,
+				FA84C0001BB1FA24007350E4 /* KLCPopup.m */,
 				FA81D4C61BA2A76400A867F2 /* Main.storyboard */,
 				FA1917F61BA40CAD00711A7E /* Images */,
 				FA81D4C91BA2A76400A867F2 /* Images.xcassets */,
@@ -361,6 +378,7 @@
 				FA81D4C21BA2A76400A867F2 /* AppDelegate.m in Sources */,
 				FA3D9C391BAE359800CB4BAE /* ViewController.m in Sources */,
 				FA81D4BF1BA2A76400A867F2 /* main.m in Sources */,
+				FA84C0011BB1FA24007350E4 /* KLCPopup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

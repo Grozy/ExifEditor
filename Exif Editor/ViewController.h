@@ -13,6 +13,7 @@
 #import <ImageIO/CGImageProperties.h>
 #import <CoreLocation/CoreLocation.h>
 #import "XLMediaZoom.h"
+#import "KLCPopup.h"
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -32,11 +33,22 @@
 @property (strong, nonatomic) IBOutlet UITextField *fileExtension;
 @property (strong, nonatomic) IBOutlet UITextField *widthAndHeight;
 
+// Restoring the original values (The 'Reset' button)
 @property (strong, nonatomic) IBOutlet UITextField *currentlyBeingEdited;
+@property (strong, nonatomic) IBOutlet NSString *currentItem;
 
+// Description pop-up (The 'What is this?' button)
+@property (strong, nonatomic) IBOutlet UIView *descriptionView;
+@property (strong, nonatomic) IBOutlet UILabel *item;
+@property (strong, nonatomic) IBOutlet UITextView *itemInfo;
+@property (strong, nonatomic) IBOutlet KLCPopup *popup;
+
+// Dictionary of original values (required by both 'Reset' and 'What is this?')
+@property (strong, nonatomic) IBOutlet NSMutableDictionary *originalValues;
 @property (strong, nonatomic) IBOutlet NSString *exifExposureTimeO;
 
-@property (strong, nonatomic) IBOutlet UIView *descriptionView;
+@property (strong, nonatomic) IBOutlet NSMutableDictionary *tags;
+@property long currentTag;
 
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;
@@ -162,6 +174,8 @@
 - (IBAction)saveButtonPressed:(id)sender;
 - (IBAction)resetExif:(id)sender;
 - (IBAction)eraseExif:(id)sender;
+
+- (NSString *)md5:(NSString *)input;
 
 @end
 
