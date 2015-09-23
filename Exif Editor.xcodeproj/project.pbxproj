@@ -37,6 +37,8 @@
 		FA84C0031BB1FC1B007350E4 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0021BB1FC1B007350E4 /* QuartzCore.framework */; };
 		FA84C0051BB1FC25007350E4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0041BB1FC25007350E4 /* Foundation.framework */; };
 		FA84C0071BB1FC30007350E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0061BB1FC30007350E4 /* UIKit.framework */; };
+		FA84C00F1BB2A69E007350E4 /* UpIconC.png in Resources */ = {isa = PBXBuildFile; fileRef = FA84C00E1BB2A69E007350E4 /* UpIconC.png */; };
+		FA84C0111BB2A801007350E4 /* UpIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA84C0101BB2A801007350E4 /* UpIconC2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +91,8 @@
 		FA84C0021BB1FC1B007350E4 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		FA84C0041BB1FC25007350E4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FA84C0061BB1FC30007350E4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		FA84C00E1BB2A69E007350E4 /* UpIconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpIconC.png; sourceTree = "<group>"; };
+		FA84C0101BB2A801007350E4 /* UpIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpIconC2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,6 +141,8 @@
 		FA1917F61BA40CAD00711A7E /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FA84C0101BB2A801007350E4 /* UpIconC2.png */,
+				FA84C00E1BB2A69E007350E4 /* UpIconC.png */,
 				FA573AC61BB1355C005D9A7B /* QuestionIconC.png */,
 				FA019F061BA8E1EF00D38F5B /* up-arrow.png */,
 				FA019F071BA8E1EF00D38F5B /* down-arrow.png */,
@@ -313,6 +319,7 @@
 				FA81D4CD1BA2A76400A867F2 /* LaunchScreen.xib in Resources */,
 				FA4A2C221BA6917800C3711C /* CameraIconC.png in Resources */,
 				FA019F091BA8E1EF00D38F5B /* down-arrow.png in Resources */,
+				FA84C00F1BB2A69E007350E4 /* UpIconC.png in Resources */,
 				FA573AC71BB1355C005D9A7B /* QuestionIconC.png in Resources */,
 				FA4A2C161BA68EBB00C3711C /* PhotoIcon2.png in Resources */,
 				FA81D4CA1BA2A76400A867F2 /* Images.xcassets in Resources */,
@@ -320,6 +327,7 @@
 				FA4A2C1C1BA68FB300C3711C /* PhotoIconC.png in Resources */,
 				FA4A2C181BA68F1A00C3711C /* CameraIcon2.png in Resources */,
 				FA1918041BA4157C00711A7E /* CameraIcon.png in Resources */,
+				FA84C0111BB2A801007350E4 /* UpIconC2.png in Resources */,
 				FA4A2C121BA68DEA00C3711C /* EraseIcon.png in Resources */,
 				FA4A2C261BA6923300C3711C /* EraseIconC.png in Resources */,
 				FA4A2C141BA68E6900C3711C /* SaveIcon.png in Resources */,

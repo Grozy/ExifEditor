@@ -17,6 +17,9 @@
 
 @interface ViewController : UIViewController <UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
+@property CGFloat screenW;
+@property CGFloat screenH;
+
 @property (strong, nonatomic) UIImagePickerController *picker;
 @property (strong) NSMutableDictionary *exifData;
 @property (assign, nonatomic) NSInteger index;
@@ -28,6 +31,7 @@
 @property (strong, nonatomic) IBOutlet UITextField *height;
 @property (strong, nonatomic) IBOutlet UITextField *fileSize;
 @property (strong, nonatomic) IBOutlet UITextField *dateTimeOriginal;
+@property (strong, nonatomic) IBOutlet UITextField *dateTimeOriginalTime;
 @property (strong, nonatomic) IBOutlet UITextField *dateTimeDigitized;
 @property (strong, nonatomic) IBOutlet UITextField *fileName;
 @property (strong, nonatomic) IBOutlet UITextField *fileExtension;
@@ -49,6 +53,11 @@
 
 @property (strong, nonatomic) IBOutlet NSMutableDictionary *tags;
 @property long currentTag;
+
+// Date selection
+@property (strong, nonatomic) IBOutlet UILabel *selectedDate;
+@property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
+@property (strong, nonatomic) IBOutlet UIDatePicker *timePicker;
 
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;

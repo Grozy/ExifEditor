@@ -87,6 +87,14 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (NSString *)firstHalf: (NSString *)str {
+    return [str substringToIndex:10];
+}
+
+- (NSString *)secondHalf: (NSString *)str {
+    return [str substringWithRange:NSMakeRange(11, 8)];
+}
+
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
     self.pic = picker;
@@ -233,15 +241,6 @@
                          }
                          [self.originalValues setObject:@"exifSpectralSensitivity" forKey:self.exifSpectralSensitivity.text];
                          
-                         /*
-                          Copy and paste this:
-                          [self.originalValues setObject:self.______.text forKey:@"______"];
-                          
-                          It is a dictionary containing item name-value pairs.
-                          It's used to reset the items to their original values
-                          and show the description of the item to the user.
-                          */
-                         
                          NSDecimalNumber *exifISOSpeedRatings = CFDictionaryGetValue(exif, kCGImagePropertyExifISOSpeedRatings);
                          self.exifISOSpeedRatings.text = [NSString stringWithFormat:@"%@", exifISOSpeedRatings];
                          [self.originalValues setObject:@"exifISOSpeedRatings" forKey:self.exifISOSpeedRatings.text];
@@ -260,7 +259,8 @@
                          [self.originalValues setObject:@"exifVersion" forKey:self.exifVersion.text];
                          
                          NSDecimalNumber *exifDateTimeOriginal = CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeOriginal);
-                         self.dateTimeOriginal.text = [NSString stringWithFormat:@"%@", exifDateTimeOriginal];
+                         self.dateTimeOriginal.text = [self firstHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
+                         self.dateTimeOriginalTime.text = [self secondHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
                          [self.originalValues setObject:self.dateTimeOriginal.text forKey:@"dateTimeOriginal"];
                          
                          NSDecimalNumber *exifDateTimeDigitized = CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeDigitized);
@@ -1006,6 +1006,7 @@
 }
 
 - (void)imageZoomPressed {
+    [self dismissKeyboard];
     self.imageZoom = [[XLMediaZoom alloc] initWithAnimationTime:@(0.5) image:self.imageView blurEffect:YES];
     [self.view addSubview:self.imageZoom];
     [self.imageZoom show];
@@ -1022,8 +1023,14 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     [self.item removeFromSuperview];
     [self.itemInfo removeFromSuperview];
+    [KLCPopup dismissAllPopups];
     
     [self.scrollView setContentOffset:(pointFromRectangle(textField.frame)) animated:YES];
+    
+    self.currentlyBeingEdited = textField;
+    [textField addTarget:self
+                  action:@selector(textFieldDidChange:)
+        forControlEvents:UIControlEventEditingChanged];
     
     UIToolbar* numberToolbar = [[UIToolbar alloc]initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 50)];
     numberToolbar.barStyle = UIBarStyleBlackTranslucent;
@@ -1043,6 +1050,10 @@ CGPoint pointFromRectangle(CGRect rect) {
     NSLog(@"just finished editing");
     [self.item removeFromSuperview];
     [self.itemInfo removeFromSuperview];
+}
+
+- (void)textFieldDidChange:(id) sender {
+    [self.scrollView setContentOffset:(pointFromRectangle(self.currentlyBeingEdited.frame)) animated:YES];
 }
 
 // Goes to the next text field when Next is pressed
@@ -1347,6 +1358,24 @@ CGPoint pointFromRectangle(CGRect rect) {
             ];  
 }
 
+- (void)scrollToTop: (id)sender {
+    [self.scrollView setContentOffset:CGPointMake(0, 0 - self.scrollView.contentInset.top) animated:YES];
+}
+
+- (void)selectDate: (id)sender {
+    NSLog(@"now inside select date method");
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy:MM:dd"];
+    self.dateTimeOriginal.text = [dateFormatter stringFromDate:self.datePicker.date];
+}
+
+- (void)selectTime: (id)sender {
+    NSLog(@"now inside select time method");
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"HH:mm:ss"];
+    self.dateTimeOriginalTime.text = [dateFormatter stringFromDate:self.timePicker.date];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     //    self.view.backgroundColor = [UIColor whiteColor];
@@ -1371,6 +1400,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     // Width of scroll view
     CGFloat w = self.scrollView.bounds.size.width;
 //    CGFloat h = self.scrollView.bounds.size.height;
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    self.screenW = screenRect.size.width;
+    self.screenH = screenRect.size.height;
     NSLog(@"%f", w);
     
     // Take picture button
@@ -1381,7 +1413,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [takePicture addTarget:self
                     action:@selector(takePicture:)
           forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:takePicture];
+    [self.view addSubview:takePicture];
     
     // New image button
     UIButton *chooseNewImage = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1391,7 +1423,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [chooseNewImage addTarget:self
                        action:@selector(newImageButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:chooseNewImage];
+    [self.view addSubview:chooseNewImage];
     
     // Reset to actual
     UIButton *resetExif = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1423,8 +1455,21 @@ CGPoint pointFromRectangle(CGRect rect) {
        forControlEvents:UIControlEventTouchUpInside];
 //    [self.view addSubview:saveExif];
     
+    // Button for automatically scrolling to the top
+    UIButton *scrollToTop = [UIButton buttonWithType:UIButtonTypeCustom];
+    scrollToTop.frame = CGRectMake(20, self.screenH-150, w/5, w/5);
+//    [scrollToTop.layer setBackgroundColor:[UIColor colorWithWhite:1.0 alpha:0.5].CGColor];
+    scrollToTop.alpha = 0.6;
+    
+    UIImage *scrollToTopImage = [UIImage imageNamed:@"UpIconC2.png"];
+    [scrollToTop setImage:scrollToTopImage forState:UIControlStateNormal];
+    [scrollToTop addTarget:self
+                 action:@selector(scrollToTop:)
+       forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:scrollToTop];
+    
     // Description view
-    self.descriptionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 150)];
+    self.descriptionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 120)];
     self.descriptionView.backgroundColor = [UIColor whiteColor];
     [self.descriptionView setAlpha:0.9];
 //    [self.view addSubview:self.descriptionView];
@@ -1544,16 +1589,41 @@ CGPoint pointFromRectangle(CGRect rect) {
     [dateLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
     [self.scrollView addSubview:dateLabel];
     
+    UIView* gummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+    
     // Date original
     self.dateTimeOriginal = [[UITextField alloc] init];
     self.dateTimeOriginal.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.dateTimeOriginal.delegate = self;
-    self.dateTimeOriginal.frame = CGRectMake(w/2, 564, w/2, 20);
+    self.dateTimeOriginal.frame = CGRectMake(w/2, 564, w/4, 20);
     self.dateTimeOriginal.keyboardAppearance = UIKeyboardAppearanceDark;
     self.dateTimeOriginal.tag = 1;
     self.dateTimeOriginal.textColor = [UIColor blackColor];
     [self.dateTimeOriginal setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.dateTimeOriginal];
+    
+    // Time original
+    self.dateTimeOriginalTime = [[UITextField alloc] init];
+    self.dateTimeOriginalTime.clearButtonMode = UITextFieldViewModeWhileEditing;
+    self.dateTimeOriginalTime.delegate = self;
+    self.dateTimeOriginalTime.frame = CGRectMake(3*w/4, 564, w/4, 20);
+    self.dateTimeOriginalTime.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.dateTimeOriginalTime.tag = 1;
+    self.dateTimeOriginalTime.textColor = [UIColor blackColor];
+    [self.dateTimeOriginalTime setReturnKeyType:UIReturnKeyNext];
+    [self.scrollView addSubview:self.dateTimeOriginalTime];
+    
+    // Date picker for the date field
+    self.datePicker = [[UIDatePicker alloc] init];
+    self.datePicker.datePickerMode = UIDatePickerModeDate;
+    [self.datePicker addTarget:self action:@selector(selectDate:) forControlEvents:UIControlEventValueChanged];
+    self.dateTimeOriginal.inputView = self.datePicker;
+    
+    // Time picker for the date field
+    self.timePicker = [[UIDatePicker alloc] init];
+    self.timePicker.datePickerMode = UIDatePickerModeTime;
+    [self.timePicker addTarget:self action:@selector(selectTime:) forControlEvents:UIControlEventValueChanged];
+    self.dateTimeOriginalTime.inputView = self.timePicker;
     
     // Date digitized. Initialized so we don't get NSException
     self.dateTimeDigitized = [[UITextField alloc] init];
@@ -3521,7 +3591,127 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 71:
             self.item.text = @"GPS version";
-            self.itemInfo.text = @"The lens’s serial number.";
+            self.itemInfo.text = @"The GPS version.";
+            break;
+        case 72:
+            self.item.text = @"Latitude ref";
+            self.itemInfo.text = @"Whether the latitude is north or south.";
+            break;
+        case 73:
+            self.item.text = @"Latitude";
+            self.itemInfo.text = @"The latitude.";
+            break;
+        case 74:
+            self.item.text = @"Longitude ref";
+            self.itemInfo.text = @"Whether the longitude is east or west.";
+            break;
+        case 75:
+            self.item.text = @"Longitude";
+            self.itemInfo.text = @"The longitude.";
+            break;
+        case 76:
+            self.item.text = @"Altitude ref";
+            self.itemInfo.text = @"The reference altitude.";
+            break;
+        case 77:
+            self.item.text = @"Altitude";
+            self.itemInfo.text = @"The altitude.";
+            break;
+        case 78:
+            self.item.text = @"Time stamp";
+            self.itemInfo.text = @"The time as UTC (Coordinated Universal Time).";
+            break;
+        case 79:
+            self.item.text = @"Satellites";
+            self.itemInfo.text = @"The satellites used for GPS measurements.";
+            break;
+        case 80:
+            self.item.text = @"Status";
+            self.itemInfo.text = @"The status of the GPS receiver.";
+            break;
+        case 81:
+            self.item.text = @"Measure mode";
+            self.itemInfo.text = @"The measurement mode.";
+            break;
+        case 82:
+            self.item.text = @"Degree of precision";
+            self.itemInfo.text = @"The degree of precision (DOP) of the data.";
+            break;
+        case 83:
+            self.item.text = @"Speed ref";
+            self.itemInfo.text = @"The unit for expressing the GPS receiver speed of movement.";
+            break;
+        case 84:
+            self.item.text = @"Speed";
+            self.itemInfo.text = @"The GPS receiver speed of movement.";
+            break;
+        case 85:
+            self.item.text = @"Track ref";
+            self.itemInfo.text = @"The reference for the direction of GPS receiver movement.";
+            break;
+        case 86:
+            self.item.text = @"Track";
+            self.itemInfo.text = @"The direction of GPS receiver movement.";
+            break;
+        case 87:
+            self.item.text = @"Image direction ref";
+            self.itemInfo.text = @"The reference for the direction of the image.";
+            break;
+        case 88:
+            self.item.text = @"Image direction";
+            self.itemInfo.text = @"The direction of the image.";
+            break;
+        case 89:
+            self.item.text = @"Map datum";
+            self.itemInfo.text = @"The geodetic survey data used by the GPS receiver.";
+            break;
+        case 90:
+            self.item.text = @"Destination latitude ref";
+            self.itemInfo.text = @"Whether the latitude of the destination point is northern or southern.";
+            break;
+        case 91:
+            self.item.text = @"Destination latitude";
+            self.itemInfo.text = @"The latitude of the destination point.";
+            break;
+        case 92:
+            self.item.text = @"Destination longitude ref";
+            self.itemInfo.text = @"Whether the longitude of the destination point is east or west.";
+            break;
+        case 93:
+            self.item.text = @"Destination longitude";
+            self.itemInfo.text = @"The longitude of the destination point.";
+            break;
+        case 94:
+            self.item.text = @"Destination bearing ref";
+            self.itemInfo.text = @"The reference for giving the bearing to the destination point.";
+            break;
+        case 95:
+            self.item.text = @"Destination bearing";
+            self.itemInfo.text = @"The bearing to the destination point.";
+            break;
+        case 96:
+            self.item.text = @"Destination distance ref";
+            self.itemInfo.text = @"The units for expressing the distance to the destination point.";
+            break;
+        case 97:
+            self.item.text = @"Destination distance";
+            self.itemInfo.text = @"The distance to the destination point.";
+            break;
+        case 98:
+            self.item.text = @"Processing method";
+            self.itemInfo.text = @"The name of the method used for finding a location.";
+            break;
+        case 99:
+            self.item.text = @"Area information";
+            self.itemInfo.text = @"The name of the GPS area.";
+            break;
+        case 100:
+            self.item.text = @"Date stamp";
+            self.itemInfo.text = @"The data and time information relative to Coordinated Universal Time (UTC).";
+            break;
+        case 101:
+            self.item.text = @"Differential";
+            self.itemInfo.text = @"Whether differential correction is applied to the GPS receiver.";
             break;
         default:
             break;
