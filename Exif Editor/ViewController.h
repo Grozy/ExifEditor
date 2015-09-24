@@ -21,6 +21,7 @@
 @property CGFloat screenH;
 
 @property (strong, nonatomic) UIImagePickerController *picker;
+@property (strong, nonatomic) UIImagePickerController *takeNewPhotoPicker;
 @property (strong) NSMutableDictionary *exifData;
 @property (assign, nonatomic) NSInteger index;
 @property (strong, nonatomic) IBOutlet UILabel *screenNumber;
@@ -177,12 +178,13 @@
 @property (strong) UIImagePickerController *pic;
 @property (strong) NSDictionary *inf;
 
-
-- (IBAction)takePicture:(id)sender;
+- (IBAction)loadPicture;
+- (IBAction)takePicture;
 - (IBAction)newImageButtonPressed:(id)sender;
 - (IBAction)saveButtonPressed:(id)sender;
 - (IBAction)resetExif:(id)sender;
-- (IBAction)eraseExif:(id)sender;
+//- (IBAction)eraseExif:(id)sender;
+- (IBAction)clearExif;
 
 - (NSString *)md5:(NSString *)input;
 
