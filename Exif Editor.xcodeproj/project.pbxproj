@@ -39,6 +39,11 @@
 		FA84C0071BB1FC30007350E4 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA84C0061BB1FC30007350E4 /* UIKit.framework */; };
 		FA84C00F1BB2A69E007350E4 /* UpIconC.png in Resources */ = {isa = PBXBuildFile; fileRef = FA84C00E1BB2A69E007350E4 /* UpIconC.png */; };
 		FA84C0111BB2A801007350E4 /* UpIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA84C0101BB2A801007350E4 /* UpIconC2.png */; };
+		FA85BF1A1BB33B3500C8590D /* CameraIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA85BF191BB33B3500C8590D /* CameraIconC2.png */; };
+		FA85BF1C1BB33B8400C8590D /* PhotoIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA85BF1B1BB33B8400C8590D /* PhotoIconC2.png */; };
+		FA85BF1E1BB33BA600C8590D /* ResetIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA85BF1D1BB33BA600C8590D /* ResetIconC2.png */; };
+		FA85BF201BB33BC100C8590D /* EraseIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA85BF1F1BB33BC100C8590D /* EraseIconC2.png */; };
+		FA85BF221BB33BE600C8590D /* SaveIconC2.png in Resources */ = {isa = PBXBuildFile; fileRef = FA85BF211BB33BE600C8590D /* SaveIconC2.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,6 +98,11 @@
 		FA84C0061BB1FC30007350E4 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FA84C00E1BB2A69E007350E4 /* UpIconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpIconC.png; sourceTree = "<group>"; };
 		FA84C0101BB2A801007350E4 /* UpIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UpIconC2.png; sourceTree = "<group>"; };
+		FA85BF191BB33B3500C8590D /* CameraIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = CameraIconC2.png; sourceTree = "<group>"; };
+		FA85BF1B1BB33B8400C8590D /* PhotoIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PhotoIconC2.png; sourceTree = "<group>"; };
+		FA85BF1D1BB33BA600C8590D /* ResetIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ResetIconC2.png; sourceTree = "<group>"; };
+		FA85BF1F1BB33BC100C8590D /* EraseIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EraseIconC2.png; sourceTree = "<group>"; };
+		FA85BF211BB33BE600C8590D /* SaveIconC2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SaveIconC2.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +151,11 @@
 		FA1917F61BA40CAD00711A7E /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FA85BF211BB33BE600C8590D /* SaveIconC2.png */,
+				FA85BF1F1BB33BC100C8590D /* EraseIconC2.png */,
+				FA85BF1D1BB33BA600C8590D /* ResetIconC2.png */,
+				FA85BF1B1BB33B8400C8590D /* PhotoIconC2.png */,
+				FA85BF191BB33B3500C8590D /* CameraIconC2.png */,
 				FA84C0101BB2A801007350E4 /* UpIconC2.png */,
 				FA84C00E1BB2A69E007350E4 /* UpIconC.png */,
 				FA573AC61BB1355C005D9A7B /* QuestionIconC.png */,
@@ -326,11 +341,16 @@
 				FA4A2C101BA68D6800C3711C /* ResetIcon.png in Resources */,
 				FA4A2C1C1BA68FB300C3711C /* PhotoIconC.png in Resources */,
 				FA4A2C181BA68F1A00C3711C /* CameraIcon2.png in Resources */,
+				FA85BF1E1BB33BA600C8590D /* ResetIconC2.png in Resources */,
 				FA1918041BA4157C00711A7E /* CameraIcon.png in Resources */,
 				FA84C0111BB2A801007350E4 /* UpIconC2.png in Resources */,
+				FA85BF201BB33BC100C8590D /* EraseIconC2.png in Resources */,
 				FA4A2C121BA68DEA00C3711C /* EraseIcon.png in Resources */,
+				FA85BF1C1BB33B8400C8590D /* PhotoIconC2.png in Resources */,
+				FA85BF221BB33BE600C8590D /* SaveIconC2.png in Resources */,
 				FA4A2C261BA6923300C3711C /* EraseIconC.png in Resources */,
 				FA4A2C141BA68E6900C3711C /* SaveIcon.png in Resources */,
+				FA85BF1A1BB33B3500C8590D /* CameraIconC2.png in Resources */,
 				FA4A2C1E1BA6914200C3711C /* SaveIconC.png in Resources */,
 				FA019F0B1BA8E76700D38F5B /* data.plist in Resources */,
 			);

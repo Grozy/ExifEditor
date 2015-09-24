@@ -111,14 +111,13 @@
     NSString *extension = [[referenceUrl path] pathExtension];
     NSLog(@"The extension is %@", extension);
     self.fileExtension.text = extension;
-    [self.originalValues setObject:@"fileExtension" forKey:self.fileExtension.text];
+    self.originalValues = [[NSMutableDictionary alloc] init];
+    [self.originalValues setObject:self.fileExtension.text forKey:@"fileExtension"];
     
     NSMutableDictionary *mediaMetadata = (NSMutableDictionary *) [info objectForKey:UIImagePickerControllerMediaMetadata];
     self.exifData = mediaMetadata;
     
     self.imageView.image = fullImage;
-    
-    self.originalValues = [[NSMutableDictionary alloc] init];
     
     // image width and height (but with CGImageSourceRef)
     // below is from http://stackoverflow.com/questions/9766394/get-exif-data-from-uiimage-uiimagepickercontroller
@@ -135,7 +134,7 @@
                  
                  NSString *fullFileName = [[asset defaultRepresentation] filename];
                  self.fileName.text = [fullFileName stringByDeletingPathExtension];
-                 [self.originalValues setObject:@"fileName" forKey:self.fileName.text];
+                 [self.originalValues setObject:self.fileName.text forKey:@"fileName"];
                  
                  if (length != 0)  {
                      
@@ -179,7 +178,7 @@
                      
                      NSString *dimensions = [[[NSString stringWithFormat:@"%d",w] stringByAppendingString:@" x "] stringByAppendingString:[NSString stringWithFormat:@"%d",h]];
                      self.widthAndHeight.text = dimensions;
-                     [self.originalValues setObject:@"widthAndHeight" forKey:self.widthAndHeight.text];
+                     [self.originalValues setObject:self.widthAndHeight.text forKey:@"widthAndHeight"];
                      
                      // get exif data
                      CFDictionaryRef exif = (CFDictionaryRef)CFDictionaryGetValue(imagePropertiesDictionary, kCGImagePropertyExifDictionary);
@@ -192,7 +191,7 @@
                      
                      NSLog(@"File size is: %f kilobytes", fileSize);
                      self.fileSize.text = [NSString stringWithFormat:@"%f KB", fileSize];
-                     [self.originalValues setObject:@"fileSize" forKey:self.fileSize.text];
+                     [self.originalValues setObject:self.fileSize.text forKey:@"fileSize"];
                      
                      //                     self.tableData = [exif_dict allValues];
                      //                     self.myTableView.dataSource = self;
@@ -222,15 +221,15 @@
                          //                         NSLog(@"%@", exifExposureTime);
                          self.exifExposureTime.text = [NSString stringWithFormat:@"%@", exifExposureTime];
                          self.exifExposureTimeO = self.exifExposureTime.text;
-                         [self.originalValues setObject:@"exifExposureTime" forKey:self.exifExposureTime.text];
+                         [self.originalValues setObject:self.exifExposureTime.text forKey:@"exifExposureTime"];
                          
                          NSDecimalNumber *exifFNumber = CFDictionaryGetValue(exif, kCGImagePropertyExifFNumber);
                          self.exifFNumber.text = [NSString stringWithFormat:@"%@", exifFNumber];
-                         [self.originalValues setObject:@"exifFNumber" forKey:self.exifFNumber.text];
+                         [self.originalValues setObject:self.exifFNumber.text forKey:@"exifFNumber"];
                          
                          NSDecimalNumber *exifExposureProgram = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureProgram);
                          self.exifExposureProgram.text = [NSString stringWithFormat:@"%@", exifExposureProgram];
-                         [self.originalValues setObject:@"exifExposureProgram" forKey:self.exifFNumber.text];
+                         [self.originalValues setObject:self.exifExposureProgram.text forKey:@"exifExposureProgram"];
                          
                          NSString *exifSpectralSensitivity = CFDictionaryGetValue(exif, kCGImagePropertyExifSpectralSensitivity);
                          if(!exifSpectralSensitivity) {
@@ -239,11 +238,11 @@
                          else {
                              self.exifSpectralSensitivity.text = exifSpectralSensitivity;
                          }
-                         [self.originalValues setObject:@"exifSpectralSensitivity" forKey:self.exifSpectralSensitivity.text];
+                         [self.originalValues setObject:self.exifSpectralSensitivity.text forKey:@"exifSpectralSensitivity"];
                          
                          NSDecimalNumber *exifISOSpeedRatings = CFDictionaryGetValue(exif, kCGImagePropertyExifISOSpeedRatings);
                          self.exifISOSpeedRatings.text = [NSString stringWithFormat:@"%@", exifISOSpeedRatings];
-                         [self.originalValues setObject:@"exifISOSpeedRatings" forKey:self.exifISOSpeedRatings.text];
+                         [self.originalValues setObject:self.exifISOSpeedRatings.text forKey:@"exifISOSpeedRatings"];
                          
                          NSString *exifOECF = CFDictionaryGetValue(exif, kCGImagePropertyExifOECF);
                          if(!exifOECF) {
@@ -252,16 +251,23 @@
                          else {
                              self.exifOECF.text = exifOECF;
                          }
-                         [self.originalValues setObject:@"exifOECF" forKey:self.exifOECF.text];
+                         [self.originalValues setObject:self.exifOECF.text forKey:@"exifOECF"];
                          
                          NSDecimalNumber *exifVersion = CFDictionaryGetValue(exif, kCGImagePropertyExifVersion);
                          self.exifVersion.text = [NSString stringWithFormat:@"%@", exifVersion];
-                         [self.originalValues setObject:@"exifVersion" forKey:self.exifVersion.text];
+                         [self.originalValues setObject:self.exifVersion.text forKey:@"exifVersion"];
                          
                          NSDecimalNumber *exifDateTimeOriginal = CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeOriginal);
-                         self.dateTimeOriginal.text = [self firstHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
-                         self.dateTimeOriginalTime.text = [self secondHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
+                         if(!exifDateTimeOriginal) {
+                             self.dateTimeOriginal.text = @"";
+                             self.dateTimeOriginalTime.text = @"";
+                         }
+                         else {
+                             self.dateTimeOriginal.text = [self firstHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
+                             self.dateTimeOriginalTime.text = [self secondHalf:[NSString stringWithFormat:@"%@", exifDateTimeOriginal]];
+                         }
                          [self.originalValues setObject:self.dateTimeOriginal.text forKey:@"dateTimeOriginal"];
+                         [self.originalValues setObject:self.dateTimeOriginalTime.text forKey:@"dateTimeOriginalTime"];
                          
                          NSDecimalNumber *exifDateTimeDigitized = CFDictionaryGetValue(exif, kCGImagePropertyExifDateTimeDigitized);
                          if(!exifDateTimeDigitized) {
@@ -1027,6 +1033,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     [self.scrollView setContentOffset:(pointFromRectangle(textField.frame)) animated:YES];
     
+    self.currentTag = textField.tag;
     self.currentlyBeingEdited = textField;
     [textField addTarget:self
                   action:@selector(textFieldDidChange:)
@@ -1043,7 +1050,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [numberToolbar sizeToFit];
     textField.inputAccessoryView = numberToolbar;
 
-    self.currentTag = textField.tag;
+    
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
@@ -1407,53 +1414,53 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Take picture button
     UIButton *takePicture = [UIButton buttonWithType:UIButtonTypeCustom];
-    takePicture.frame = CGRectMake(0, 10.0, w/5, w/5);
-    UIImage *takePictureImage = [UIImage imageNamed:@"CameraIconC.png"];
+    takePicture.frame = CGRectMake(0, 0, w/5, w/5);
+    UIImage *takePictureImage = [UIImage imageNamed:@"CameraIconC2.png"];
     [takePicture setImage:takePictureImage forState:UIControlStateNormal];
     [takePicture addTarget:self
                     action:@selector(takePicture:)
           forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:takePicture];
+    [self.scrollView addSubview:takePicture];
     
     // New image button
     UIButton *chooseNewImage = [UIButton buttonWithType:UIButtonTypeCustom];
-    chooseNewImage.frame = CGRectMake(w/5, 10.0, w/5, w/5);
-    UIImage *chooseNewImageImage = [UIImage imageNamed:@"PhotoIconC.png"];
+    chooseNewImage.frame = CGRectMake(w/5, 0, w/5, w/5);
+    UIImage *chooseNewImageImage = [UIImage imageNamed:@"PhotoIconC2.png"];
     [chooseNewImage setImage:chooseNewImageImage forState:UIControlStateNormal];
     [chooseNewImage addTarget:self
                        action:@selector(newImageButtonPressed:)
              forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:chooseNewImage];
+    [self.scrollView addSubview:chooseNewImage];
     
     // Reset to actual
     UIButton *resetExif = [UIButton buttonWithType:UIButtonTypeCustom];
-    resetExif.frame = CGRectMake(2*w/5, 10.0, w/5, w/5);
-    UIImage *resetExifImage = [UIImage imageNamed:@"ResetIconC.png"];
+    resetExif.frame = CGRectMake(2*w/5, 0, w/5, w/5);
+    UIImage *resetExifImage = [UIImage imageNamed:@"ResetIconC2.png"];
     [resetExif setImage:resetExifImage forState:UIControlStateNormal];
     [resetExif addTarget:self
                   action:@selector(resetExif:)
         forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:resetExif];
+    [self.scrollView addSubview:resetExif];
     
     // Delete all
     UIButton *eraseExif = [UIButton buttonWithType:UIButtonTypeCustom];
-    eraseExif.frame = CGRectMake(3*w/5, 10.0, w/5, w/5);
-    UIImage *eraseExifImage = [UIImage imageNamed:@"EraseIconC.png"];
+    eraseExif.frame = CGRectMake(3*w/5, 0, w/5, w/5);
+    UIImage *eraseExifImage = [UIImage imageNamed:@"EraseIconC2.png"];
     [eraseExif setImage:eraseExifImage forState:UIControlStateNormal];
     [eraseExif addTarget:self
                   action:@selector(eraseExif:)
         forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:eraseExif];
+    [self.scrollView addSubview:eraseExif];
     
     // Button for saving the modified image
     UIButton *saveExif = [UIButton buttonWithType:UIButtonTypeCustom];
-    saveExif.frame = CGRectMake(4*w/5, 10.0, w/5, w/5);
-    UIImage *saveExifImage = [UIImage imageNamed:@"SaveIconC.png"];
+    saveExif.frame = CGRectMake(4*w/5, 0, w/5, w/5);
+    UIImage *saveExifImage = [UIImage imageNamed:@"SaveIconC2.png"];
     [saveExif setImage:saveExifImage forState:UIControlStateNormal];
     [saveExif addTarget:self
                  action:@selector(saveButtonPressed:)
        forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:saveExif];
+    [self.scrollView addSubview:saveExif];
     
     // Button for automatically scrolling to the top
     UIButton *scrollToTop = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1501,9 +1508,10 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.fileName = [[UITextField alloc] init];
     self.fileName.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileName.delegate = self;
-    self.fileName.enabled = NO;
+//    self.fileName.enabled = NO;
     self.fileName.frame = CGRectMake(w/2, 322, w/2, 20);
     self.fileName.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.fileName.tag = 111;
     self.fileName.textColor = [UIColor blackColor];
     [self.fileName setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.fileName];
@@ -1597,7 +1605,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.dateTimeOriginal.delegate = self;
     self.dateTimeOriginal.frame = CGRectMake(w/2, 564, w/4, 20);
     self.dateTimeOriginal.keyboardAppearance = UIKeyboardAppearanceDark;
-    self.dateTimeOriginal.tag = 1;
+    self.dateTimeOriginal.tag = 0;
     self.dateTimeOriginal.textColor = [UIColor blackColor];
     [self.dateTimeOriginal setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.dateTimeOriginal];
@@ -3305,13 +3313,297 @@ CGPoint pointFromRectangle(CGRect rect) {
 // Resets the field to the original value
 - (void)resetPressed {
     NSLog(@"Resetting");
-    if(self.currentlyBeingEdited == self.exifExposureTime) {
-        NSLog(@"currently being edited is the exif exposure time");
-        self.exifExposureTime.text = self.exifExposureTimeO;
+    
+    // maybe store the memory address of each textfield in the dictionary?
+    
+    NSString *s = [self.originalValues valueForKey:[self.tags valueForKey:[NSString stringWithFormat:@"%ld", self.currentTag]]];
+    
+    NSLog(@"%@",s);
+    
+    if(self.currentlyBeingEdited == self.fileName) {
+        self.fileName.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.dateTimeOriginal) {
+        self.dateTimeOriginal.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.dateTimeOriginalTime) {
+        self.dateTimeOriginalTime.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifExposureTime) {
+        self.exifExposureTime.text = s;
     }
     else if(self.currentlyBeingEdited == self.exifFNumber) {
-        NSLog(@"f-number");
-        self.exifFNumber.text = @"f-number yo";
+        self.exifFNumber.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifExposureProgram) {
+        self.exifExposureProgram.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSpectralSensitivity) {
+        self.exifSpectralSensitivity.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifISOSpeedRatings) {
+        self.exifISOSpeedRatings.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifOECF) {
+        self.exifOECF.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifVersion) {
+        self.exifVersion.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifComponentsConfiguration) {
+        self.exifComponentsConfiguration.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifCompressedBitsPerPixel) {
+        self.exifCompressedBitsPerPixel.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifShutterSpeedValue) {
+        self.exifShutterSpeedValue.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifApertureValue) {
+        self.exifApertureValue.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifBrightnessValue) {
+        self.exifBrightnessValue.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifExposureBiasValue) {
+        self.exifExposureBiasValue.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifMaxApertureValue) {
+        self.exifMaxApertureValue.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubjectDistance) {
+        self.exifSubjectDistance.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifMeteringMode) {
+        self.exifMeteringMode.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifLightSource) {
+        self.exifLightSource.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFlash) {
+        self.exifFlash.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFocalLength) {
+        self.exifFocalLength.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubjectArea) {
+        self.exifSubjectArea.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifMakerNote) {
+        self.exifMakerNote.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifUserComment) {
+        self.exifUserComment.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubsecTime) {
+        self.exifSubsecTime.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubsecTimeOrginal) {
+        self.exifSubsecTimeOrginal.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubsecTimeDigitized) {
+        self.exifSubsecTimeDigitized.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFlashPixVersion) {
+        self.exifFlashPixVersion.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifColorSpace) {
+        self.exifColorSpace.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifPixelXDimension) {
+        self.exifPixelXDimension.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifPixelYDimension) {
+        self.exifPixelYDimension.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifRelatedSoundFile) {
+        self.exifRelatedSoundFile.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFlashEnergy) {
+        self.exifFlashEnergy.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSpatialFrequencyResponse) {
+        self.exifSpatialFrequencyResponse.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFocalPlaneXResolution) {
+        self.exifFocalPlaneXResolution.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFocalPlaneYResolution) {
+        self.exifFocalPlaneYResolution.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFocalPlaneResolutionUnit) {
+        self.exifFocalPlaneResolutionUnit.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubjectLocation) {
+        self.exifSubjectLocation.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifExposureIndex) {
+        self.exifExposureIndex.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSensingMethod) {
+        self.exifSensingMethod.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFileSource) {
+        self.exifFileSource.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSceneType) {
+        self.exifSceneType.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifCFAPattern) {
+        self.exifCFAPattern.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifCustomRendered) {
+        self.exifCustomRendered.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifExposureMode) {
+        self.exifExposureMode.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifWhiteBalance) {
+        self.exifWhiteBalance.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifDigitalZoomRatio) {
+        self.exifDigitalZoomRatio.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifFocalLenIn35mmFilm) {
+        self.exifFocalLenIn35mmFilm.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSceneCaptureType) {
+        self.exifSceneCaptureType.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifGainControl) {
+        self.exifGainControl.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifContrast) {
+        self.exifContrast.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSaturation) {
+        self.exifSaturation.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSharpness) {
+        self.exifSharpness.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifDeviceSettingDescription) {
+        self.exifDeviceSettingDescription.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifSubjectDistRange) {
+        self.exifSubjectDistRange.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifImageUniqueID) {
+        self.exifImageUniqueID.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifGamma) {
+        self.exifGamma.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifCameraOwnerName) {
+        self.exifCameraOwnerName.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifBodySerialNumber) {
+        self.exifBodySerialNumber.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifLensSpecification) {
+        self.exifLensSpecification.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifLensMake) {
+        self.exifLensMake.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifLensModel) {
+        self.exifLensModel.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.exifLensSerialNumber) {
+        self.exifLensSerialNumber.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsVersion) {
+        self.gpsVersion.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsLatitudeRef) {
+        self.gpsLatitudeRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsLatitude) {
+        self.gpsLatitude.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsLongitudeRef) {
+        self.gpsLongitudeRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsLongitude) {
+        self.gpsLongitude.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsAltitudeRef) {
+        self.gpsAltitudeRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsAltitude) {
+        self.gpsAltitude.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsTimeStamp) {
+        self.gpsTimeStamp.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsSatellites) {
+        self.gpsSatellites.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsStatus) {
+        self.gpsStatus.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsMeasureMode) {
+        self.gpsMeasureMode.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDegreeOfPrecision) {
+        self.gpsDegreeOfPrecision.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsSpeedRef) {
+        self.gpsSpeedRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsSpeed) {
+        self.gpsSpeed.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsTrackRef) {
+        self.gpsTrackRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsTrack) {
+        self.gpsTrack.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsImgDirectionRef) {
+        self.gpsImgDirectionRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsImgDirection) {
+        self.gpsImgDirection.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsMapDatum) {
+        self.gpsMapDatum.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestLatRef) {
+        self.gpsDestLatRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestLat) {
+        self.gpsDestLat.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestLongRef) {
+        self.gpsDestLongRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestLong) {
+        self.gpsDestLong.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestBearingRef) {
+        self.gpsDestBearingRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestBearing) {
+        self.gpsDestBearing.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestDistanceRef) {
+        self.gpsDestDistanceRef.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDestDistance) {
+        self.gpsDestDistance.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsProcessingMethod) {
+        self.gpsProcessingMethod.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsAreaInformation) {
+        self.gpsAreaInformation.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDateStamp) {
+        self.gpsDateStamp.text = s;
+    }
+    else if(self.currentlyBeingEdited == self.gpsDifferental) {
+        self.gpsDifferental.text = s;
     }
     else {
         NSLog(@"failed");
@@ -3341,6 +3633,10 @@ CGPoint pointFromRectangle(CGRect rect) {
 
 - (void)describeItemWithTag: (long) tag {
     switch(tag) {
+        case 0:
+            self.item.text = @"Date created";
+            self.itemInfo.text = @"The date that the original image data was generated.";
+            break;
         case 1:
             self.item.text = @"Date created";
             self.itemInfo.text = @"The date that the original image data was generated.";
@@ -3721,7 +4017,8 @@ CGPoint pointFromRectangle(CGRect rect) {
 - (void)populateDictionary {
     NSLog(@"now populating dict");
     self.tags = [[NSMutableDictionary alloc] init];
-    [self.tags setObject:@"dateTimeOriginal" forKey:@"1"];
+    [self.tags setObject:@"dateTimeOriginal" forKey:@"0"];
+    [self.tags setObject:@"dateTimeOriginalTime" forKey:@"1"];
     [self.tags setObject:@"exifExposureTime" forKey:@"2"];
     [self.tags setObject:@"exifFNumber" forKey:@"3"];
     [self.tags setObject:@"exifExposureProgram" forKey:@"4"];
@@ -3783,6 +4080,38 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.tags setObject:@"exifLensMake" forKey:@"60"];
     [self.tags setObject:@"exifLensModel" forKey:@"61"];
     [self.tags setObject:@"exifLensSerialNumber" forKey:@"62"];
+    [self.tags setObject:@"gpsVersion" forKey:@"71"];
+    [self.tags setObject:@"gpsLatitudeRef" forKey:@"72"];
+    [self.tags setObject:@"gpsLatitude" forKey:@"73"];
+    [self.tags setObject:@"gpsLongitudeRef" forKey:@"74"];
+    [self.tags setObject:@"gpsLongitude" forKey:@"75"];
+    [self.tags setObject:@"gpsAltitudeRef" forKey:@"76"];
+    [self.tags setObject:@"gpsAltitude" forKey:@"77"];
+    [self.tags setObject:@"gpsTimeStamp" forKey:@"78"];
+    [self.tags setObject:@"gpsSatellites" forKey:@"79"];
+    [self.tags setObject:@"gpsStatus" forKey:@"80"];
+    [self.tags setObject:@"gpsMeasureMode" forKey:@"81"];
+    [self.tags setObject:@"gpsDegreeOfPrecision" forKey:@"82"];
+    [self.tags setObject:@"gpsSpeedRef" forKey:@"83"];
+    [self.tags setObject:@"gpsSpeed" forKey:@"84"];
+    [self.tags setObject:@"gpsTrackRef" forKey:@"85"];
+    [self.tags setObject:@"gpsTrack" forKey:@"86"];
+    [self.tags setObject:@"gpsImgDirectionRef" forKey:@"87"];
+    [self.tags setObject:@"gpsImgDirection" forKey:@"88"];
+    [self.tags setObject:@"gpsMapDatum" forKey:@"89"];
+    [self.tags setObject:@"gpsDestLatRef" forKey:@"90"];
+    [self.tags setObject:@"gpsDestLat" forKey:@"91"];
+    [self.tags setObject:@"gpsDestLongRef" forKey:@"92"];
+    [self.tags setObject:@"gpsDestLong" forKey:@"93"];
+    [self.tags setObject:@"gpsDestBearingRef" forKey:@"94"];
+    [self.tags setObject:@"gpsDestBearing" forKey:@"95"];
+    [self.tags setObject:@"gpsDestDistanceRef" forKey:@"96"];
+    [self.tags setObject:@"gpsDestDistance" forKey:@"97"];
+    [self.tags setObject:@"gpsProcessingMethod" forKey:@"98"];
+    [self.tags setObject:@"gpsAreaInformation" forKey:@"99"];
+    [self.tags setObject:@"gpsDateStamp" forKey:@"100"];
+    [self.tags setObject:@"gpsDifferental" forKey:@"101"];
+    [self.tags setObject:@"fileName" forKey:@"111"];
 }
 
 - (void)donePressed {
