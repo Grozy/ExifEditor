@@ -27,6 +27,12 @@
 		FA4A2C241BA691CB00C3711C /* ResetIconC.png in Resources */ = {isa = PBXBuildFile; fileRef = FA4A2C231BA691CB00C3711C /* ResetIconC.png */; };
 		FA4A2C261BA6923300C3711C /* EraseIconC.png in Resources */ = {isa = PBXBuildFile; fileRef = FA4A2C251BA6923300C3711C /* EraseIconC.png */; };
 		FA573AC71BB1355C005D9A7B /* QuestionIconC.png in Resources */ = {isa = PBXBuildFile; fileRef = FA573AC61BB1355C005D9A7B /* QuestionIconC.png */; };
+		FA6D5DAD1BB6633300D373AB /* greyButton.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DAC1BB6633300D373AB /* greyButton.png */; };
+		FA6D5DAF1BB6633900D373AB /* greyButtonHighlight.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DAE1BB6633900D373AB /* greyButtonHighlight.png */; };
+		FA6D5DB11BB6633F00D373AB /* LocationGrey.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DB01BB6633F00D373AB /* LocationGrey.png */; };
+		FA6D5DB31BB6637700D373AB /* LocationBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DB21BB6637700D373AB /* LocationBlue.png */; };
+		FA6D5DB51BB6637F00D373AB /* LocationHeadingBlue.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DB41BB6637F00D373AB /* LocationHeadingBlue.png */; };
+		FA6D5DB71BB670C200D373AB /* ResetGrey.png in Resources */ = {isa = PBXBuildFile; fileRef = FA6D5DB61BB670C200D373AB /* ResetGrey.png */; };
 		FA81D4BF1BA2A76400A867F2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = FA81D4BE1BA2A76400A867F2 /* main.m */; };
 		FA81D4C21BA2A76400A867F2 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = FA81D4C11BA2A76400A867F2 /* AppDelegate.m */; };
 		FA81D4C81BA2A76400A867F2 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FA81D4C61BA2A76400A867F2 /* Main.storyboard */; };
@@ -80,6 +86,12 @@
 		FA4A2C231BA691CB00C3711C /* ResetIconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ResetIconC.png; sourceTree = "<group>"; };
 		FA4A2C251BA6923300C3711C /* EraseIconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = EraseIconC.png; sourceTree = "<group>"; };
 		FA573AC61BB1355C005D9A7B /* QuestionIconC.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = QuestionIconC.png; sourceTree = "<group>"; };
+		FA6D5DAC1BB6633300D373AB /* greyButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greyButton.png; sourceTree = "<group>"; };
+		FA6D5DAE1BB6633900D373AB /* greyButtonHighlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = greyButtonHighlight.png; sourceTree = "<group>"; };
+		FA6D5DB01BB6633F00D373AB /* LocationGrey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LocationGrey.png; sourceTree = "<group>"; };
+		FA6D5DB21BB6637700D373AB /* LocationBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LocationBlue.png; sourceTree = "<group>"; };
+		FA6D5DB41BB6637F00D373AB /* LocationHeadingBlue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LocationHeadingBlue.png; sourceTree = "<group>"; };
+		FA6D5DB61BB670C200D373AB /* ResetGrey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ResetGrey.png; sourceTree = "<group>"; };
 		FA81D4B91BA2A76400A867F2 /* Exif Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Exif Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA81D4BD1BA2A76400A867F2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FA81D4BE1BA2A76400A867F2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -151,6 +163,12 @@
 		FA1917F61BA40CAD00711A7E /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				FA6D5DB61BB670C200D373AB /* ResetGrey.png */,
+				FA6D5DB41BB6637F00D373AB /* LocationHeadingBlue.png */,
+				FA6D5DB21BB6637700D373AB /* LocationBlue.png */,
+				FA6D5DB01BB6633F00D373AB /* LocationGrey.png */,
+				FA6D5DAE1BB6633900D373AB /* greyButtonHighlight.png */,
+				FA6D5DAC1BB6633300D373AB /* greyButton.png */,
 				FA85BF211BB33BE600C8590D /* SaveIconC2.png */,
 				FA85BF1F1BB33BC100C8590D /* EraseIconC2.png */,
 				FA85BF1D1BB33BA600C8590D /* ResetIconC2.png */,
@@ -326,14 +344,18 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA6D5DAF1BB6633900D373AB /* greyButtonHighlight.png in Resources */,
 				FA81D4C81BA2A76400A867F2 /* Main.storyboard in Resources */,
 				FA019F081BA8E1EF00D38F5B /* up-arrow.png in Resources */,
 				FA4A2C241BA691CB00C3711C /* ResetIconC.png in Resources */,
 				FA4A2C1A1BA68F4000C3711C /* CameraIcon3.png in Resources */,
+				FA6D5DB31BB6637700D373AB /* LocationBlue.png in Resources */,
 				FA4A2C061BA68B0100C3711C /* PhotoIcon.png in Resources */,
 				FA81D4CD1BA2A76400A867F2 /* LaunchScreen.xib in Resources */,
+				FA6D5DB71BB670C200D373AB /* ResetGrey.png in Resources */,
 				FA4A2C221BA6917800C3711C /* CameraIconC.png in Resources */,
 				FA019F091BA8E1EF00D38F5B /* down-arrow.png in Resources */,
+				FA6D5DAD1BB6633300D373AB /* greyButton.png in Resources */,
 				FA84C00F1BB2A69E007350E4 /* UpIconC.png in Resources */,
 				FA573AC71BB1355C005D9A7B /* QuestionIconC.png in Resources */,
 				FA4A2C161BA68EBB00C3711C /* PhotoIcon2.png in Resources */,
@@ -349,6 +371,8 @@
 				FA85BF1C1BB33B8400C8590D /* PhotoIconC2.png in Resources */,
 				FA85BF221BB33BE600C8590D /* SaveIconC2.png in Resources */,
 				FA4A2C261BA6923300C3711C /* EraseIconC.png in Resources */,
+				FA6D5DB11BB6633F00D373AB /* LocationGrey.png in Resources */,
+				FA6D5DB51BB6637F00D373AB /* LocationHeadingBlue.png in Resources */,
 				FA4A2C141BA68E6900C3711C /* SaveIcon.png in Resources */,
 				FA85BF1A1BB33B3500C8590D /* CameraIconC2.png in Resources */,
 				FA4A2C1E1BA6914200C3711C /* SaveIconC.png in Resources */,

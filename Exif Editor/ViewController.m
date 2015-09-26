@@ -11,6 +11,7 @@
 #import <ImageIO/CGImageDestination.h>
 #import <QuartzCore/QuartzCore.h>
 #import <CommonCrypto/CommonDigest.h>
+#import <CoreLocation/CoreLocation.h>
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 
@@ -20,19 +21,33 @@
 
 @implementation ViewController
 
-//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-//
-//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-//
-//    if (self) {
-//        // Custom initialization
-//    }
-//
-//    return self;
-//
-//}
+/*
+ *  Maybe store the memory addresses of the text fields in a dictionary instead?
+ */
 
+/**
+ *  Prompts the user to take a picture.
+ */
+-(IBAction)takePicture {
+    if (self.takeNewPhotoPicker == nil) {
+        self.takeNewPhotoPicker = [[UIImagePickerController alloc] init];
+        self.takeNewPhotoPicker.delegate = self;
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera])
+        {
+            [self.takeNewPhotoPicker setSourceType:UIImagePickerControllerSourceTypeCamera];
+        }
+        else
+        {
+            [self.takeNewPhotoPicker setSourceType:UIImagePickerControllerSourceTypePhotoLibrary];
+        }
+        self.takeNewPhotoPicker.allowsEditing = NO;
+    }
+    [self presentViewController:self.takeNewPhotoPicker animated:YES completion:nil];
+}
 
+/**
+ *  Prompts the user to choose a picture from the photo library.
+ */
 - (IBAction)loadPicture {
     if (self.picker == nil) {
         self.picker = [[UIImagePickerController alloc] init];
@@ -40,29 +55,225 @@
         self.picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         self.picker.allowsEditing = NO;
     }
-    [self presentViewController:_picker animated:YES completion:nil];
+    [self presentViewController:self.picker animated:YES completion:nil];
 }
 
-- (IBAction)takePicture:(id)sender {
-    NSLog(@"Now taking pic");
-}
+/**
+ *  Selector for the New Image button
+ *  Chooses an image from the photo library.
+ */
 - (IBAction)newImageButtonPressed:(id)sender {
     [self loadPicture];
 }
 
+/**
+ *  Selector for the Save button
+ *
+ *  TODO: Saving works, but the image is flipped and MUCH larger.
+ */
 - (IBAction)saveButtonPressed:(id)sender {
-    NSLog(@"Now saving");
+    /*
+     *  If all text fields are empty, then save a stripped image.
+     *  Else, just save an image with whatever is in the text fields.
+     */
+    
+    NSLog(@"now saving");
+//    self.currentImageData = [self getDataFromCurrentTextfields];
+    
+    self.saveView = [[UIView alloc] initWithFrame:CGRectMake(self.screenW-200, 200, 300, 300)];
+    self.saveView.backgroundColor = UIColorFromRGB(0x1b81c8);
+    self.saveView.alpha = 0.7;
+    
+    self.jpgSaveButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 10, 150, 50)];
+    self.jpgSaveButton.backgroundColor = [UIColor redColor];
+    [self.jpgSaveButton setTitle:@"JPG" forState:UIControlStateNormal];
+    self.pngSaveButton = [[UIButton alloc] initWithFrame:CGRectMake(10, 90, 150, 50)];
+    self.pngSaveButton.backgroundColor = [UIColor redColor];
+    [self.pngSaveButton setTitle:@"PNG" forState:UIControlStateNormal];
+    
+    [self.saveView addSubview:self.jpgSaveButton];
+    [self.saveView addSubview:self.pngSaveButton];
+    
+    self.savePopup = [KLCPopup popupWithContentView:self.saveView
+                                       showType:KLCPopupShowTypeGrowIn
+                                        dismissType:KLCPopupDismissTypeShrinkOut maskType:KLCPopupMaskTypeDimmed dismissOnBackgroundTouch:YES dismissOnContentTouch:NO];
+    [self.savePopup show];
+    
+    UIImage *image = [[UIImage alloc] initWithData:self.currentImageData];
+    NSLog(@"size is: %@", NSStringFromCGSize([image size]));
+//    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
 }
 
+/**
+ *  Reads all current text fields and generates image data from it.
+ */
+- (NSData *)getDataFromCurrentTextfields {
+    return self.currentImageData;
+}
+
+/**
+ *  Selector for the Reset button
+ *  Re-calls the load function with the same photo [self.pic] and information [self.info]
+ */
 - (IBAction)resetExif:(id)sender {
     NSLog(@"Now resetting");
     [self imagePickerController:self.pic didFinishPickingMediaWithInfo:self.inf];
 }
 
-- (IBAction)eraseExif:(id)sender {
-    NSLog(@"Now erasing");
+/**
+ *  Selector for the Clear button.
+ *  Sets all text fields to string of "". This is also called in the load function
+ *  to "wash out" the old Exif values when the user pics a new picture.
+ *
+ *  TODO: Set the Exif/GPS/format-specific dictionary values to kCFNull.
+ */
+- (IBAction)clearExif{
+    NSLog(@"Now clearing text fields");
+    
+//    self.fileName.text = @"";
+//    self.fileExtension.text = @"";
+//    self.widthAndHeight.text = @"";
+//    self.fileSize.text = @"";
+    self.dateTimeOriginal.text = @"";
+    self.dateTimeOriginalTime.text = @"";
+    self.dateTimeDigitized.text = @"";
+    self.exifExposureTime.text = @"";
+    self.exifFNumber.text = @"";
+    self.exifExposureProgram.text = @"";
+    self.exifSpectralSensitivity.text = @"";
+    self.exifISOSpeedRatings.text = @"";
+    self.exifOECF.text = @"";
+    self.exifVersion.text = @"";
+    self.exifComponentsConfiguration.text = @"";
+    self.exifCompressedBitsPerPixel.text = @"";
+    self.exifShutterSpeedValue.text = @"";
+    self.exifApertureValue.text = @"";
+    self.exifBrightnessValue.text = @"";
+    self.exifExposureBiasValue.text = @"";
+    self.exifMaxApertureValue.text = @"";
+    self.exifSubjectDistance.text = @"";
+    self.exifMeteringMode.text = @"";
+    self.exifLightSource.text = @"";
+    self.exifFlash.text = @"";
+    self.exifFocalLength.text = @"";
+    self.exifSubjectArea.text = @"";
+    self.exifMakerNote.text = @"";
+    self.exifUserComment.text = @"";
+    self.exifSubsecTime.text = @"";
+    self.exifSubsecTimeOrginal.text = @"";
+    self.exifSubsecTimeDigitized.text = @"";
+    self.exifFlashPixVersion.text = @"";
+    self.exifColorSpace.text = @"";
+    self.exifPixelXDimension.text = @"";
+    self.exifPixelYDimension.text = @"";
+    self.exifRelatedSoundFile.text = @"";
+    self.exifFlashEnergy.text = @"";
+    self.exifSpatialFrequencyResponse.text = @"";
+    self.exifFocalPlaneXResolution.text = @"";
+    self.exifFocalPlaneYResolution.text = @"";
+    self.exifFocalPlaneResolutionUnit.text = @"";
+    self.exifSubjectLocation.text = @"";
+    self.exifExposureIndex.text = @"";
+    self.exifSensingMethod.text = @"";
+    self.exifFileSource.text = @"";
+    self.exifSceneType.text = @"";
+    self.exifCFAPattern.text = @"";
+    self.exifCustomRendered.text = @"";
+    self.exifExposureMode.text = @"";
+    self.exifWhiteBalance.text = @"";
+    self.exifDigitalZoomRatio.text = @"";
+    self.exifFocalLenIn35mmFilm.text = @"";
+    self.exifSceneCaptureType.text = @"";
+    self.exifGainControl.text = @"";
+    self.exifContrast.text = @"";
+    self.exifSaturation.text = @"";
+    self.exifSharpness.text = @"";
+    self.exifDeviceSettingDescription.text = @"";
+    self.exifSubjectDistRange.text = @"";
+    self.exifImageUniqueID.text = @"";
+    self.exifGamma.text = @"";
+    self.exifCameraOwnerName.text = @"";
+    self.exifBodySerialNumber.text = @"";
+    self.exifLensSpecification.text = @"";
+    self.exifLensMake.text = @"";
+    self.exifLensModel.text = @"";
+    self.exifLensSerialNumber.text = @"";
+    self.gpsVersion.text = @"";
+    self.gpsLatitudeRef.text = @"";
+    self.gpsLatitude.text = @"";
+    self.gpsLongitudeRef.text = @"";
+    self.gpsLongitude.text = @"";
+    self.gpsAltitudeRef.text = @"";
+    self.gpsAltitude.text = @"";
+    self.gpsTimeStamp.text = @"";
+    self.gpsSatellites.text = @"";
+    self.gpsStatus.text = @"";
+    self.gpsMeasureMode.text = @"";
+    self.gpsDegreeOfPrecision.text = @"";
+    self.gpsSpeedRef.text = @"";
+    self.gpsSpeed.text = @"";
+    self.gpsTrackRef.text = @"";
+    self.gpsTrack.text = @"";
+    self.gpsImgDirectionRef.text = @"";
+    self.gpsImgDirection.text = @"";
+    self.gpsMapDatum.text = @"";
+    self.gpsDestLatRef.text = @"";
+    self.gpsDestLat.text = @"";
+    self.gpsDestLongRef.text = @"";
+    self.gpsDestLong.text = @"";
+    self.gpsDestBearingRef.text = @"";
+    self.gpsDestBearing.text = @"";
+    self.gpsDestDistanceRef.text = @"";
+    self.gpsDestDistance.text = @"";
+    self.gpsProcessingMethod.text = @"";
+    self.gpsAreaInformation.text = @"";
+    self.gpsDateStamp.text = @"";
+    self.gpsDifferental.text = @"";
 }
 
+/**
+ *  Takes an image in NSData format and returns it with the Exif/GPS dictionary
+ *  stripped.
+ *
+ *  TODO: Strip the other dictionaries (i.e. the format-specific and manufacturer-
+ *  specific ones)
+ */
+- (NSData *)dataByRemovingExif:(NSData *)data
+{
+    CGImageSourceRef source = CGImageSourceCreateWithData((CFDataRef)data, NULL);
+    NSMutableData *mutableData = nil;
+    
+    if (source) {
+        CFStringRef type = CGImageSourceGetType(source);
+        size_t count = CGImageSourceGetCount(source);
+        mutableData = [NSMutableData data];
+        
+        CGImageDestinationRef destination = CGImageDestinationCreateWithData((CFMutableDataRef)mutableData, type, count, NULL);
+        
+        NSDictionary *removeExifProperties = @{(id)kCGImagePropertyExifDictionary: (id)kCFNull,
+                                               (id)kCGImagePropertyGPSDictionary : (id)kCFNull};
+        
+        if (destination) {
+            for (size_t index = 0; index < count; index++) {
+                CGImageDestinationAddImageFromSource(destination, source, index, (__bridge CFDictionaryRef)removeExifProperties);
+            }
+            
+            if (!CGImageDestinationFinalize(destination)) {
+                NSLog(@"CGImageDestinationFinalize failed");
+            }
+            
+            CFRelease(destination);
+        }
+        
+        CFRelease(source);
+    }
+    
+    return mutableData;
+}
+
+/**
+ *  Prints the contents of a dictionary. Only used for debugging.
+ */
 - (NSString *)stringOutputForDictionary:(NSDictionary *)inputDict {
     NSMutableString * outputString = [NSMutableString stringWithCapacity:256];
     
@@ -83,19 +294,38 @@
     return [NSString stringWithString: outputString];
 }
 
+/**
+ *  Called when the user canceled the image selection.
+ */
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+/**
+ *  Gets the date portion of the dateTime field. Don't use with anything but self.dateTimeOriginal.
+ */
 - (NSString *)firstHalf: (NSString *)str {
     return [str substringToIndex:10];
 }
 
+/**
+ *  Gets the time portion of the dateTime field. Don't use with anything but self.dateTimeOriginal.
+ */
 - (NSString *)secondHalf: (NSString *)str {
     return [str substringWithRange:NSMakeRange(11, 8)];
 }
 
+/**
+ *  Called when the user took a picture or picked a photo from the library. It then reads the Exif/GPS data, then:
+ *      1) Fills the image view
+ *      2) Fills a dictionary for original values for resetting
+ *      3) Populates the text fields
+ *
+ *  TODO: When the user takes a new picture, it doesn't show up in the image view, and its Exif/GPS data don't appear.
+ */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    
+    [self clearExif];
     
     self.pic = picker;
     self.inf = info;
@@ -107,7 +337,26 @@
 //    UIImage *editedImage = info[UIImagePickerControllerEditedImage];
 //    NSValue *cropRect = info[UIImagePickerControllerCropRect];
 //    NSURL *mediaUrl = info[UIImagePickerControllerMediaURL];
+    
+    /*
+     *  This will cause massive lag, as converting to PNG is an expensive operation.
+     */
+//    self.currentImageData = UIImagePNGRepresentation(fullImage);
+    
+    if(picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        UIImageWriteToSavedPhotosAlbum(fullImage, nil, nil, nil);
+        [picker dismissViewControllerAnimated:YES
+                                   completion:nil];
+        return;
+    }
+//    else if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+//        
+//    }
+    
     NSURL *referenceUrl = info[UIImagePickerControllerReferenceURL];
+    
+//    self.currentImageData = [[NSData alloc] initWithContentsOfFile:[referenceUrl absoluteString]];
+    
     NSString *extension = [[referenceUrl path] pathExtension];
     NSLog(@"The extension is %@", extension);
     self.fileExtension.text = extension;
@@ -290,6 +539,7 @@
                          [self.originalValues setObject:self.exifCompressedBitsPerPixel.text forKey:@"exifCompressedBitsPerPixel"];
                          
                          NSDecimalNumber *exifShutterSpeedValue = CFDictionaryGetValue(exif, kCGImagePropertyExifShutterSpeedValue);
+//                         double actualShutterSpeed = 1/pow(2,[exifShutterSpeedValue doubleValue]);
                          self.exifShutterSpeedValue.text = [NSString stringWithFormat:@"%@", exifShutterSpeedValue];
                          [self.originalValues setObject:self.exifShutterSpeedValue.text forKey:@"exifShutterSpeedValue"];
                          
@@ -683,6 +933,130 @@
                          self.gpsLongitude.text = [NSString stringWithFormat:@"%@", longitude];
                          [self.originalValues setObject:self.gpsLongitude.text forKey:@"gpsLongitude"];
                          
+                         // Google maps
+                         /*
+                          * Might have to check if the user is using iOS 8.
+                          * Apparently, the NSLocationWhenInUseUsageDescription and
+                          * NSLocationAlwaysUsageDescription keys in the info.plist
+                          * file might cause problems in earlier versions.
+                          */
+                         
+                         if([self.gpsLatitudeRef.text isEqualToString:@"N"]) {
+                             self.latval = [latitude doubleValue];
+                         }
+                         else {
+                             self.latval = -1*[latitude doubleValue];
+                         }
+                         if([self.gpsLatitudeRef.text isEqualToString:@"E"]) {
+                             self.longval = [longitude doubleValue];
+                         }
+                         else {
+                             self.longval = -1*[longitude doubleValue];
+                         }
+                         
+                         /*
+                         // Create a GMSCameraPosition that tells the map to display the
+                         // coordinate -33.86,151.20 at zoom level 6.
+                         self.camera = [GMSCameraPosition cameraWithLatitude:latval
+                                                                   longitude:longval
+                                                                        zoom:6];
+                         self.mapView = [GMSMapView mapWithFrame:CGRectMake(0, 3280, self.screenW, 220) camera:self.camera];
+//                         self.mapView.settings.compassButton = YES;
+                         self.mapView.myLocationEnabled = YES;
+                         self.mapView.settings.myLocationButton = YES;
+                         NSLog(@"User's location: %@", self.mapView.myLocation);
+                         [self.scrollView addSubview:self.mapView];
+                         
+                         [self.mapView addObserver:self
+                                    forKeyPath:@"myLocation"
+                                       options:NSKeyValueObservingOptionNew
+                                       context:NULL];
+                         // Ask for My Location data after the map has already been added to the UI.
+                         dispatch_async(dispatch_get_main_queue(), ^{
+                             self.mapView.myLocationEnabled = YES;
+                         });
+                         
+                         // Creates a marker in the center of the map.
+                         GMSMarker *marker = [[GMSMarker alloc] init];
+                         marker.position = CLLocationCoordinate2DMake(latval, longval);
+                         marker.title = @"Location";
+                         marker.snippet = [[NSString stringWithFormat:@"%f", latval] stringByAppendingString:[NSString stringWithFormat:@", %f",longval]];
+                         marker.map = self.mapView;
+                         */
+                         
+                         // Apple maps
+                         
+                         self.gpsMapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 3280, self.screenW, 220)];
+                         self.gpsMapView.delegate = self;
+//                         self.gpsMapView.showsUserLocation = YES;
+                         [self.scrollView addSubview:self.gpsMapView];
+                         
+                         // Test location in Cairo, Egypt
+//                         self.latval = 30.05;
+//                         self.longval = 31.2333;
+                         
+                         MKCoordinateRegion region;
+                         region.center.latitude = self.latval;
+                         region.center.longitude = self.longval;
+                         region.span.latitudeDelta = 0.01;
+                         region.span.longitudeDelta = 0.01;
+                         
+                         [self.gpsMapView setRegion:region animated:YES];
+                         
+                         // Annotation
+                         MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
+                         point.coordinate = CLLocationCoordinate2DMake(self.latval, self.longval);
+                         point.title = @"Image location";
+                         point.subtitle = [[NSString stringWithFormat:@"%f", self.latval] stringByAppendingString:[NSString stringWithFormat:@", %f", self.longval]];
+                         
+                         [self.gpsMapView addAnnotation:point];
+                         
+//                         MKUserTrackingBarButtonItem *buttonItem = [[MKUserTrackingBarButtonItem alloc] initWithMapView:self.gpsMapView];
+//                         self.navigationItem.rightBarButtonItem = buttonItem;
+//                         
+//                         [self.gpsMapView addSubview:self.userHeadingBtn];
+                         
+                         //User Heading Button states images
+                         UIImage *buttonImage = [UIImage imageNamed:@"greyButtonHighlight.png"];
+                         UIImage *buttonImageHighlight = [UIImage imageNamed:@"greyButton.png"];
+                         UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+                         
+                         //Configure the button
+                         self.userHeadingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+                         [self.userHeadingBtn addTarget:self action:@selector(startShowingUserHeading:) forControlEvents:UIControlEventTouchUpInside];
+                         //Add state images
+                         [self.userHeadingBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+                         [self.userHeadingBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
+                         [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+                         
+                         //Button shadow
+                         self.userHeadingBtn.frame = CGRectMake(0,0,39,30);
+                         self.userHeadingBtn.layer.cornerRadius = 8.0f;
+                         self.userHeadingBtn.layer.masksToBounds = NO;
+                         self.userHeadingBtn.layer.shadowColor = [UIColor blackColor].CGColor;
+                         self.userHeadingBtn.layer.shadowOpacity = 0.8;
+                         self.userHeadingBtn.layer.shadowRadius = 1;
+                         self.userHeadingBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
+                         
+                         [self.gpsMapView addSubview:self.userHeadingBtn];
+                         
+                         // Reset location button
+                         UIImage *resetButtonArrow = [UIImage imageNamed:@"ResetGrey.png"];
+                         self.resetLocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+                         [self.resetLocationBtn addTarget:self action:@selector(resetMapLocation:) forControlEvents:UIControlEventTouchUpInside];
+                         [self.resetLocationBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+                         [self.resetLocationBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
+                         [self.resetLocationBtn setImage:resetButtonArrow forState:UIControlStateNormal];
+                         self.resetLocationBtn.frame = CGRectMake(39,0,39,30);
+                         self.resetLocationBtn.layer.cornerRadius = 8.0f;
+                         self.resetLocationBtn.layer.masksToBounds = NO;
+                         self.resetLocationBtn.layer.shadowColor = [UIColor blackColor].CGColor;
+                         self.resetLocationBtn.layer.shadowOpacity = 0.8;
+                         self.resetLocationBtn.layer.shadowRadius = 1;
+                         self.resetLocationBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
+                         
+                         [self.gpsMapView addSubview:self.resetLocationBtn];
+                         
                          NSDecimalNumber *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
                          self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];
                          [self.originalValues setObject:self.gpsAltitudeRef.text forKey:@"gpsAltitudeRef"];
@@ -939,7 +1313,15 @@
     
     //    UITextField *fileType = (UITextField *) [info objectForKey: UIImagePickerControllerMediaType];
 }
+- (NSString *)deviceLocation
+{
+    NSString *theLocation = [NSString stringWithFormat:@"latitude: %f longitude: %f", self.locationManager.location.coordinate.latitude, self.locationManager.location.coordinate.longitude];
+    return theLocation;
+}
 
+/**
+ *  Dismisses the keyboard and hides the description view when the user clicks the view.
+ */
 -(void)dismissKeyboard {
     [self.view endEditing:YES];
     [self.item removeFromSuperview];
@@ -949,10 +1331,11 @@
 //    }];
 }
 
-// Get current location
+/**
+ *  Gets the current location for when the user writes new GPS data. No function actually calls this yet.
+ */
 - (NSDictionary *)getGPSDictionaryForLocation:(CLLocation *)location {
     NSMutableDictionary *gps = [NSMutableDictionary dictionary];
-    
     // GPS tag version
     [gps setObject:@"2.2.0.0" forKey:(NSString *)kCGImagePropertyGPSVersion];
     
@@ -1011,6 +1394,9 @@
     return gps;
 }
 
+/**
+ *  Makes the image full screen.
+ */
 - (void)imageZoomPressed {
     [self dismissKeyboard];
     self.imageZoom = [[XLMediaZoom alloc] initWithAnimationTime:@(0.5) image:self.imageView blurEffect:YES];
@@ -1018,12 +1404,23 @@
     [self.imageZoom show];
 }
 
+/**
+ *  Gets a point on the scrollview using the .frame value of the text field.
+ *  Used for automatically focusing on the textfield when the user begins editing it.
+ */
 CGPoint pointFromRectangle(CGRect rect) {
     
     return CGPointMake(0, rect.origin.y-200);
 }
 
-// Focuses to the text field being edited
+/**
+ *  When the user begins editing a text field:
+ *      1) Any previous description views are dismissed
+ *      2) It focuses on the textfield automatically
+ *      3) Sets the current tag for use in the Reset and Identify functions.
+ *      4) Sets the textfield being edited for use in Reset. I suppose I could just use the current tag for this.
+ *      5) Shows the tool bar above the keyboard
+ */
 - (void)textFieldDidBeginEditing:(UITextField *)textField {
     NSLog(@"did begin editing");
     
@@ -1049,27 +1446,93 @@ CGPoint pointFromRectangle(CGRect rect) {
                            nil];
     [numberToolbar sizeToFit];
     textField.inputAccessoryView = numberToolbar;
-
     
+    // check if the text field should have only numbers in it
+//    if(self.currentTag == ) {
+        [self checkIfNumber];
+//    }
 }
 
+/**
+ *  Checks if the the string contains something that isn't a number.
+ *  Called in textFieldDidBeginEditing and textFieldDidChange.
+ */
+- (void)checkIfNumber {
+    long t = self.currentlyBeingEdited.tag;
+    if(t == 2 || t == 3 || t == 4 || t == 10 || t == 11 || t == 12 ||
+       t == 13 || t == 14 || t == 15 || t == 16 || t == 17 || t == 18 || t == 19 ||
+       t == 20 || t == 24 || t == 25 || t == 26 || t == 28 || t == 29 || t == 30 ||
+       t == 32 || t == 34 ||
+       t == 35 || t == 36 || t == 37 || t == 38 || t == 39 || t == 43 || t == 44 ||
+       t == 45 || t == 46 || t == 47 || t == 48 || t == 49 || t == 50 || t == 51 ||
+       t == 52 || t == 54 || t == 73 || t == 75 || t == 77 || t == 78 || t == 82 ||
+       t == 84 || t == 86 || t == 88 || t == 91 || t == 93 || t == 95 || t == 97 ||
+       t == 101) {
+        NSNumberFormatter *s = [[NSNumberFormatter alloc] init];
+        
+        // If s is null, then the text field contains something that isn't a number
+        if(![s numberFromString: self.currentlyBeingEdited.text] &&
+           ![self.currentlyBeingEdited.text isEqualToString:@""]) {
+            self.numberView = [[UIView alloc] initWithFrame:CGRectMake(10, 0, self.screenW-20, 60)];
+            self.numberView.backgroundColor = [UIColor redColor];
+            [self.numberView setAlpha:0.9];
+            
+            self.numberWarning = [[UITextView alloc] initWithFrame:CGRectMake((self.screenW-20)/2-(self.screenW-40)/2, 10, self.screenW-40, 40)];
+            self.numberWarning.backgroundColor = [UIColor redColor];
+            [self.numberWarning setFont:[UIFont fontWithName:@"Avenir-Heavy" size:26]];
+            self.numberWarning.text = @"You must enter a number.";
+            [self.numberView addSubview:self.numberWarning];
+            
+            self.numberPopup = [KLCPopup popupWithContentView:self.numberView
+                                                     showType:KLCPopupShowTypeSlideInFromTop dismissType:KLCPopupDismissTypeSlideOutToTop maskType:KLCPopupMaskTypeNone dismissOnBackgroundTouch:YES dismissOnContentTouch:YES];
+            if(![self.numberPopup isShowing]) {
+                NSLog(@"the number popup is currently showing");
+                [self.numberPopup showWithLayout:KLCPopupLayoutMake(KLCPopupHorizontalLayoutCenter, KLCPopupVerticalLayoutTop)];
+            }
+        }
+    }
+    else {
+        NSLog(@"you are editing a string");
+    }
+}
+
+/**
+ *  Dismisses the description view.
+ */
 - (void)textFieldDidEndEditing:(UITextField *)textField {
     NSLog(@"just finished editing");
     [self.item removeFromSuperview];
     [self.itemInfo removeFromSuperview];
 }
 
+/**
+ *  Automatically focuses on the text field when the user starts editing it.
+ */
 - (void)textFieldDidChange:(id) sender {
     [self.scrollView setContentOffset:(pointFromRectangle(self.currentlyBeingEdited.frame)) animated:YES];
+    
+//    NSCharacterSet *numericSet = [NSCharacterSet decimalDigitCharacterSet];
+//    NSCharacterSet *stringSet = [NSCharacterSet characterSetWithCharactersInString:self.currentlyBeingEdited.text];
+    
+//    if(![numericSet isSupersetOfSet: stringSet]) {
+    
+    [KLCPopup dismissAllPopups];
+    
+    [self checkIfNumber];
 }
 
-// Goes to the next text field when Next is pressed
+/**
+ *  Goes to the next available text field when the user clicks next
+ */
 -(BOOL)textFieldShouldReturn:(UITextField*)textField
 {
     [self.item removeFromSuperview];
     [self.itemInfo removeFromSuperview];
     
-    if(textField == self.dateTimeOriginal) {
+    if(textField == self.fileName) {
+        [self.dateTimeOriginal becomeFirstResponder];
+    }
+    else if(textField == self.dateTimeOriginal) {
         [self.exifExposureTime becomeFirstResponder];
     }
     else if(textField == self.exifExposureTime) {
@@ -1351,6 +1814,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     return YES;
 }
 
+/**
+ *  Converts md5 into an int in string format. Not used right now.
+ */
 - (NSString *)md5:(NSString *) input
 {
     const char *cStr = [input UTF8String];
@@ -1365,10 +1831,16 @@ CGPoint pointFromRectangle(CGRect rect) {
             ];  
 }
 
+/**
+ *  Scrolls to the top of the app.
+ */
 - (void)scrollToTop: (id)sender {
     [self.scrollView setContentOffset:CGPointMake(0, 0 - self.scrollView.contentInset.top) animated:YES];
 }
 
+/**
+ *  Shows the date picker when the user starts editing the date.
+ */
 - (void)selectDate: (id)sender {
     NSLog(@"now inside select date method");
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -1376,6 +1848,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.dateTimeOriginal.text = [dateFormatter stringFromDate:self.datePicker.date];
 }
 
+/**
+ *  Shows the time picker when the user starts editing the time.
+ */
 - (void)selectTime: (id)sender {
     NSLog(@"now inside select time method");
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -1383,6 +1858,10 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.dateTimeOriginalTime.text = [dateFormatter stringFromDate:self.timePicker.date];
 }
 
+/**
+ *  Called first when the app loads. Initializes all the views, buttons, labels, and
+ *  text fields. Then loads a picture from the photo library.
+ */
 - (void)viewDidLoad {
     [super viewDidLoad];
     //    self.view.backgroundColor = [UIColor whiteColor];
@@ -1400,7 +1879,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Scroll view
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, 4708)];
+    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, 4928)];
     
     [self.view addSubview:self.scrollView];
     
@@ -1418,7 +1897,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     UIImage *takePictureImage = [UIImage imageNamed:@"CameraIconC2.png"];
     [takePicture setImage:takePictureImage forState:UIControlStateNormal];
     [takePicture addTarget:self
-                    action:@selector(takePicture:)
+                    action:@selector(takePicture)
           forControlEvents:UIControlEventTouchUpInside];
     [self.scrollView addSubview:takePicture];
     
@@ -1448,7 +1927,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     UIImage *eraseExifImage = [UIImage imageNamed:@"EraseIconC2.png"];
     [eraseExif setImage:eraseExifImage forState:UIControlStateNormal];
     [eraseExif addTarget:self
-                  action:@selector(eraseExif:)
+                  action:@selector(clearExif)
         forControlEvents:UIControlEventTouchUpInside];
     [self.scrollView addSubview:eraseExif];
     
@@ -1476,12 +1955,14 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.view addSubview:scrollToTop];
     
     // Description view
-    self.descriptionView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, w, 120)];
+    self.descriptionView = [[UIView alloc] initWithFrame:CGRectMake(10, 30, w-20, 120)];
     self.descriptionView.backgroundColor = [UIColor whiteColor];
     [self.descriptionView setAlpha:0.9];
 //    [self.view addSubview:self.descriptionView];
+    self.descriptionScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, w-20, 120)];
+    [self.descriptionView addSubview:self.descriptionScrollView];
     self.popup = [KLCPopup popupWithContentView:self.descriptionView
-                  showType:KLCPopupShowTypeSlideInFromTop dismissType:KLCPopupDismissTypeSlideOutToTop maskType:KLCPopupMaskTypeNone dismissOnBackgroundTouch:YES dismissOnContentTouch:YES];
+                  showType:KLCPopupShowTypeSlideInFromTop dismissType:KLCPopupDismissTypeSlideOutToTop maskType:KLCPopupMaskTypeNone dismissOnBackgroundTouch:YES dismissOnContentTouch:NO];
     
     // Image view
     self.imageView = [[UIImageView alloc] init];
@@ -1497,19 +1978,20 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.imageView addGestureRecognizer:newTap];
     
     // File name label
-    UILabel *fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 322, w/2-10, 20)];
+    UILabel *fileNameLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/5, 322, w/2-10, 20)];
     fileNameLabel.text = @"File name";
-    fileNameLabel.textAlignment = NSTextAlignmentRight;
+//    fileNameLabel.textAlignment = NSTextAlignmentRight;
     fileNameLabel.textColor = [UIColor blackColor];
     [fileNameLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:fileNameLabel];
     
     // File name
     self.fileName = [[UITextField alloc] init];
+//    self.fileName.backgroundColor = [UIColor whiteColor];
     self.fileName.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.fileName.delegate = self;
-//    self.fileName.enabled = NO;
-    self.fileName.frame = CGRectMake(w/2, 322, w/2, 20);
+    self.fileName.enabled = NO;
+    self.fileName.frame = CGRectMake(w/2, 322, 3*w/10, 20);
     self.fileName.keyboardAppearance = UIKeyboardAppearanceDark;
     self.fileName.tag = 111;
     self.fileName.textColor = [UIColor blackColor];
@@ -1517,9 +1999,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.fileName];
     
     // File extension label
-    UILabel *fileExtensionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 366, w/2-10, 20)];
+    UILabel *fileExtensionLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/5, 366, w/2-10, 20)];
     fileExtensionLabel.text = @"File extension";
-    fileExtensionLabel.textAlignment = NSTextAlignmentRight;
+//    fileExtensionLabel.textAlignment = NSTextAlignmentRight;
     fileExtensionLabel.textColor = [UIColor blackColor];
     [fileExtensionLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:fileExtensionLabel];
@@ -1536,9 +2018,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.fileExtension];
     
     // Width and height label
-    UILabel *widthAndHeightLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 410, w/2-10, 20)];
+    UILabel *widthAndHeightLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/5, 410, w/2-10, 20)];
     widthAndHeightLabel.text = @"Dimensions";
-    widthAndHeightLabel.textAlignment = NSTextAlignmentRight;
+//    widthAndHeightLabel.textAlignment = NSTextAlignmentRight;
     widthAndHeightLabel.textColor = [UIColor blackColor];
     [widthAndHeightLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:widthAndHeightLabel];
@@ -1555,9 +2037,9 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.widthAndHeight];
     
     // File size label
-    UILabel *fileSizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 454, w/2-10, 20)];
+    UILabel *fileSizeLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/5, 454, w/2-10, 20)];
     fileSizeLabel.text = @"File size";
-    fileSizeLabel.textAlignment = NSTextAlignmentRight;
+//    fileSizeLabel.textAlignment = NSTextAlignmentRight;
     fileSizeLabel.textColor = [UIColor blackColor];
     [fileSizeLabel setFont:[UIFont fontWithName:@"Avenir-Heavy" size:14]];
     [self.scrollView addSubview:fileSizeLabel];
@@ -1575,7 +2057,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Table view to hold the data
     self.exifTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 508, w, 2860)];
-    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3280, w, 2860)];
+    self.gpsTableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 3544, w, 2860)];
     [self.scrollView addSubview:self.exifTableView];
     [self.scrollView addSubview:self.gpsTableView];
     
@@ -1597,7 +2079,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [dateLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
     [self.scrollView addSubview:dateLabel];
     
-    UIView* gummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+//    UIView* gummyView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
     
     // Date original
     self.dateTimeOriginal = [[UITextField alloc] init];
@@ -1649,6 +2131,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifExposureTime.delegate = self;
     self.exifExposureTime.frame = CGRectMake(w/2, 608, w/2, 20);
     self.exifExposureTime.keyboardAppearance = UIKeyboardAppearanceDark;
+    self.exifExposureTime.keyboardType = UIKeyboardTypeNumbersAndPunctuation;
     self.exifExposureTime.tag = 2;
     self.exifExposureTime.textColor = [UIColor blackColor];
     [self.exifExposureTime setReturnKeyType:UIReturnKeyNext];
@@ -1661,11 +2144,17 @@ CGPoint pointFromRectangle(CGRect rect) {
     [exifFNumberLabel setFont:[UIFont fontWithName:@"Avenir" size:14]];
     [self.scrollView addSubview:exifFNumberLabel];
     
+    // f-number symbol label
+    UILabel *fNumberSymbolLabel = [[UILabel alloc] initWithFrame:CGRectMake(w/2, 652, 20, 20)];
+    fNumberSymbolLabel.text = @"ƒ/";
+    fNumberSymbolLabel.textColor = [UIColor blackColor];
+    [self.scrollView addSubview:fNumberSymbolLabel];
+    
     // f-number
     self.exifFNumber = [[UITextField alloc] init];
     self.exifFNumber.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifFNumber.delegate = self;
-    self.exifFNumber.frame = CGRectMake(w/2, 652, w/2, 20);
+    self.exifFNumber.frame = CGRectMake(w/2+20, 652, w/2-20, 20);
     self.exifFNumber.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifFNumber.tag = 3;
     self.exifFNumber.textColor = [UIColor blackColor];
@@ -2745,8 +3234,16 @@ CGPoint pointFromRectangle(CGRect rect) {
     gpsTitleLabel.textColor = [UIColor whiteColor];
     [self.scrollView addSubview:gpsTitleLabel];
     
+    // Google maps
+    
+    // Location search bar
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 3500, w, 44)];
+    self.searchBar.delegate = self;
+    self.searchBar.keyboardAppearance = UIKeyboardAppearanceDark;
+    [self.scrollView addSubview: self.searchBar];
+
     // GPS version label
-    UILabel *gpsVersion = [[UILabel alloc] initWithFrame:CGRectMake(10, 3292, 400, 20)];
+    UILabel *gpsVersion = [[UILabel alloc] initWithFrame:CGRectMake(10, 3556, 400, 20)];
     gpsVersion.text = @"GPS version";
     gpsVersion.textColor = [UIColor grayColor];
     [gpsVersion setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2756,7 +3253,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsVersion = [[UITextField alloc] init];
     self.gpsVersion.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsVersion.delegate = self;
-    self.gpsVersion.frame = CGRectMake(w/2, 3292, w/2, 20);
+    self.gpsVersion.frame = CGRectMake(w/2, 3556, w/2, 20);
     self.gpsVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsVersion.tag = 71;
     self.gpsVersion.textColor = [UIColor blackColor];
@@ -2764,7 +3261,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsVersion];
     
     // Latitude ref label
-    UILabel *gpsLatitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3336, 400, 20)];
+    UILabel *gpsLatitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3600, 400, 20)];
     gpsLatitudeRef.text = @"Latitude ref";
     gpsLatitudeRef.textColor = [UIColor grayColor];
     [gpsLatitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2774,7 +3271,8 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsLatitudeRef = [[UITextField alloc] init];
     self.gpsLatitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLatitudeRef.delegate = self;
-    self.gpsLatitudeRef.frame = CGRectMake(w/2, 3336, w/2, 20);
+    self.gpsLatitudeRef.enabled = NO;
+    self.gpsLatitudeRef.frame = CGRectMake(w/2, 3600, w/2, 20);
     self.gpsLatitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLatitudeRef.tag = 72;
     self.gpsLatitudeRef.textColor = [UIColor blackColor];
@@ -2782,7 +3280,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsLatitudeRef];
     
     // Latitude label
-    UILabel *gpsLatitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3380, 400, 20)];
+    UILabel *gpsLatitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3644, 400, 20)];
     gpsLatitude.text = @"Latitude";
     gpsLatitude.textColor = [UIColor grayColor];
     [gpsLatitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2792,7 +3290,8 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsLatitude = [[UITextField alloc] init];
     self.gpsLatitude.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLatitude.delegate = self;
-    self.gpsLatitude.frame = CGRectMake(w/2, 3380, w/2, 20);
+    self.gpsLatitude.enabled = NO;
+    self.gpsLatitude.frame = CGRectMake(w/2, 3644, w/2, 20);
     self.gpsLatitude.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLatitude.tag = 73;
     self.gpsLatitude.textColor = [UIColor blackColor];
@@ -2800,7 +3299,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsLatitude];
     
     // Latitude ref label
-    UILabel *gpsLongitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3424, 400, 20)];
+    UILabel *gpsLongitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3688, 400, 20)];
     gpsLongitudeRef.text = @"Longitude ref";
     gpsLongitudeRef.textColor = [UIColor grayColor];
     [gpsLongitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2810,7 +3309,8 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsLongitudeRef = [[UITextField alloc] init];
     self.gpsLongitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLongitudeRef.delegate = self;
-    self.gpsLongitudeRef.frame = CGRectMake(w/2, 3424, w/2, 20);
+    self.gpsLongitudeRef.enabled = NO;
+    self.gpsLongitudeRef.frame = CGRectMake(w/2, 3688, w/2, 20);
     self.gpsLongitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLongitudeRef.tag = 74;
     self.gpsLongitudeRef.textColor = [UIColor blackColor];
@@ -2818,7 +3318,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsLongitudeRef];
     
     // Latitude label
-    UILabel *gpsLongitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3468, 400, 20)];
+    UILabel *gpsLongitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3732, 400, 20)];
     gpsLongitude.text = @"Longitude";
     gpsLongitude.textColor = [UIColor grayColor];
     [gpsLongitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2828,7 +3328,8 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsLongitude = [[UITextField alloc] init];
     self.gpsLongitude.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsLongitude.delegate = self;
-    self.gpsLongitude.frame = CGRectMake(w/2, 3468, w/2, 20);
+    self.gpsLongitude.enabled = NO;
+    self.gpsLongitude.frame = CGRectMake(w/2, 3732, w/2, 20);
     self.gpsLongitude.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsLongitude.tag = 75;
     self.gpsLongitude.textColor = [UIColor blackColor];
@@ -2836,7 +3337,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsLongitude];
     
     // Altitude ref label
-    UILabel *gpsAltitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3512, 400, 20)];
+    UILabel *gpsAltitudeRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3776, 400, 20)];
     gpsAltitudeRef.text = @"Altitude ref";
     gpsAltitudeRef.textColor = [UIColor grayColor];
     [gpsAltitudeRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2846,7 +3347,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsAltitudeRef = [[UITextField alloc] init];
     self.gpsAltitudeRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsAltitudeRef.delegate = self;
-    self.gpsAltitudeRef.frame = CGRectMake(w/2, 3512, w/2, 20);
+    self.gpsAltitudeRef.frame = CGRectMake(w/2, 3776, w/2, 20);
     self.gpsAltitudeRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsAltitudeRef.tag = 76;
     self.gpsAltitudeRef.textColor = [UIColor blackColor];
@@ -2854,7 +3355,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsAltitudeRef];
     
     // Altitude label
-    UILabel *gpsAltitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3556, 400, 20)];
+    UILabel *gpsAltitude = [[UILabel alloc] initWithFrame:CGRectMake(10, 3820, 400, 20)];
     gpsAltitude.text = @"Altitude";
     gpsAltitude.textColor = [UIColor grayColor];
     [gpsAltitude setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2864,7 +3365,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsAltitude = [[UITextField alloc] init];
     self.gpsAltitude.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsAltitude.delegate = self;
-    self.gpsAltitude.frame = CGRectMake(w/2, 3556, w/2, 20);
+    self.gpsAltitude.frame = CGRectMake(w/2, 3820, w/2, 20);
     self.gpsAltitude.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsAltitude.tag = 77;
     self.gpsAltitude.textColor = [UIColor blackColor];
@@ -2872,7 +3373,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsAltitude];
     
     // Time stamp label
-    UILabel *gpsTimeStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 3600, 400, 20)];
+    UILabel *gpsTimeStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 3864, 400, 20)];
     gpsTimeStamp.text = @"Time stamp";
     gpsTimeStamp.textColor = [UIColor grayColor];
     [gpsTimeStamp setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2882,7 +3383,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsTimeStamp = [[UITextField alloc] init];
     self.gpsTimeStamp.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsTimeStamp.delegate = self;
-    self.gpsTimeStamp.frame = CGRectMake(w/2, 3600, w/2, 20);
+    self.gpsTimeStamp.frame = CGRectMake(w/2, 3864, w/2, 20);
     self.gpsTimeStamp.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsTimeStamp.tag = 78;
     self.gpsTimeStamp.textColor = [UIColor blackColor];
@@ -2890,7 +3391,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsTimeStamp];
     
     // Satellites label
-    UILabel *gpsSatellites = [[UILabel alloc] initWithFrame:CGRectMake(10, 3644, 400, 20)];
+    UILabel *gpsSatellites = [[UILabel alloc] initWithFrame:CGRectMake(10, 3908, 400, 20)];
     gpsSatellites.text = @"Satellites";
     gpsSatellites.textColor = [UIColor grayColor];
     [gpsSatellites setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2900,7 +3401,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsSatellites = [[UITextField alloc] init];
     self.gpsSatellites.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsSatellites.delegate = self;
-    self.gpsSatellites.frame = CGRectMake(w/2, 3644, w/2, 20);
+    self.gpsSatellites.frame = CGRectMake(w/2, 3908, w/2, 20);
     self.gpsSatellites.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsSatellites.tag = 79;
     self.gpsSatellites.textColor = [UIColor blackColor];
@@ -2908,7 +3409,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsSatellites];
     
     // Status label
-    UILabel *gpsStatus = [[UILabel alloc] initWithFrame:CGRectMake(10, 3688, 400, 20)];
+    UILabel *gpsStatus = [[UILabel alloc] initWithFrame:CGRectMake(10, 3952, 400, 20)];
     gpsStatus.text = @"Status";
     gpsStatus.textColor = [UIColor grayColor];
     [gpsStatus setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2918,7 +3419,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsStatus = [[UITextField alloc] init];
     self.gpsStatus.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsStatus.delegate = self;
-    self.gpsStatus.frame = CGRectMake(w/2, 3688, w/2, 20);
+    self.gpsStatus.frame = CGRectMake(w/2, 3952, w/2, 20);
     self.gpsStatus.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsStatus.tag = 80;
     self.gpsStatus.textColor = [UIColor blackColor];
@@ -2926,7 +3427,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsStatus];
     
     // Measure mode label
-    UILabel *gpsMeasureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 3732, 400, 20)];
+    UILabel *gpsMeasureMode = [[UILabel alloc] initWithFrame:CGRectMake(10, 3996, 400, 20)];
     gpsMeasureMode.text = @"Measure mode";
     gpsMeasureMode.textColor = [UIColor grayColor];
     [gpsMeasureMode setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2936,7 +3437,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsMeasureMode = [[UITextField alloc] init];
     self.gpsMeasureMode.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsMeasureMode.delegate = self;
-    self.gpsMeasureMode.frame = CGRectMake(w/2, 3732, w/2, 20);
+    self.gpsMeasureMode.frame = CGRectMake(w/2, 3996, w/2, 20);
     self.gpsMeasureMode.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsMeasureMode.tag = 81;
     self.gpsMeasureMode.textColor = [UIColor blackColor];
@@ -2944,7 +3445,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsMeasureMode];
     
     // DOP label
-    UILabel *gpsDegreeOfPrecision = [[UILabel alloc] initWithFrame:CGRectMake(10, 3776, 400, 20)];
+    UILabel *gpsDegreeOfPrecision = [[UILabel alloc] initWithFrame:CGRectMake(10, 4040, 400, 20)];
     gpsDegreeOfPrecision.text = @"Degree of precision (DOP)";
     gpsDegreeOfPrecision.textColor = [UIColor grayColor];
     [gpsDegreeOfPrecision setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2954,7 +3455,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDegreeOfPrecision = [[UITextField alloc] init];
     self.gpsDegreeOfPrecision.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDegreeOfPrecision.delegate = self;
-    self.gpsDegreeOfPrecision.frame = CGRectMake(w/2, 3776, w/2, 20);
+    self.gpsDegreeOfPrecision.frame = CGRectMake(w/2, 4040, w/2, 20);
     self.gpsDegreeOfPrecision.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDegreeOfPrecision.tag = 82;
     self.gpsDegreeOfPrecision.textColor = [UIColor blackColor];
@@ -2962,7 +3463,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDegreeOfPrecision];
     
     // Speed ref label
-    UILabel *gpsSpeedRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3820, 400, 20)];
+    UILabel *gpsSpeedRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4084, 400, 20)];
     gpsSpeedRef.text = @"Speed ref";
     gpsSpeedRef.textColor = [UIColor grayColor];
     [gpsSpeedRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2972,7 +3473,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsSpeedRef = [[UITextField alloc] init];
     self.gpsSpeedRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsSpeedRef.delegate = self;
-    self.gpsSpeedRef.frame = CGRectMake(w/2, 3820, w/2, 20);
+    self.gpsSpeedRef.frame = CGRectMake(w/2, 4084, w/2, 20);
     self.gpsSpeedRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsSpeedRef.tag = 83;
     self.gpsSpeedRef.textColor = [UIColor blackColor];
@@ -2980,7 +3481,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsSpeedRef];
     
     // Speed label
-    UILabel *gpsSpeed = [[UILabel alloc] initWithFrame:CGRectMake(10, 3864, 400, 20)];
+    UILabel *gpsSpeed = [[UILabel alloc] initWithFrame:CGRectMake(10, 4128, 400, 20)];
     gpsSpeed.text = @"Speed";
     gpsSpeed.textColor = [UIColor grayColor];
     [gpsSpeed setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -2990,7 +3491,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsSpeed = [[UITextField alloc] init];
     self.gpsSpeed.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsSpeed.delegate = self;
-    self.gpsSpeed.frame = CGRectMake(w/2, 3864, w/2, 20);
+    self.gpsSpeed.frame = CGRectMake(w/2, 4128, w/2, 20);
     self.gpsSpeed.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsSpeed.tag = 84;
     self.gpsSpeed.textColor = [UIColor blackColor];
@@ -2998,7 +3499,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsSpeed];
     
     // Track ref label
-    UILabel *gpsTrackRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3908, 400, 20)];
+    UILabel *gpsTrackRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4172, 400, 20)];
     gpsTrackRef.text = @"Track ref";
     gpsTrackRef.textColor = [UIColor grayColor];
     [gpsTrackRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3008,7 +3509,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsTrackRef = [[UITextField alloc] init];
     self.gpsTrackRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsTrackRef.delegate = self;
-    self.gpsTrackRef.frame = CGRectMake(w/2, 3908, w/2, 20);
+    self.gpsTrackRef.frame = CGRectMake(w/2, 4172, w/2, 20);
     self.gpsTrackRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsTrackRef.tag = 85;
     self.gpsTrackRef.textColor = [UIColor blackColor];
@@ -3016,7 +3517,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsTrackRef];
     
     // Track label
-    UILabel *gpsTrack = [[UILabel alloc] initWithFrame:CGRectMake(10, 3952, 400, 20)];
+    UILabel *gpsTrack = [[UILabel alloc] initWithFrame:CGRectMake(10, 4216, 400, 20)];
     gpsTrack.text = @"Track";
     gpsTrack.textColor = [UIColor grayColor];
     [gpsTrack setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3026,7 +3527,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsTrack = [[UITextField alloc] init];
     self.gpsTrack.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsTrack.delegate = self;
-    self.gpsTrack.frame = CGRectMake(w/2, 3952, w/2, 20);
+    self.gpsTrack.frame = CGRectMake(w/2, 4216, w/2, 20);
     self.gpsTrack.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsTrack.tag = 86;
     self.gpsTrack.textColor = [UIColor blackColor];
@@ -3034,7 +3535,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsTrack];
     
     // Image direction ref label
-    UILabel *gpsImgDirectionRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 3996, 400, 20)];
+    UILabel *gpsImgDirectionRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4260, 400, 20)];
     gpsImgDirectionRef.text = @"Image direction ref";
     gpsImgDirectionRef.textColor = [UIColor grayColor];
     [gpsImgDirectionRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3044,7 +3545,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsImgDirectionRef = [[UITextField alloc] init];
     self.gpsImgDirectionRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsImgDirectionRef.delegate = self;
-    self.gpsImgDirectionRef.frame = CGRectMake(w/2, 3996, w/2, 20);
+    self.gpsImgDirectionRef.frame = CGRectMake(w/2, 4260, w/2, 20);
     self.gpsImgDirectionRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsImgDirectionRef.tag = 87;
     self.gpsImgDirectionRef.textColor = [UIColor blackColor];
@@ -3052,7 +3553,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsImgDirectionRef];
     
     // Image direction label
-    UILabel *gpsImgDirection = [[UILabel alloc] initWithFrame:CGRectMake(10, 4040, 400, 20)];
+    UILabel *gpsImgDirection = [[UILabel alloc] initWithFrame:CGRectMake(10, 4304, 400, 20)];
     gpsImgDirection.text = @"Image direction";
     gpsImgDirection.textColor = [UIColor grayColor];
     [gpsImgDirection setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3062,7 +3563,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsImgDirection = [[UITextField alloc] init];
     self.gpsImgDirection.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsImgDirection.delegate = self;
-    self.gpsImgDirection.frame = CGRectMake(w/2, 4040, w/2, 20);
+    self.gpsImgDirection.frame = CGRectMake(w/2, 4304, w/2, 20);
     self.gpsImgDirection.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsImgDirection.tag = 88;
     self.gpsImgDirection.textColor = [UIColor blackColor];
@@ -3070,7 +3571,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsImgDirection];
     
     // Map datum label
-    UILabel *gpsMapDatum = [[UILabel alloc] initWithFrame:CGRectMake(10, 4084, 400, 20)];
+    UILabel *gpsMapDatum = [[UILabel alloc] initWithFrame:CGRectMake(10, 4348, 400, 20)];
     gpsMapDatum.text = @"Map datum";
     gpsMapDatum.textColor = [UIColor grayColor];
     [gpsMapDatum setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3080,7 +3581,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsMapDatum = [[UITextField alloc] init];
     self.gpsMapDatum.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsMapDatum.delegate = self;
-    self.gpsMapDatum.frame = CGRectMake(w/2, 4084, w/2, 20);
+    self.gpsMapDatum.frame = CGRectMake(w/2, 4348, w/2, 20);
     self.gpsMapDatum.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsMapDatum.tag = 89;
     self.gpsMapDatum.textColor = [UIColor blackColor];
@@ -3088,7 +3589,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsMapDatum];
     
     // Destination latitude ref label
-    UILabel *gpsDestLatRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4128, 400, 20)];
+    UILabel *gpsDestLatRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4392, 400, 20)];
     gpsDestLatRef.text = @"Destination latitude ref";
     gpsDestLatRef.textColor = [UIColor grayColor];
     [gpsDestLatRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3098,7 +3599,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestLatRef = [[UITextField alloc] init];
     self.gpsDestLatRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestLatRef.delegate = self;
-    self.gpsDestLatRef.frame = CGRectMake(w/2, 4128, w/2, 20);
+    self.gpsDestLatRef.frame = CGRectMake(w/2, 4392, w/2, 20);
     self.gpsDestLatRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestLatRef.tag = 90;
     self.gpsDestLatRef.textColor = [UIColor blackColor];
@@ -3106,7 +3607,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestLatRef];
     
     // Destination latitude label
-    UILabel *gpsDestLat = [[UILabel alloc] initWithFrame:CGRectMake(10, 4172, 400, 20)];
+    UILabel *gpsDestLat = [[UILabel alloc] initWithFrame:CGRectMake(10, 4436, 400, 20)];
     gpsDestLat.text = @"Destination latitude";
     gpsDestLat.textColor = [UIColor grayColor];
     [gpsDestLat setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3116,7 +3617,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestLat = [[UITextField alloc] init];
     self.gpsDestLat.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestLat.delegate = self;
-    self.gpsDestLat.frame = CGRectMake(w/2, 4172, w/2, 20);
+    self.gpsDestLat.frame = CGRectMake(w/2, 4436, w/2, 20);
     self.gpsDestLat.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestLat.tag = 91;
     self.gpsDestLat.textColor = [UIColor blackColor];
@@ -3124,7 +3625,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestLat];
     
     // Destination longitude ref label
-    UILabel *gpsDestLongRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4216, 400, 20)];
+    UILabel *gpsDestLongRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4480, 400, 20)];
     gpsDestLongRef.text = @"Destination longitude ref";
     gpsDestLongRef.textColor = [UIColor grayColor];
     [gpsDestLongRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3134,7 +3635,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestLongRef = [[UITextField alloc] init];
     self.gpsDestLongRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestLongRef.delegate = self;
-    self.gpsDestLongRef.frame = CGRectMake(w/2, 4216, w/2, 20);
+    self.gpsDestLongRef.frame = CGRectMake(w/2, 4480, w/2, 20);
     self.gpsDestLongRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestLongRef.tag = 92;
     self.gpsDestLongRef.textColor = [UIColor blackColor];
@@ -3142,7 +3643,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestLongRef];
     
     // Destination longitude label
-    UILabel *gpsDestLong = [[UILabel alloc] initWithFrame:CGRectMake(10, 4260, 400, 20)];
+    UILabel *gpsDestLong = [[UILabel alloc] initWithFrame:CGRectMake(10, 4524, 400, 20)];
     gpsDestLong.text = @"Destination longitude";
     gpsDestLong.textColor = [UIColor grayColor];
     [gpsDestLong setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3152,7 +3653,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestLong = [[UITextField alloc] init];
     self.gpsDestLong.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestLong.delegate = self;
-    self.gpsDestLong.frame = CGRectMake(w/2, 4260, w/2, 20);
+    self.gpsDestLong.frame = CGRectMake(w/2, 4524, w/2, 20);
     self.gpsDestLong.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestLong.tag = 93;
     self.gpsDestLong.textColor = [UIColor blackColor];
@@ -3160,7 +3661,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestLong];
     
     // Destination bearing ref label
-    UILabel *gpsDestBearingRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4304, 400, 20)];
+    UILabel *gpsDestBearingRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4568, 400, 20)];
     gpsDestBearingRef.text = @"Destination bearing ref";
     gpsDestBearingRef.textColor = [UIColor grayColor];
     [gpsDestBearingRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3170,7 +3671,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestBearingRef = [[UITextField alloc] init];
     self.gpsDestBearingRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestBearingRef.delegate = self;
-    self.gpsDestBearingRef.frame = CGRectMake(w/2, 4304, w/2, 20);
+    self.gpsDestBearingRef.frame = CGRectMake(w/2, 4568, w/2, 20);
     self.gpsDestBearingRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestBearingRef.tag = 94;
     self.gpsDestBearingRef.textColor = [UIColor blackColor];
@@ -3178,7 +3679,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestBearingRef];
     
     // Destination bearing label
-    UILabel *gpsDestBearing = [[UILabel alloc] initWithFrame:CGRectMake(10, 4348, 400, 20)];
+    UILabel *gpsDestBearing = [[UILabel alloc] initWithFrame:CGRectMake(10, 4612, 400, 20)];
     gpsDestBearing.text = @"Destination bearing";
     gpsDestBearing.textColor = [UIColor grayColor];
     [gpsDestBearing setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3188,7 +3689,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestBearing = [[UITextField alloc] init];
     self.gpsDestBearing.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestBearing.delegate = self;
-    self.gpsDestBearing.frame = CGRectMake(w/2, 4348, w/2, 20);
+    self.gpsDestBearing.frame = CGRectMake(w/2, 4612, w/2, 20);
     self.gpsDestBearing.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestBearing.tag = 95;
     self.gpsDestBearing.textColor = [UIColor blackColor];
@@ -3196,7 +3697,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestBearing];
     
     // Destination distance ref label
-    UILabel *gpsDestDistanceRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4392, 400, 20)];
+    UILabel *gpsDestDistanceRef = [[UILabel alloc] initWithFrame:CGRectMake(10, 4656, 400, 20)];
     gpsDestDistanceRef.text = @"Destination distance ref";
     gpsDestDistanceRef.textColor = [UIColor grayColor];
     [gpsDestDistanceRef setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3206,7 +3707,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestDistanceRef = [[UITextField alloc] init];
     self.gpsDestDistanceRef.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestDistanceRef.delegate = self;
-    self.gpsDestDistanceRef.frame = CGRectMake(w/2, 4392, w/2, 20);
+    self.gpsDestDistanceRef.frame = CGRectMake(w/2, 4656, w/2, 20);
     self.gpsDestDistanceRef.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestDistanceRef.tag = 96;
     self.gpsDestDistanceRef.textColor = [UIColor blackColor];
@@ -3214,7 +3715,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestDistanceRef];
     
     // Destination distance label
-    UILabel *gpsDestDistance = [[UILabel alloc] initWithFrame:CGRectMake(10, 4436, 400, 20)];
+    UILabel *gpsDestDistance = [[UILabel alloc] initWithFrame:CGRectMake(10, 4700, 400, 20)];
     gpsDestDistance.text = @"Destination distance";
     gpsDestDistance.textColor = [UIColor grayColor];
     [gpsDestDistance setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3224,7 +3725,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDestDistance = [[UITextField alloc] init];
     self.gpsDestDistance.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDestDistance.delegate = self;
-    self.gpsDestDistance.frame = CGRectMake(w/2, 4436, w/2, 20);
+    self.gpsDestDistance.frame = CGRectMake(w/2, 4700, w/2, 20);
     self.gpsDestDistance.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDestDistance.tag = 97;
     self.gpsDestDistance.textColor = [UIColor blackColor];
@@ -3232,7 +3733,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDestDistance];
     
     // Processing method label
-    UILabel *gpsProcessingMethod = [[UILabel alloc] initWithFrame:CGRectMake(10, 4480, 400, 20)];
+    UILabel *gpsProcessingMethod = [[UILabel alloc] initWithFrame:CGRectMake(10, 4744, 400, 20)];
     gpsProcessingMethod.text = @"Processing method";
     gpsProcessingMethod.textColor = [UIColor grayColor];
     [gpsProcessingMethod setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3242,7 +3743,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsProcessingMethod = [[UITextField alloc] init];
     self.gpsProcessingMethod.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsProcessingMethod.delegate = self;
-    self.gpsProcessingMethod.frame = CGRectMake(w/2, 4480, w/2, 20);
+    self.gpsProcessingMethod.frame = CGRectMake(w/2, 4744, w/2, 20);
     self.gpsProcessingMethod.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsProcessingMethod.tag = 98;
     self.gpsProcessingMethod.textColor = [UIColor blackColor];
@@ -3250,7 +3751,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsProcessingMethod];
     
     // Area information label
-    UILabel *gpsAreaInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 4524, 400, 20)];
+    UILabel *gpsAreaInformation = [[UILabel alloc] initWithFrame:CGRectMake(10, 4788, 400, 20)];
     gpsAreaInformation.text = @"Area information";
     gpsAreaInformation.textColor = [UIColor grayColor];
     [gpsAreaInformation setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3260,7 +3761,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsAreaInformation = [[UITextField alloc] init];
     self.gpsAreaInformation.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsAreaInformation.delegate = self;
-    self.gpsAreaInformation.frame = CGRectMake(w/2, 4524, w/2, 20);
+    self.gpsAreaInformation.frame = CGRectMake(w/2, 4788, w/2, 20);
     self.gpsAreaInformation.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsAreaInformation.tag = 99;
     self.gpsAreaInformation.textColor = [UIColor blackColor];
@@ -3268,7 +3769,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsAreaInformation];
     
     // Date stamp label
-    UILabel *gpsDateStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 4568, 400, 20)];
+    UILabel *gpsDateStamp = [[UILabel alloc] initWithFrame:CGRectMake(10, 4832, 400, 20)];
     gpsDateStamp.text = @"Date stamp";
     gpsDateStamp.textColor = [UIColor grayColor];
     [gpsDateStamp setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3278,7 +3779,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDateStamp = [[UITextField alloc] init];
     self.gpsDateStamp.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDateStamp.delegate = self;
-    self.gpsDateStamp.frame = CGRectMake(w/2, 4568, w/2, 20);
+    self.gpsDateStamp.frame = CGRectMake(w/2, 4832, w/2, 20);
     self.gpsDateStamp.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDateStamp.tag = 100;
     self.gpsDateStamp.textColor = [UIColor blackColor];
@@ -3286,7 +3787,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.scrollView addSubview:self.gpsDateStamp];
     
     // Differential label
-    UILabel *gpsDifferental = [[UILabel alloc] initWithFrame:CGRectMake(10, 4612, 400, 20)];
+    UILabel *gpsDifferental = [[UILabel alloc] initWithFrame:CGRectMake(10, 4876, 400, 20)];
     gpsDifferental.text = @"Differential applied?";
     gpsDifferental.textColor = [UIColor grayColor];
     [gpsDifferental setFont:[UIFont fontWithName:@"Avenir" size:14]];
@@ -3296,25 +3797,38 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.gpsDifferental = [[UITextField alloc] init];
     self.gpsDifferental.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.gpsDifferental.delegate = self;
-    self.gpsDifferental.frame = CGRectMake(w/2, 4612, w/2, 20);
+    self.gpsDifferental.frame = CGRectMake(w/2, 4876, w/2, 20);
     self.gpsDifferental.keyboardAppearance = UIKeyboardAppearanceDark;
     self.gpsDifferental.tag = 101;
     self.gpsDifferental.textColor = [UIColor blackColor];
     [self.gpsDifferental setReturnKeyType:UIReturnKeyNext];
     [self.scrollView addSubview:self.gpsDifferental];
     
+    // Location manager
+    self.locationManager = [[CLLocationManager alloc] init];
+    self.locationManager.delegate = self;
+    self.locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters;
+    if(self.locationManager.locationServicesEnabled)
+    {
+        [self.locationManager startUpdatingLocation];
+    }
+    
     [self loadPicture];
 }
 
+/**
+ *  Goes to the previous text field when the user presses previous. Currently not
+ *  implemented.
+ */
 - (void)previousItemPressed {
     NSLog(@"Going to previous item");
 }
 
-// Resets the field to the original value
+/**
+ *  Resets a single text field to the original value.
+ */
 - (void)resetPressed {
     NSLog(@"Resetting");
-    
-    // maybe store the memory address of each textfield in the dictionary?
     
     NSString *s = [self.originalValues valueForKey:[self.tags valueForKey:[NSString stringWithFormat:@"%ld", self.currentTag]]];
     
@@ -3610,39 +4124,44 @@ CGPoint pointFromRectangle(CGRect rect) {
     }
 }
 
-// Tells the user what the field is
+/**
+ *  Shows a popup view with a description of the text field currently being edited.
+ */
 - (void)identifyPressed {
+    [KLCPopup dismissAllPopups];
     NSLog(@"Identifying item");
     
-    CGFloat w = self.descriptionView.bounds.size.width;
-    
     self.item.text = @"";
-    self.item = [[UILabel alloc] initWithFrame:CGRectMake(10, 30, 400, 20)];
+    self.item = [[UILabel alloc] initWithFrame:CGRectMake(20, 30, 300, 20)];
     [self.item setFont:[UIFont fontWithName:@"Avenir-Heavy" size:12]];
     
-    self.itemInfo = [[UITextView alloc] initWithFrame:CGRectMake(10, 50, w-20, 70)];
+//    self.itemInfo = [[UITextView alloc] initWithFrame:CGRectMake(20, 50, w-40, 70)];
+    self.itemInfo = [[UITextView alloc] initWithFrame:CGRectMake((self.screenW-20)/2-(self.screenW-40)/2, 50, self.screenW-40, 70)];
     [self.itemInfo setFont:[UIFont fontWithName:@"Avenir" size:12]];
     
     [self describeItemWithTag:self.currentTag];
     
-    [self.descriptionView addSubview:self.item];
-    [self.descriptionView addSubview:self.itemInfo];
+    [self.descriptionScrollView addSubview:self.item];
+    [self.descriptionScrollView addSubview:self.itemInfo];
     
     [self.popup showWithLayout:KLCPopupLayoutMake(KLCPopupHorizontalLayoutCenter, KLCPopupVerticalLayoutTop)];
 }
 
+/**
+ *  Contains the actual descriptions.
+ */
 - (void)describeItemWithTag: (long) tag {
     switch(tag) {
         case 0:
             self.item.text = @"Date created";
-            self.itemInfo.text = @"The date that the original image data was generated.";
+            self.itemInfo.text = @"The date that the original image data was generated. The date must be in yyyy:MM:dd format.";
             break;
         case 1:
             self.item.text = @"Date created";
-            self.itemInfo.text = @"The date that the original image data was generated.";
+            self.itemInfo.text = @"The time that the original image data was generated. The time must be in HH:mm:ss format.";
             break;
         case 2:
-            self.item.text = @"Exposure time";
+            self.item.text = @"Exposure time/Shutter speed";
             self.itemInfo.text = @"The length of time when the film/digital sensor in the camera is exposed to light. Measured in seconds.";
             break;
         case 3:
@@ -3651,7 +4170,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 4:
             self.item.text = @"Exposure program";
-            self.itemInfo.text = @"The class of the exposure program used to set exposure when the picture is taken.";
+            self.itemInfo.text = @"The class of the exposure program used to set exposure when the picture was taken. The values are represented by numbers.\n0 = Not defined\n1 = Manual\n2 = Normal\n3 = Aperture priority\n4 = Shutter priority\n5 = Creative program (biased toward depth of field)\n6 = Action program (biased toward fast shutter speed)\n7 = Portrait mode (for closeup photos with the background out of focus)\n8 = Landscape mode (for landscape photos with the background in focus)";
             break;
         case 5:
             self.item.text = @"Spectral sensitivity";
@@ -3679,14 +4198,14 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 11:
             self.item.text = @"Shutter speed value";
-            self.itemInfo.text = @"Speed in which the curtain opens then closes.";
+            self.itemInfo.text = @"This is not the same as exposure time/shutter speed! This value is log base 2 of the reciprocal of the exposure time.";
             break;
         case 12:
-            self.item.text = @"Aperture";
-            self.itemInfo.text = @"Size of the diaphragm opening.";
+            self.item.text = @"Aperture value";
+            self.itemInfo.text = @"This value is log base √2 of the f-number.";
             break;
         case 13:
-            self.item.text = @"Brightness";
+            self.item.text = @"Brightness value";
             self.itemInfo.text = @"Brightness of the subject.";
             break;
         case 14:
@@ -4009,11 +4528,18 @@ CGPoint pointFromRectangle(CGRect rect) {
             self.item.text = @"Differential";
             self.itemInfo.text = @"Whether differential correction is applied to the GPS receiver.";
             break;
+        case 111:
+            self.item.text = @"File name";
+            self.itemInfo.text = @"The file name.";
+            break;
         default:
             break;
     }
 }
 
+/**
+ *  Populates the dictionary, which pairs the exif/gps objects to the tags of their respective text fields.
+ */
 - (void)populateDictionary {
     NSLog(@"now populating dict");
     self.tags = [[NSMutableDictionary alloc] init];
@@ -4114,8 +4640,167 @@ CGPoint pointFromRectangle(CGRect rect) {
     [self.tags setObject:@"fileName" forKey:@"111"];
 }
 
+/**
+ *  Handles what happens when the keyboard is closed. Could come in handy someday.
+ */
 - (void)donePressed {
     NSLog(@"Done/closing the keyboard");
+}
+
+- (void)dealloc {
+    [self.mapView removeObserver:self
+                  forKeyPath:@"myLocation"
+                     context:NULL];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+    if (!self.firstLocationUpdate) {
+        // If the first location update has not yet been recieved, then jump to that
+        // location.
+        self.firstLocationUpdate = YES;
+        CLLocation *location = [change objectForKey:NSKeyValueChangeNewKey];
+        self.mapView.camera = [GMSCameraPosition cameraWithTarget:location.coordinate
+                                                         zoom:6];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+{
+    MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(userLocation.coordinate, 800, 800);
+    [self.gpsMapView setRegion:[self.gpsMapView regionThatFits:region] animated:YES];
+}
+
+- (IBAction) startShowingUserHeading:(id)sender{
+    self.gpsLatitude.text = [NSString stringWithFormat:@"%f", self.locationManager.location.coordinate.latitude];
+    if(self.locationManager.location.coordinate.latitude > 0) {
+        NSLog(@"north");
+        self.gpsLatitudeRef.text = @"N";
+    }
+    else {
+        NSLog(@"south");
+        self.gpsLatitudeRef.text = @"S";
+    }
+    self.gpsLongitude.text = [NSString stringWithFormat:@"%f", self.locationManager.location.coordinate.longitude];
+    if(self.locationManager.location.coordinate.longitude > 0) {
+        NSLog(@"east");
+        self.gpsLongitudeRef.text = @"E";
+    }
+    else {
+        NSLog(@"west");
+        self.gpsLongitudeRef.text = @"W";
+    }
+    
+    if(self.gpsMapView.userTrackingMode == 0){
+        [self.gpsMapView setUserTrackingMode: MKUserTrackingModeFollow animated: YES];
+        
+        //Turn on the position arrow
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationBlue.png"];
+        [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+    else if(self.gpsMapView.userTrackingMode == 1){
+        [self.gpsMapView setUserTrackingMode: MKUserTrackingModeFollowWithHeading animated: YES];
+        
+        //Change it to heading angle
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationHeadingBlue"];
+        [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+    else if(self.gpsMapView.userTrackingMode == 2){
+        [self.gpsMapView setUserTrackingMode: MKUserTrackingModeNone animated: YES];
+        
+        //Put it back again
+        UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+        [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    }
+}
+
+- (IBAction) resetMapLocation:(id)sender{
+    MKCoordinateRegion region;
+    region.center.latitude = self.latval;
+    region.center.longitude = self.longval;
+    region.span.latitudeDelta = 0.01;
+    region.span.longitudeDelta = 0.01;
+    
+    self.gpsLatitude.text = [NSString stringWithFormat:@"%f", self.latval];
+    if(self.latval > 0) {
+        NSLog(@"north");
+        self.gpsLatitudeRef.text = @"N";
+    }
+    else {
+        NSLog(@"south");
+        self.gpsLatitudeRef.text = @"S";
+    }
+    self.gpsLongitude.text = [NSString stringWithFormat:@"%f", self.longval];
+    if(self.longval > 0) {
+        NSLog(@"east");
+        self.gpsLongitudeRef.text = @"E";
+    }
+    else {
+        NSLog(@"west");
+        self.gpsLongitudeRef.text = @"W";
+    }
+    
+    [self.gpsMapView setRegion:region animated:YES];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar
+    textDidChange:(NSString *)searchText {
+//    NSLog(@"you searched %@", searchText);
+    CGPoint searchPoint = pointFromRectangle(self.searchBar.frame);
+    searchPoint.y -= 64;
+    [self.scrollView setContentOffset:(searchPoint) animated:YES];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    CGPoint searchPoint = pointFromRectangle(self.searchBar.frame);
+    searchPoint.y -= 64;
+    [self.scrollView setContentOffset:(searchPoint) animated:YES];
+}
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)theSearchBar
+{
+    [theSearchBar resignFirstResponder];
+
+    CLGeocoder *geocoder = [[CLGeocoder alloc] init];
+    [geocoder geocodeAddressString:theSearchBar.text completionHandler:^(NSArray *placemarks, NSError *error) {
+        //Error checking
+        
+        CLPlacemark *placemark = [placemarks objectAtIndex:0];
+        MKCoordinateRegion region;
+        region.center.latitude = placemark.region.center.latitude;
+        region.center.longitude = placemark.region.center.longitude;
+        
+        self.gpsLatitude.text = [NSString stringWithFormat:@"%f", region.center.latitude];
+        if(region.center.latitude > 0) {
+            NSLog(@"north");
+            self.gpsLatitudeRef.text = @"N";
+        }
+        else {
+            NSLog(@"south");
+            self.gpsLatitudeRef.text = @"S";
+        }
+        self.gpsLongitude.text = [NSString stringWithFormat:@"%f", region.center.longitude];
+        if(region.center.longitude > 0) {
+            NSLog(@"east");
+            self.gpsLongitudeRef.text = @"E";
+        }
+        else {
+            NSLog(@"west");
+            self.gpsLongitudeRef.text = @"W";
+        }
+        
+        MKCoordinateSpan span;
+        double radius = placemark.region.radius / 1000; // convert to km
+        
+        NSLog(@"[searchBarSearchButtonClicked] Radius is %f", radius);
+        span.latitudeDelta = radius / 112.0;
+        
+        region.span = span;
+        
+        [self.gpsMapView setRegion:region animated:YES];
+    }];
 }
 
 - (void)didReceiveMemoryWarning {

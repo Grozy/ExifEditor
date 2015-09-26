@@ -1,10 +1,13 @@
 PODS:
+  - GoogleMaps (1.10.3)
   - XLMediaZoom (2.0.1)
 
 DEPENDENCIES:
+  - GoogleMaps
   - XLMediaZoom
 
 SPEC CHECKSUMS:
+  GoogleMaps: 945e4ac3b74bcca3ddada51df256eb7beddb474d
   XLMediaZoom: 52f8f473066d0a3e09572fbee6c84f25c1ed0bca
 
 COCOAPODS: 0.38.2

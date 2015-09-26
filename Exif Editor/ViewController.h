@@ -14,8 +14,10 @@
 #import <CoreLocation/CoreLocation.h>
 #import "XLMediaZoom.h"
 #import "KLCPopup.h"
+@import GoogleMaps;
+@import MapKit;
 
-@interface ViewController : UIViewController <UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface ViewController : UIViewController <UITextFieldDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate, MKMapViewDelegate, CLLocationManagerDelegate, UISearchBarDelegate>
 
 @property CGFloat screenW;
 @property CGFloat screenH;
@@ -44,6 +46,7 @@
 
 // Description pop-up (The 'What is this?' button)
 @property (strong, nonatomic) IBOutlet UIView *descriptionView;
+@property (strong, nonatomic) IBOutlet UIScrollView *descriptionScrollView;
 @property (strong, nonatomic) IBOutlet UILabel *item;
 @property (strong, nonatomic) IBOutlet UITextView *itemInfo;
 @property (strong, nonatomic) IBOutlet KLCPopup *popup;
@@ -59,6 +62,17 @@
 @property (strong, nonatomic) IBOutlet UILabel *selectedDate;
 @property (strong, nonatomic) IBOutlet UIDatePicker *datePicker;
 @property (strong, nonatomic) IBOutlet UIDatePicker *timePicker;
+
+// Save menu
+@property (strong, nonatomic) IBOutlet UIView *saveView;
+@property (strong, nonatomic) IBOutlet UIButton *jpgSaveButton;
+@property (strong, nonatomic) IBOutlet UIButton *pngSaveButton;
+@property (strong, nonatomic) IBOutlet KLCPopup *savePopup;
+
+// Not-a-number popup
+@property (strong, nonatomic) IBOutlet UIView *numberView;
+@property (strong, nonatomic) IBOutlet KLCPopup *numberPopup;
+@property (strong, nonatomic) IBOutlet UITextView *numberWarning;
 
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;
@@ -123,7 +137,20 @@
 @property (strong, nonatomic) IBOutlet UITextField *exifLensModel;
 @property (strong, nonatomic) IBOutlet UITextField *exifLensSerialNumber;
 
-// etc.
+// Google maps
+@property (strong, nonatomic) IBOutlet GMSMapView *mapView;
+@property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) GMSCameraPosition *camera;
+@property (nonatomic) BOOL firstLocationUpdate;
+
+// Apple maps
+@property (strong, nonatomic) IBOutlet MKMapView *gpsMapView;
+//@property (nonatomic) CLLocationManager *locationManager;
+@property (strong, nonatomic) IBOutlet UIButton *userHeadingBtn;
+@property (strong, nonatomic) IBOutlet UIButton *resetLocationBtn;
+@property double latval;
+@property double longval;
+@property (strong, nonatomic) IBOutlet UISearchBar *searchBar;
 
 // GPS Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *gpsVersion;
@@ -177,6 +204,7 @@
 
 @property (strong) UIImagePickerController *pic;
 @property (strong) NSDictionary *inf;
+@property (strong) NSData *currentImageData;
 
 - (IBAction)loadPicture;
 - (IBAction)takePicture;

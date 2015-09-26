@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6F5EFC765D6AA8E1D148E0ED"
+               BlueprintIdentifier = "4D1162DD659CBA8CC5C8EF88"
                BuildableName = "libXLMediaZoom.a"
                BlueprintName = "XLMediaZoom"
                ReferencedContainer = "container:Pods.xcodeproj">
