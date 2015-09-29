@@ -74,6 +74,12 @@
 @property (strong, nonatomic) IBOutlet KLCPopup *numberPopup;
 @property (strong, nonatomic) IBOutlet UITextView *numberWarning;
 
+// Saving the picture
+@property (strong, nonatomic) IBOutlet NSMutableDictionary *locDict;
+@property (strong, nonatomic) IBOutlet NSMutableDictionary *imageMetadata;
+@property CFDictionaryRef originalExif;
+@property CFDictionaryRef originalGps;
+
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;
 @property (strong, nonatomic) IBOutlet UITextField *exifFNumber;
@@ -139,13 +145,13 @@
 
 // Google maps
 @property (strong, nonatomic) IBOutlet GMSMapView *mapView;
-@property (nonatomic) CLLocationManager *locationManager;
+//@property (nonatomic) CLLocationManager *locationManager;
 @property (nonatomic) GMSCameraPosition *camera;
 @property (nonatomic) BOOL firstLocationUpdate;
 
 // Apple maps
 @property (strong, nonatomic) IBOutlet MKMapView *gpsMapView;
-//@property (nonatomic) CLLocationManager *locationManager;
+@property (nonatomic) CLLocationManager *locationManager;
 @property (strong, nonatomic) IBOutlet UIButton *userHeadingBtn;
 @property (strong, nonatomic) IBOutlet UIButton *resetLocationBtn;
 @property double latval;

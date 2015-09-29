@@ -43,12 +43,27 @@
         self.takeNewPhotoPicker.allowsEditing = NO;
     }
     [self presentViewController:self.takeNewPhotoPicker animated:YES completion:nil];
+//    UIImageWriteToSavedPhotosAlbum(fullImage, self, nil, nil);
+//    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:finishedSavingWithError:contextInfo:), nil);
+//    [self.takeNewPhotoPicker dismissViewControllerAnimated:YES
+//                               completion:nil];
+}
+
+- (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo: (void *)contextInfo
+{
+    if (!error)
+    {
+        NSLog(@"succesfully picked the image");
+    }
+    
 }
 
 /**
  *  Prompts the user to choose a picture from the photo library.
  */
 - (IBAction)loadPicture {
+    NSLog(@"now loading a new picture");
+    
     if (self.picker == nil) {
         self.picker = [[UIImagePickerController alloc] init];
         self.picker.delegate = self;
@@ -99,9 +114,219 @@
                                         dismissType:KLCPopupDismissTypeShrinkOut maskType:KLCPopupMaskTypeDimmed dismissOnBackgroundTouch:YES dismissOnContentTouch:NO];
     [self.savePopup show];
     
-    UIImage *image = [[UIImage alloc] initWithData:self.currentImageData];
-    NSLog(@"size is: %@", NSStringFromCGSize([image size]));
+    
+    
+    [self saveImage:self.imageView.image withInfo:self.inf];
+    
 //    UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+}
+
+- (void) saveImage:(UIImage *)imageToSave withInfo:(NSDictionary *)info
+{
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    NSLog(@"info has size: %lu", (unsigned long) [info count]);
+    
+    // Get the image metadata (EXIF & TIFF)
+//    NSMutableDictionary * imageMetadata = [[info objectForKey:UIImagePickerControllerMediaMetadata] mutableCopy];
+    
+    NSLog(@"info contains: %@", [self stringOutputForDictionary:info]);
+    
+//    self.imageMetadata = (NSMutableDictionary *) [info objectForKey:UIImagePickerControllerMediaMetadata];
+//    NSLog(@"%@", imageMetadata);
+    
+    self.imageMetadata = [[NSMutableDictionary alloc] initWithDictionary:[info objectForKey:UIImagePickerControllerMediaMetadata]];
+//    self.imageMetadata = [[NSMutableDictionary alloc] initWithDictionary:(__bridge NSMutableDictionary *)(self.originalExif)];
+    
+    NSMutableDictionary *saveExif = [[NSMutableDictionary alloc] init];
+    
+    // Date time original - ascii
+    NSString *saveDateOriginal = [self.dateTimeOriginal.text stringByAppendingString:[NSString stringWithFormat:@" %@", self.dateTimeOriginalTime.text]];
+    [saveExif setObject:saveDateOriginal forKey:(NSString *)kCGImagePropertyExifDateTimeOriginal];
+    // Exposure time - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifExposureTime.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifExposureTime];
+    // f-number - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifFNumber.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifFNumber];
+    // Exposure program - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifExposureProgram.text intValue]] forKey:(NSString *)kCGImagePropertyExifExposureProgram];
+    // Spectral sensitivity - ascii
+    [saveExif setObject:self.exifSpectralSensitivity.text forKey:(NSString *)kCGImagePropertyExifSpectralSensitivity];
+    // ISO speed ratings - short according to documentation (but it's actually array)
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifISOSpeedRatings.text intValue]] forKey:(NSString *)kCGImagePropertyExifISOSpeedRatings];
+    // OECF - undefined (array)
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifOECF.text intValue]] forKey:(NSString *)kCGImagePropertyExifOECF];
+    // Version - undefined (array)
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifVersion.text intValue]] forKey:(NSString *)kCGImagePropertyExifVersion];
+    // Components configuration - undefined (array)
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifComponentsConfiguration.text intValue]] forKey:(NSString *)kCGImagePropertyExifComponentsConfiguration];
+    // Compressed bits per pixel - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifCompressedBitsPerPixel.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifCompressedBitsPerPixel];
+    // Shutter speed value - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifShutterSpeedValue.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifShutterSpeedValue];
+    // Aperture value - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifApertureValue.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifApertureValue];
+    // Brightness value - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifBrightnessValue.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifBrightnessValue];
+    // Exposure bias value - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifExposureBiasValue.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifExposureBiasValue];
+    // Max aperture value - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifMaxApertureValue.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifMaxApertureValue];
+    // Subject distance - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifSubjectDistance.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifSubjectDistance];
+    // Metering mode - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifMeteringMode.text intValue]] forKey:(NSString *)kCGImagePropertyExifMeteringMode];
+    // Light source - short
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifLightSource.text intValue]] forKey:(NSString *)kCGImagePropertyExifLightSource];
+    // Flash - short
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifFlash.text intValue]] forKey:(NSString *)kCGImagePropertyExifFlash];
+    // Focal length - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifFocalLength.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifFocalLength];
+    // Subject area - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSubjectArea.text intValue]] forKey:(NSString *)kCGImagePropertyExifSubjectArea];
+    // Maker note - undefined (string)
+    [saveExif setObject:self.exifMakerNote.text forKey:(NSString *)kCGImagePropertyExifMakerNote];
+    // User comment - undefined (string)
+    [saveExif setObject:self.exifUserComment.text forKey:(NSString *)kCGImagePropertyExifUserComment];
+    // Subsec time - ascii
+    [saveExif setObject:self.exifSubsecTime.text forKey:(NSString *)kCGImagePropertyExifSubsecTime];
+    // Subsec time original - ascii
+    [saveExif setObject:self.exifSubsecTimeOrginal.text forKey:(NSString *)kCGImagePropertyExifSubsecTimeOrginal];
+    // Subsec time digitized - ascii
+    [saveExif setObject:self.exifSubsecTimeDigitized.text forKey:(NSString *)kCGImagePropertyExifSubsecTimeDigitized];
+    // Flash pix version - undefined (array)
+    [saveExif setObject:self.exifFlashPixVersion.text forKey:(NSString *)kCGImagePropertyExifFlashPixVersion];
+    // Color space - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifColorSpace.text intValue]] forKey:(NSString *)kCGImagePropertyExifColorSpace];
+    // Pixel X dimension - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifPixelXDimension.text intValue]] forKey:(NSString *)kCGImagePropertyExifPixelXDimension];
+    // Pixel Y dimension - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifPixelYDimension.text intValue]] forKey:(NSString *)kCGImagePropertyExifPixelYDimension];
+    // Related sound file - ascii
+    [saveExif setObject:self.exifRelatedSoundFile.text forKey:(NSString *)kCGImagePropertyExifRelatedSoundFile];
+    // Flash energy - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifFlashEnergy.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifFlashEnergy];
+    // Spatial frequency response - undefined (array)
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifSpatialFrequencyResponse.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifSpatialFrequencyResponse];
+    // Focal plane X resolution - rational
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifFocalPlaneXResolution.text intValue]] forKey:(NSString *)kCGImagePropertyExifFocalPlaneXResolution];
+    // Focal plane Y resolution - rational
+    [saveExif setObject:[NSDecimalNumber numberWithInt:[self.exifFocalPlaneYResolution.text intValue]] forKey:(NSString *)kCGImagePropertyExifFocalPlaneYResolution];
+    // Focal plane resolution unit - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifFocalPlaneResolutionUnit.text intValue]] forKey:(NSString *)kCGImagePropertyExifFocalPlaneResolutionUnit];
+    // Subject location - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSubjectLocation.text intValue]] forKey:(NSString *)kCGImagePropertyExifSubjectLocation];
+    // Exposure index - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifExposureIndex.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifExposureIndex];
+    // Sensing method - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSensingMethod.text intValue]] forKey:(NSString *)kCGImagePropertyExifSensingMethod];
+    // File source - undefined according to documentation, but it's actually a short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifFileSource.text intValue]] forKey:(NSString *)kCGImagePropertyExifFileSource];
+    // Scene type - undefined. not editable
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifSceneType.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifSceneType];
+    // CFA pattern - undefined. not editable
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifCFAPattern.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifCFAPattern];
+    // Custom rendered - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifCustomRendered.text intValue]] forKey:(NSString *)kCGImagePropertyExifCustomRendered];
+    // Exposure mode - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifExposureMode.text intValue]] forKey:(NSString *)kCGImagePropertyExifExposureMode];
+    // White balance - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifWhiteBalance.text intValue]] forKey:(NSString *)kCGImagePropertyExifWhiteBalance];
+    // Digital zoom ratio - rational
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifDigitalZoomRatio.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifDigitalZoomRatio];
+    // Focal length in 35 mm film - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifFocalLenIn35mmFilm.text intValue]] forKey:(NSString *)kCGImagePropertyExifFocalLenIn35mmFilm];
+    // Scene capture type - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSceneCaptureType.text intValue]] forKey:(NSString *)kCGImagePropertyExifSceneCaptureType];
+    // Gain control - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifGainControl.text intValue]] forKey:(NSString *)kCGImagePropertyExifGainControl];
+    // Contrast - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifContrast.text intValue]] forKey:(NSString *)kCGImagePropertyExifContrast];
+    // Saturation - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSaturation.text intValue]] forKey:(NSString *)kCGImagePropertyExifSaturation];
+    // Sharpness - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSharpness.text intValue]] forKey:(NSString *)kCGImagePropertyExifSharpness];
+    // Device setting description - undefined. not editable
+    [saveExif setObject:self.exifDeviceSettingDescription.text forKey:(NSString *)kCGImagePropertyExifDeviceSettingDescription];
+    // Subject distance range - short
+    [saveExif setObject:[NSNumber numberWithInt:[self.exifSubjectDistRange.text intValue]] forKey:(NSString *)kCGImagePropertyExifSubjectDistRange];
+    // Image unique ID - ascii
+    [saveExif setObject:self.exifImageUniqueID.text forKey:(NSString *)kCGImagePropertyExifImageUniqueID];
+    // Gamma - not in documentation, but probably a float
+    [saveExif setObject:[NSDecimalNumber numberWithFloat:[self.exifGamma.text doubleValue]] forKey:(NSString *)kCGImagePropertyExifGamma];
+    // Camera owner name - not in documentation, but probably ascii
+    [saveExif setObject:self.exifCameraOwnerName.text forKey:(NSString *)kCGImagePropertyExifCameraOwnerName];
+    // Body serial number - not in documentation, but probably ascii
+    [saveExif setObject:self.exifBodySerialNumber.text forKey:(NSString *)kCGImagePropertyExifBodySerialNumber];
+    // Lens specification - not in documentation, but it is an array
+    [saveExif setObject:self.exifLensSpecification.text forKey:(NSString *)kCGImagePropertyExifLensSpecification];
+    // Lens make - not in documentation, but probably ascii
+    [saveExif setObject:self.exifLensMake.text forKey:(NSString *)kCGImagePropertyExifLensMake];
+    // Lens model - not in documentation, but probably ascii
+    [saveExif setObject:self.exifLensModel.text forKey:(NSString *)kCGImagePropertyExifLensModel];
+    // Lens serial number - not in documentation, but probably ascii
+    [saveExif setObject:self.exifLensSerialNumber.text forKey:(NSString *)kCGImagePropertyExifLensSerialNumber];
+    
+    [self.imageMetadata setObject:saveExif forKey:(NSString *)kCGImagePropertyExifDictionary];
+    
+    NSLog(@"imageMetadata has size: %lu", (unsigned long)[self.exifData count]);
+    
+    // add GPS data
+    CLLocation * loc = [[CLLocation alloc] initWithLatitude:self.latval longitude:self.longval]; // need a location here
+    if ( loc ) {
+        NSLog(@"setting object");
+        [self.imageMetadata setObject:[self gpsDictionaryForLocation:loc] forKey:(NSString*)kCGImagePropertyGPSDictionary];
+    }
+    
+    ALAssetsLibraryWriteImageCompletionBlock imageWriteCompletionBlock =
+    ^(NSURL *newURL, NSError *error) {
+        if (error) {
+            NSLog( @"Error writing image with metadata to Photo Library: %@", error );
+        } else {
+            NSLog( @"Wrote image %@ with metadata %@ to Photo Library",newURL,self.imageMetadata);
+        }
+    };
+    
+    // Save the new image to the Camera Roll
+    [library writeImageToSavedPhotosAlbum:[imageToSave CGImage]
+                                 metadata:self.imageMetadata
+                          completionBlock:imageWriteCompletionBlock];
+}
+
+- (NSDictionary *) gpsDictionaryForLocation:(CLLocation *)location
+{
+    NSLog(@"now writing gps dictionary location");
+    CLLocationDegrees exifLatitude  = location.coordinate.latitude;
+    CLLocationDegrees exifLongitude = location.coordinate.longitude;
+    
+    NSString * latRef;
+    NSString * longRef;
+    if (exifLatitude < 0.0) {
+        exifLatitude = exifLatitude * -1.0f;
+        latRef = @"S";
+    } else {
+        latRef = @"N";
+    }
+    
+    if (exifLongitude < 0.0) {
+        exifLongitude = exifLongitude * -1.0f;
+        longRef = @"W";
+    } else {
+        longRef = @"E";
+    }
+    
+    self.locDict = [[NSMutableDictionary alloc] init];
+    
+    [self.locDict setObject:location.timestamp forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+    [self.locDict setObject:latRef forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
+    [self.locDict setObject:[NSNumber numberWithFloat:exifLatitude] forKey:(NSString *)kCGImagePropertyGPSLatitude];
+    [self.locDict setObject:longRef forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
+    [self.locDict setObject:[NSNumber numberWithFloat:exifLongitude] forKey:(NSString *)kCGImagePropertyGPSLongitude];
+    [self.locDict setObject:[NSNumber numberWithFloat:location.horizontalAccuracy] forKey:(NSString*)kCGImagePropertyGPSDOP];
+    [self.locDict setObject:[NSNumber numberWithFloat:location.altitude] forKey:(NSString*)kCGImagePropertyGPSAltitude];
+    
+    NSLog(@"location dictionary contains: %@", [self stringOutputForDictionary:self.locDict]);
+    
+    return self.locDict;
 }
 
 /**
@@ -325,6 +550,8 @@
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
+    NSLog(@"now loading the picture's information");
+    
     [self clearExif];
     
     self.pic = picker;
@@ -339,15 +566,23 @@
 //    NSURL *mediaUrl = info[UIImagePickerControllerMediaURL];
     
     /*
-     *  This will cause massive lag, as converting to PNG is an expensive operation.
+     *  The following will cause massive lag. Apparently converting to PNG is an expensive operation.
      */
 //    self.currentImageData = UIImagePNGRepresentation(fullImage);
     
     if(picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        NSLog(@"now in the imagePickerController method as SourceTypeCamera");
         UIImageWriteToSavedPhotosAlbum(fullImage, nil, nil, nil);
         [picker dismissViewControllerAnimated:YES
                                    completion:nil];
+        
+        self.pic = [[UIImagePickerController alloc] init];
+        self.pic.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        [self imagePickerController:self.pic didFinishPickingMediaWithInfo:self.inf];
         return;
+        
+//        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+//        [library writeImageToSavedPhotosAlbum:metadata:completionBlock];
     }
 //    else if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
 //        
@@ -431,6 +666,7 @@
                      
                      // get exif data
                      CFDictionaryRef exif = (CFDictionaryRef)CFDictionaryGetValue(imagePropertiesDictionary, kCGImagePropertyExifDictionary);
+                     self.originalExif = exif;
                      NSDictionary *exif_dict = (__bridge NSDictionary*)exif;
                      NSLog(@"exif_dict: %@",exif_dict);
                      
@@ -555,34 +791,39 @@
                          self.exifExposureBiasValue.text = [NSString stringWithFormat:@"%@", exifExposureBiasValue];
                          [self.originalValues setObject:self.exifExposureBiasValue.text forKey:@"exifExposureBiasValue"];
                          
-                         NSString *exifMaxApertureValue = CFDictionaryGetValue(exif, kCGImagePropertyExifMaxApertureValue);
+                         NSDecimalNumber *exifMaxApertureValue = CFDictionaryGetValue(exif, kCGImagePropertyExifMaxApertureValue);
                          if(!exifMaxApertureValue) {
                              self.exifMaxApertureValue.text = @"";
                          }
                          else {
-                             self.exifMaxApertureValue.text = exifMaxApertureValue;
+                             self.exifMaxApertureValue.text = [NSString stringWithFormat:@"%@", exifMaxApertureValue];
                          }
                          [self.originalValues setObject:self.exifMaxApertureValue.text forKey:@"exifMaxApertureValue"];
                          
-                         NSString *exifSubjectDistance = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectDistance);
+                         NSDecimalNumber *exifSubjectDistance = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectDistance);
                          if(!exifSubjectDistance) {
                              self.exifSubjectDistance.text = @"";
                          }
                          else {
-                             self.exifSubjectDistance.text = exifSubjectDistance;
+                             self.exifSubjectDistance.text = [NSString stringWithFormat:@"%@", exifSubjectDistance];
                          }
                          [self.originalValues setObject:self.exifSubjectDistance.text forKey:@"exifSubjectDistance"];
                          
                          NSDecimalNumber *exifMeteringMode = CFDictionaryGetValue(exif, kCGImagePropertyExifMeteringMode);
-                         self.exifMeteringMode.text = [NSString stringWithFormat:@"%@", exifMeteringMode];
+                         if(!exifMeteringMode) {
+                             self.exifMeteringMode.text = @"";
+                         }
+                         else {
+                             self.exifMeteringMode.text = [NSString stringWithFormat:@"%@", exifMeteringMode];
+                         }
                          [self.originalValues setObject:self.exifMeteringMode.text forKey:@"exifMeteringMode"];
                          
-                         NSString *exifLightSource = CFDictionaryGetValue(exif, kCGImagePropertyExifLightSource);
+                         NSDecimalNumber *exifLightSource = CFDictionaryGetValue(exif, kCGImagePropertyExifLightSource);
                          if(!exifLightSource) {
                              self.exifLightSource.text = @"";
                          }
                          else {
-                             self.exifLightSource.text = exifLightSource;
+                             self.exifLightSource.text = [NSString stringWithFormat:@"%@", exifLightSource];
                          }
                          [self.originalValues setObject:self.exifLightSource.text forKey:@"exifLightSource"];
                          
@@ -658,84 +899,94 @@
                          }
                          [self.originalValues setObject:self.exifRelatedSoundFile.text forKey:@"exifRelatedSoundFile"];
                          
-                         NSString *exifFlashEnergy = CFDictionaryGetValue(exif, kCGImagePropertyExifFlashEnergy);
-                         if(!exifRelatedSoundFile) {
+                         NSDecimalNumber *exifFlashEnergy = CFDictionaryGetValue(exif, kCGImagePropertyExifFlashEnergy);
+                         if(!exifFlashEnergy) {
                              self.exifFlashEnergy.text = @"";
                          }
                          else {
-                             self.exifFlashEnergy.text = exifFlashEnergy;
+                             self.exifFlashEnergy.text = [NSString stringWithFormat:@"%@", exifFlashEnergy];
                          }
                          [self.originalValues setObject:self.exifFlashEnergy.text forKey:@"exifFlashEnergy"];
                          
-                         NSString *exifSpatialFrequencyResponse = CFDictionaryGetValue(exif, kCGImagePropertyExifSpatialFrequencyResponse);
+                         NSDecimalNumber *exifSpatialFrequencyResponse = CFDictionaryGetValue(exif, kCGImagePropertyExifSpatialFrequencyResponse);
                          if(!exifSpatialFrequencyResponse) {
                              self.exifSpatialFrequencyResponse.text = @"";
                          }
                          else {
-                             self.exifSpatialFrequencyResponse.text = exifSpatialFrequencyResponse;
+                             self.exifSpatialFrequencyResponse.text = [NSString stringWithFormat:@"%@", exifSpatialFrequencyResponse];
                          }
                          [self.originalValues setObject:self.exifSpatialFrequencyResponse.text forKey:@"exifSpatialFrequencyResponse"];
                          
-                         NSString *exifFocalPlaneXResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneXResolution);
+                         NSDecimalNumber *exifFocalPlaneXResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneXResolution);
                          if(!exifFocalPlaneXResolution) {
                              self.exifFocalPlaneXResolution.text = @"";
                          }
                          else {
-                             self.exifFocalPlaneXResolution.text = exifFocalPlaneXResolution;
+                             self.exifFocalPlaneXResolution.text = [NSString stringWithFormat:@"%@", exifFocalPlaneXResolution];
                          }
                          [self.originalValues setObject:self.exifFocalPlaneXResolution.text forKey:@"exifFocalPlaneXResolution"];
                          
-                         NSString *exifFocalPlaneYResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneYResolution);
+                         NSDecimalNumber *exifFocalPlaneYResolution = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneYResolution);
                          if(!exifFocalPlaneYResolution) {
                              self.exifFocalPlaneYResolution.text = @"";
                          }
                          else {
-                             self.exifFocalPlaneYResolution.text = exifFocalPlaneYResolution;
+                             self.exifFocalPlaneYResolution.text = [NSString stringWithFormat:@"%@", exifFocalPlaneYResolution];
                          }
                          [self.originalValues setObject:self.exifFocalPlaneYResolution.text forKey:@"exifFocalPlaneYResolution"];
                          
-                         NSString *exifFocalPlaneResolutionUnit = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneResolutionUnit);
+                         NSDecimalNumber *exifFocalPlaneResolutionUnit = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalPlaneResolutionUnit);
                          if(!exifFocalPlaneResolutionUnit) {
                              self.exifFocalPlaneResolutionUnit.text = @"";
                          }
                          else {
-                             self.exifFocalPlaneResolutionUnit.text = exifFocalPlaneResolutionUnit;
+                             self.exifFocalPlaneResolutionUnit.text = [NSString stringWithFormat:@"%@", exifFocalPlaneResolutionUnit];
                          }
                          [self.originalValues setObject:self.exifFocalPlaneResolutionUnit.text forKey:@"exifFocalPlaneResolutionUnit"];
                          
-                         NSString *exifSubjectLocation = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectLocation);
+                         NSDecimalNumber *exifSubjectLocation = CFDictionaryGetValue(exif, kCGImagePropertyExifSubjectLocation);
                          if(!exifSubjectLocation) {
                              self.exifSubjectLocation.text = @"";
                          }
                          else {
-                             self.exifSubjectLocation.text = exifSubjectLocation;
+                             self.exifSubjectLocation.text = [NSString stringWithFormat:@"%@", exifSubjectLocation];
                          }
                          [self.originalValues setObject:self.exifSubjectLocation.text forKey:@"exifSubjectLocation"];
                          
-                         NSString *exifExposureIndex = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureIndex);
+                         NSDecimalNumber *exifExposureIndex = CFDictionaryGetValue(exif, kCGImagePropertyExifExposureIndex);
                          if(!exifExposureIndex) {
                              self.exifExposureIndex.text = @"";
                          }
                          else {
-                             self.exifExposureIndex.text = exifExposureIndex;
+                             self.exifExposureIndex.text = [NSString stringWithFormat:@"%@", exifExposureIndex];
                          }
                          [self.originalValues setObject:self.exifExposureIndex.text forKey:@"exifExposureIndex"];
                          
                          NSDecimalNumber *exifSensingMethod = CFDictionaryGetValue(exif, kCGImagePropertyExifSensingMethod);
-                         self.exifSensingMethod.text = [NSString stringWithFormat:@"%@", exifSensingMethod];
+                         if(!exifSensingMethod) {
+                             self.exifSensingMethod.text = @"";
+                         }
+                         else {
+                             self.exifSensingMethod.text = [NSString stringWithFormat:@"%@", exifSensingMethod];
+                         }
                          [self.originalValues setObject:self.exifSensingMethod.text forKey:@"exifSensingMethod"];
                          
-                         NSString *exifFileSource = CFDictionaryGetValue(exif, kCGImagePropertyExifFileSource);
+                         NSDecimalNumber *exifFileSource = CFDictionaryGetValue(exif, kCGImagePropertyExifFileSource);
                          if(!exifFileSource) {
                              self.exifFileSource.text = @"";
                          }
                          else {
-                             self.exifFileSource.text = exifFileSource;
+                             self.exifFileSource.text = [NSString stringWithFormat:@"%@", exifFileSource];
                          }
                          [self.originalValues setObject:self.exifFileSource.text forKey:@"exifFileSource"];
                          
                          NSDecimalNumber *exifSceneType = CFDictionaryGetValue(exif, kCGImagePropertyExifSceneType);
-                         self.exifSceneType.text = [NSString stringWithFormat:@"%@", exifSceneType];
+                         if(!exifSceneType) {
+                             self.exifSceneType.text = @"";
+                         }
+                         else {
+                             self.exifSceneType.text = [NSString stringWithFormat:@"%@", exifSceneType];
+                         }
                          [self.originalValues setObject:self.exifSceneType.text forKey:@"exifSceneType"];
                          
                          NSDecimalNumber *exifCFAPattern = CFDictionaryGetValue(exif, kCGImagePropertyExifCFAPattern);
@@ -774,11 +1025,21 @@
                          [self.originalValues setObject:self.exifDigitalZoomRatio.text forKey:@"exifDigitalZoomRatio"];
                          
                          NSDecimalNumber *exifFocalLenIn35mmFilm = CFDictionaryGetValue(exif, kCGImagePropertyExifFocalLenIn35mmFilm);
-                         self.exifFocalLenIn35mmFilm.text = [NSString stringWithFormat:@"%@", exifFocalLenIn35mmFilm];
+                         if(!exifFocalLenIn35mmFilm) {
+                             self.exifFocalLenIn35mmFilm.text = @"";
+                         }
+                         else {
+                             self.exifFocalLenIn35mmFilm.text = [NSString stringWithFormat:@"%@", exifFocalLenIn35mmFilm];
+                         }
                          [self.originalValues setObject:self.exifFocalLenIn35mmFilm.text forKey:@"exifFocalLenIn35mmFilm"];
                          
                          NSDecimalNumber *exifSceneCaptureType = CFDictionaryGetValue(exif, kCGImagePropertyExifSceneCaptureType);
-                         self.exifSceneCaptureType.text = [NSString stringWithFormat:@"%@", exifSceneCaptureType];
+                         if(!exifSceneCaptureType) {
+                             self.exifSceneCaptureType.text = @"";
+                         }
+                         else {
+                             self.exifSceneCaptureType.text = [NSString stringWithFormat:@"%@", exifSceneCaptureType];
+                         }
                          [self.originalValues setObject:self.exifSceneCaptureType.text forKey:@"exifSceneCaptureType"];
                          
                          NSDecimalNumber *exifGainControl = CFDictionaryGetValue(exif, kCGImagePropertyExifGainControl);
@@ -835,12 +1096,12 @@
                          }
                          [self.originalValues setObject:self.exifSubjectDistRange.text forKey:@"exifSubjectDistRange"];
                          
-                         NSDecimalNumber *exifImageUniqueID = CFDictionaryGetValue(exif, kCGImagePropertyExifImageUniqueID);
-                         if(!exifSubjectDistRange) {
+                         NSString *exifImageUniqueID = CFDictionaryGetValue(exif, kCGImagePropertyExifImageUniqueID);
+                         if(!exifImageUniqueID) {
                              self.exifImageUniqueID.text = @"";
                          }
                          else {
-                             self.exifImageUniqueID.text = [NSString stringWithFormat:@"%@", exifImageUniqueID];
+                             self.exifImageUniqueID.text = exifImageUniqueID;
                          }
                          [self.originalValues setObject:self.exifImageUniqueID.text forKey:@"exifImageUniqueID"];
                          
@@ -872,7 +1133,12 @@
                          [self.originalValues setObject:self.exifBodySerialNumber.text forKey:@"exifBodySerialNumber"];
                          
                          NSDecimalNumber *exifLensSpecification = CFDictionaryGetValue(exif, kCGImagePropertyExifLensSpecification);
-                         self.exifLensSpecification.text = [NSString stringWithFormat:@"%@", exifLensSpecification];
+                         if(!exifLensSpecification) {
+                             self.exifLensSpecification.text = @"";
+                         }
+                         else {
+                             self.exifLensSpecification.text = [NSString stringWithFormat:@"%@", exifLensSpecification];
+                         }
                          [self.originalValues setObject:self.exifLensSpecification.text forKey:@"exifLensSpecification"];
                          
                          NSDecimalNumber *exifLensMake = CFDictionaryGetValue(exif, kCGImagePropertyExifLensMake);
@@ -904,6 +1170,7 @@
                      
                      // get gps data
                      CFDictionaryRef gps = (CFDictionaryRef)CFDictionaryGetValue(imagePropertiesDictionary, kCGImagePropertyGPSDictionary);
+                     self.originalGps = gps;
                      NSDictionary *gps_dict = (__bridge NSDictionary*)gps;
                      NSLog(@"gps_dict: %@",gps_dict);
                      
@@ -986,10 +1253,7 @@
                          
                          // Apple maps
                          
-                         self.gpsMapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 3280, self.screenW, 220)];
-                         self.gpsMapView.delegate = self;
-//                         self.gpsMapView.showsUserLocation = YES;
-                         [self.scrollView addSubview:self.gpsMapView];
+                         
                          
                          // Test location in Cairo, Egypt
 //                         self.latval = 30.05;
@@ -1016,46 +1280,6 @@
 //                         
 //                         [self.gpsMapView addSubview:self.userHeadingBtn];
                          
-                         //User Heading Button states images
-                         UIImage *buttonImage = [UIImage imageNamed:@"greyButtonHighlight.png"];
-                         UIImage *buttonImageHighlight = [UIImage imageNamed:@"greyButton.png"];
-                         UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
-                         
-                         //Configure the button
-                         self.userHeadingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-                         [self.userHeadingBtn addTarget:self action:@selector(startShowingUserHeading:) forControlEvents:UIControlEventTouchUpInside];
-                         //Add state images
-                         [self.userHeadingBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-                         [self.userHeadingBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
-                         [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
-                         
-                         //Button shadow
-                         self.userHeadingBtn.frame = CGRectMake(0,0,39,30);
-                         self.userHeadingBtn.layer.cornerRadius = 8.0f;
-                         self.userHeadingBtn.layer.masksToBounds = NO;
-                         self.userHeadingBtn.layer.shadowColor = [UIColor blackColor].CGColor;
-                         self.userHeadingBtn.layer.shadowOpacity = 0.8;
-                         self.userHeadingBtn.layer.shadowRadius = 1;
-                         self.userHeadingBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
-                         
-                         [self.gpsMapView addSubview:self.userHeadingBtn];
-                         
-                         // Reset location button
-                         UIImage *resetButtonArrow = [UIImage imageNamed:@"ResetGrey.png"];
-                         self.resetLocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-                         [self.resetLocationBtn addTarget:self action:@selector(resetMapLocation:) forControlEvents:UIControlEventTouchUpInside];
-                         [self.resetLocationBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
-                         [self.resetLocationBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
-                         [self.resetLocationBtn setImage:resetButtonArrow forState:UIControlStateNormal];
-                         self.resetLocationBtn.frame = CGRectMake(39,0,39,30);
-                         self.resetLocationBtn.layer.cornerRadius = 8.0f;
-                         self.resetLocationBtn.layer.masksToBounds = NO;
-                         self.resetLocationBtn.layer.shadowColor = [UIColor blackColor].CGColor;
-                         self.resetLocationBtn.layer.shadowOpacity = 0.8;
-                         self.resetLocationBtn.layer.shadowRadius = 1;
-                         self.resetLocationBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
-                         
-                         [self.gpsMapView addSubview:self.resetLocationBtn];
                          
                          NSDecimalNumber *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
                          self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];
@@ -1519,6 +1743,41 @@ CGPoint pointFromRectangle(CGRect rect) {
     [KLCPopup dismissAllPopups];
     
     [self checkIfNumber];
+    
+    if(self.currentlyBeingEdited == self.gpsLatitude) {
+        MKCoordinateRegion region;
+        region.center.latitude = [self.gpsLatitude.text doubleValue];
+        region.center.longitude = [self.gpsLongitude.text doubleValue];
+        region.span.latitudeDelta = 0.01;
+        region.span.longitudeDelta = 0.01;
+        
+        [self.gpsMapView setRegion:region animated:YES];
+        
+        // Annotation
+//        MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
+//        point.coordinate = CLLocationCoordinate2DMake([self.gpsLatitude.text doubleValue], [self.gpsLongitude.text doubleValue]);
+//        point.title = @"Image location";
+//        point.subtitle = [[NSString stringWithFormat:@"%f", [self.gpsLatitude.text doubleValue]] stringByAppendingString:[NSString stringWithFormat:@", %f", [self.gpsLongitude.text doubleValue]]];
+//        
+//        [self.gpsMapView addAnnotation:point];
+    }
+    else if(self.currentlyBeingEdited == self.gpsLongitude) {
+        MKCoordinateRegion region;
+        region.center.latitude = [self.gpsLatitude.text doubleValue];
+        region.center.longitude = [self.gpsLongitude.text doubleValue];
+        region.span.latitudeDelta = 0.01;
+        region.span.longitudeDelta = 0.01;
+        
+        [self.gpsMapView setRegion:region animated:YES];
+        
+        // Annotation
+//        MKPointAnnotation *point = [[MKPointAnnotation alloc] init];
+//        point.coordinate = CLLocationCoordinate2DMake([self.gpsLatitude.text doubleValue], [self.gpsLongitude.text doubleValue]);
+//        point.title = @"Image location";
+//        point.subtitle = [[NSString stringWithFormat:@"%f", [self.gpsLatitude.text doubleValue]] stringByAppendingString:[NSString stringWithFormat:@", %f", [self.gpsLongitude.text doubleValue]]];
+//        
+//        [self.gpsMapView addAnnotation:point];
+    }
 }
 
 /**
@@ -1879,7 +2138,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     
     // Scroll view
     self.scrollView = [[UIScrollView alloc] initWithFrame:self.view.bounds];
-    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, 4928)];
+    [self.scrollView setContentSize:CGSizeMake(self.scrollView.bounds.size.width, 4972)];
     
     [self.view addSubview:self.scrollView];
     
@@ -2244,6 +2503,7 @@ CGPoint pointFromRectangle(CGRect rect) {
     self.exifVersion = [[UITextField alloc] init];
     self.exifVersion.clearButtonMode = UITextFieldViewModeWhileEditing;
     self.exifVersion.delegate = self;
+//    self.exifVersion.enabled = NO;
     self.exifVersion.frame = CGRectMake(w/2, 872, w/2, 20);
     self.exifVersion.keyboardAppearance = UIKeyboardAppearanceDark;
     self.exifVersion.tag = 8;
@@ -3234,7 +3494,52 @@ CGPoint pointFromRectangle(CGRect rect) {
     gpsTitleLabel.textColor = [UIColor whiteColor];
     [self.scrollView addSubview:gpsTitleLabel];
     
-    // Google maps
+    // Apple maps
+    self.gpsMapView = [[MKMapView alloc] initWithFrame:CGRectMake(0, 3280, self.screenW, 220)];
+    self.gpsMapView.delegate = self;
+//    self.gpsMapView.showsUserLocation = YES;
+    [self.scrollView addSubview:self.gpsMapView];
+    
+    //User Heading Button states images
+    UIImage *buttonImage = [UIImage imageNamed:@"greyButtonHighlight.png"];
+    UIImage *buttonImageHighlight = [UIImage imageNamed:@"greyButton.png"];
+    UIImage *buttonArrow = [UIImage imageNamed:@"LocationGrey.png"];
+    
+    //Configure the button
+    self.userHeadingBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.userHeadingBtn addTarget:self action:@selector(startShowingUserHeading:) forControlEvents:UIControlEventTouchUpInside];
+    //Add state images
+    [self.userHeadingBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [self.userHeadingBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
+    [self.userHeadingBtn setImage:buttonArrow forState:UIControlStateNormal];
+    
+    //Button shadow
+    self.userHeadingBtn.frame = CGRectMake(0,0,39,30);
+    self.userHeadingBtn.layer.cornerRadius = 8.0f;
+    self.userHeadingBtn.layer.masksToBounds = NO;
+    self.userHeadingBtn.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.userHeadingBtn.layer.shadowOpacity = 0.8;
+    self.userHeadingBtn.layer.shadowRadius = 1;
+    self.userHeadingBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
+    
+    [self.gpsMapView addSubview:self.userHeadingBtn];
+    
+    // Reset location button
+    UIImage *resetButtonArrow = [UIImage imageNamed:@"ResetGrey.png"];
+    self.resetLocationBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.resetLocationBtn addTarget:self action:@selector(resetMapLocation:) forControlEvents:UIControlEventTouchUpInside];
+    [self.resetLocationBtn setBackgroundImage:buttonImage forState:UIControlStateNormal];
+    [self.resetLocationBtn setBackgroundImage:buttonImageHighlight forState:UIControlStateHighlighted];
+    [self.resetLocationBtn setImage:resetButtonArrow forState:UIControlStateNormal];
+    self.resetLocationBtn.frame = CGRectMake(39,0,39,30);
+    self.resetLocationBtn.layer.cornerRadius = 8.0f;
+    self.resetLocationBtn.layer.masksToBounds = NO;
+    self.resetLocationBtn.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.resetLocationBtn.layer.shadowOpacity = 0.8;
+    self.resetLocationBtn.layer.shadowRadius = 1;
+    self.resetLocationBtn.layer.shadowOffset = CGSizeMake(0, 1.0f);
+    
+    [self.gpsMapView addSubview:self.resetLocationBtn];
     
     // Location search bar
     self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 3500, w, 44)];
@@ -4178,19 +4483,19 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 6:
             self.item.text = @"ISO speed ratings";
-            self.itemInfo.text = @"The ISO Speed and ISO Latitude of the camera or input device.";
+            self.itemInfo.text = @"The ISO Speed and ISO Latitude of the camera or input device. This value will not update.";
             break;
         case 7:
             self.item.text = @"OECF";
-            self.itemInfo.text = @"Opto-electrical conversion function, which defines the relationship between the optical input of the camera and the image values.";
+            self.itemInfo.text = @"Opto-electrical conversion function, which defines the relationship between the optical input of the camera and the image values. This value will not update.";
             break;
         case 8:
             self.item.text = @"Exif version";
-            self.itemInfo.text = @"Version of the Exif standard.";
+            self.itemInfo.text = @"Version of the Exif standard. This value will not update. Each number represents a digit of the version number. Ex: 2.31 = ( 2, 3, 1)";
             break;
         case 9:
             self.item.text = @"Components configuration";
-            self.itemInfo.text = @"The channels of each component.";
+            self.itemInfo.text = @"The channels of each component. This value will not update.";
             break;
         case 10:
             self.item.text = @"Compressed bits per pixel";
@@ -4262,7 +4567,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 27:
             self.item.text = @"FlashPix version";
-            self.itemInfo.text = @"The FlashPix version supported by an FPXR file. FlashPix is a format for multiresolution tiled images that facilitates fast onscreen viewing.";
+            self.itemInfo.text = @"The FlashPix version supported by an FPXR file. FlashPix is a format for multiresolution tiled images that facilitates fast onscreen viewing. This value will not update.";
             break;
         case 28:
             self.item.text = @"Color space";
@@ -4286,7 +4591,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 33:
             self.item.text = @"Spatial frequency response";
-            self.itemInfo.text = @"The spatial frequency table and spatial frequency response values in the direction of image width, image height, and diagonal directions.";
+            self.itemInfo.text = @"The spatial frequency table and spatial frequency response values in the direction of image width, image height, and diagonal directions. This value will not update.";
             break;
         case 34:
             self.item.text = @"Focal plane X resolution";
@@ -4318,11 +4623,11 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 41:
             self.item.text = @"Scene type";
-            self.itemInfo.text = @"The image source. Digital still cameras will show a value of 1.";
+            self.itemInfo.text = @"The image source. Digital still cameras will show a value of 1. This value will not update.";
             break;
         case 42:
             self.item.text = @"CFA pattern";
-            self.itemInfo.text = @"The color filter array (CFA) geometric pattern of the image sensor when a one-chip color area sensor is used.";
+            self.itemInfo.text = @"The color filter array (CFA) geometric pattern of the image sensor when a one-chip color area sensor is used. This value will not update.";
             break;
         case 43:
             self.item.text = @"Custom rendered";
@@ -4366,7 +4671,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 53:
             self.item.text = @"Device setting description";
-            self.itemInfo.text = @"Picture-taking conditions of a particular camera model.";
+            self.itemInfo.text = @"Picture-taking conditions of a particular camera model. This value will not update.";
             break;
         case 54:
             self.item.text = @"Subject distance range";
@@ -4390,7 +4695,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 59:
             self.item.text = @"Lens specification";
-            self.itemInfo.text = @"The specification information for the lens used to photograph the image.";
+            self.itemInfo.text = @"The specification information for the lens used to photograph the image. This value will not update.";
             break;
         case 60:
             self.item.text = @"Lens make";
