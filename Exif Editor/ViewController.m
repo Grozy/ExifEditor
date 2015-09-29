@@ -266,6 +266,7 @@
     // Lens serial number - not in documentation, but probably ascii
     [saveExif setObject:self.exifLensSerialNumber.text forKey:(NSString *)kCGImagePropertyExifLensSerialNumber];
     
+    // adds exif dictionary to the metadata dictionary
     [self.imageMetadata setObject:saveExif forKey:(NSString *)kCGImagePropertyExifDictionary];
     
     NSLog(@"imageMetadata has size: %lu", (unsigned long)[self.exifData count]);
@@ -292,6 +293,10 @@
                           completionBlock:imageWriteCompletionBlock];
 }
 
+/**
+ *  Saves the GPS dictionary information
+ *  GPS tag info taken from http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/gps.html
+ */
 - (NSDictionary *) gpsDictionaryForLocation:(CLLocation *)location
 {
     NSLog(@"now writing gps dictionary location");
@@ -316,13 +321,70 @@
     
     self.locDict = [[NSMutableDictionary alloc] init];
     
-    [self.locDict setObject:location.timestamp forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+    // GPS version - byte. probably works like exif version
+    [self.locDict setObject:self.gpsVersion.text forKey:(NSString *)kCGImagePropertyExifLensSerialNumber];
+    // Latitude ref
     [self.locDict setObject:latRef forKey:(NSString*)kCGImagePropertyGPSLatitudeRef];
+    // Latitude
     [self.locDict setObject:[NSNumber numberWithFloat:exifLatitude] forKey:(NSString *)kCGImagePropertyGPSLatitude];
+    // Longitude ref
     [self.locDict setObject:longRef forKey:(NSString*)kCGImagePropertyGPSLongitudeRef];
+    // Longitude
     [self.locDict setObject:[NSNumber numberWithFloat:exifLongitude] forKey:(NSString *)kCGImagePropertyGPSLongitude];
-    [self.locDict setObject:[NSNumber numberWithFloat:location.horizontalAccuracy] forKey:(NSString*)kCGImagePropertyGPSDOP];
-    [self.locDict setObject:[NSNumber numberWithFloat:location.altitude] forKey:(NSString*)kCGImagePropertyGPSAltitude];
+    // GPS DOP - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDegreeOfPrecision.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSDOP];
+    // Altitude ref - byte
+    [self.locDict setObject:[NSNumber numberWithInt:[self.gpsAltitudeRef.text intValue]] forKey:(NSString*)kCGImagePropertyGPSAltitudeRef];
+    // Altitude - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsAltitude.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSAltitude];
+    // timestamp - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsTimeStamp.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSTimeStamp];
+    // Satellites - ascii
+    [self.locDict setObject:self.gpsSatellites.text forKey:(NSString*)kCGImagePropertyGPSSatellites];
+    // GPS status - ascii
+    [self.locDict setObject:self.gpsStatus.text forKey:(NSString*)kCGImagePropertyGPSStatus];
+    // GPS measure mode - ascii
+    [self.locDict setObject:self.gpsMeasureMode.text forKey:(NSString*)kCGImagePropertyGPSMeasureMode];
+    // GPS DOP - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDegreeOfPrecision.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSMeasureMode];
+    // GPS speed ref - ascii
+    [self.locDict setObject:self.gpsSpeedRef.text forKey:(NSString*)kCGImagePropertyGPSSpeedRef];
+    // GPS speed - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsSpeed.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSSpeed];
+    // GPS track ref - ascii
+    [self.locDict setObject:self.gpsTrackRef.text forKey:(NSString*)kCGImagePropertyGPSTrackRef];
+    // GPS track - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsTrack.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSTrack];
+    // GPS image direction ref - ascii
+    [self.locDict setObject:self.gpsImgDirectionRef.text forKey:(NSString*)kCGImagePropertyGPSImgDirectionRef];
+    // GPS image direction - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsImgDirection.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSImgDirection];
+    // GPS map datum - ascii
+    [self.locDict setObject:self.gpsMapDatum.text forKey:(NSString*)kCGImagePropertyGPSMapDatum];
+    // GPS destination latitude ref - ascii
+    [self.locDict setObject:self.gpsDestLatRef.text forKey:(NSString*)kCGImagePropertyGPSDestLatitudeRef];
+    // GPS destination latitude - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDestLat.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSDestLatitude];
+    // GPS destination longitude ref - ascii
+    [self.locDict setObject:self.gpsDestLongRef.text forKey:(NSString*)kCGImagePropertyGPSDestLongitudeRef];
+    // GPS destination longitude - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDestLong.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSDestLongitude];
+    // GPS destination bearing ref - ascii
+    [self.locDict setObject:self.gpsDestBearingRef.text forKey:(NSString*)kCGImagePropertyGPSDestBearingRef];
+    // GPS destination bearing - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDestBearing.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSDestBearing];
+    // GPS destination distance ref - ascii
+    [self.locDict setObject:self.gpsDestDistanceRef.text forKey:(NSString*)kCGImagePropertyGPSDestDistanceRef];
+    // GPS destination distance - rational
+    [self.locDict setObject:[NSDecimalNumber numberWithFloat:[self.gpsDestDistance.text doubleValue]] forKey:(NSString*)kCGImagePropertyGPSDestDistance];
+    // GPS processing method - undefined, but according to documentation, it is a string. doesn't update
+    [self.locDict setObject:self.gpsProcessingMethod.text forKey:(NSString*)kCGImagePropertyGPSProcessingMethod];
+    // GPS area information - undefined, but according to documentation, it is a string. doesn't update
+    [self.locDict setObject:self.gpsAreaInformation.text forKey:(NSString*)kCGImagePropertyGPSAreaInformation];
+    // GPS date stamp - ascii. doesn't update
+    [self.locDict setObject:self.gpsDateStamp.text forKey:(NSString*)kCGImagePropertyGPSDateStamp];
+    // GPS differential - short
+    [self.locDict setObject:[NSNumber numberWithInt:[self.gpsDifferental.text intValue]] forKey:(NSString*)kCGImagePropertyGPSDifferental];
     
     NSLog(@"location dictionary contains: %@", [self stringOutputForDictionary:self.locDict]);
     
@@ -1282,15 +1344,30 @@
                          
                          
                          NSDecimalNumber *altitudeRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitudeRef);
-                         self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];
+                         if(!altitudeRef) {
+                             self.gpsAltitudeRef.text = @"";
+                         }
+                         else {
+                             self.gpsAltitudeRef.text = [NSString stringWithFormat:@"%@", altitudeRef];
+                         }
                          [self.originalValues setObject:self.gpsAltitudeRef.text forKey:@"gpsAltitudeRef"];
                          
                          NSDecimalNumber *altitude = CFDictionaryGetValue(gps, kCGImagePropertyGPSAltitude);
-                         self.gpsAltitude.text = [NSString stringWithFormat:@"%@", altitude];
+                         if(!altitude) {
+                             self.gpsAltitude.text = @"";
+                         }
+                         else {
+                             self.gpsAltitude.text = [NSString stringWithFormat:@"%@", altitude];
+                         }
                          [self.originalValues setObject:self.gpsAltitude.text forKey:@"gpsAltitude"];
                          
                          NSDecimalNumber *timeStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSTimeStamp);
-                         self.gpsTimeStamp.text = [NSString stringWithFormat:@"%@", timeStamp];
+                         if(!timeStamp) {
+                             self.gpsTimeStamp.text = @"";
+                         }
+                         else {
+                             self.gpsTimeStamp.text = [NSString stringWithFormat:@"%@", timeStamp];
+                         }
                          [self.originalValues setObject:self.gpsTimeStamp.text forKey:@"gpsTimeStamp"];
                          
                          NSDecimalNumber *satellites = CFDictionaryGetValue(gps, kCGImagePropertyGPSSatellites);
@@ -1366,11 +1443,21 @@
                          [self.originalValues setObject:self.gpsTrack.text forKey:@"gpsTrack"];
                          
                          NSString *imgDirectionRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSImgDirectionRef);
-                         self.gpsImgDirectionRef.text = imgDirectionRef;
+                         if(!imgDirectionRef) {
+                             self.gpsImgDirectionRef.text = @"";
+                         }
+                         else {
+                             self.gpsImgDirectionRef.text = imgDirectionRef;
+                         }
                          [self.originalValues setObject:self.gpsImgDirectionRef.text forKey:@"gpsImgDirectionRef"];
                          
                          NSDecimalNumber *imgDirection = CFDictionaryGetValue(gps, kCGImagePropertyGPSImgDirection);
-                         self.gpsImgDirection.text = [NSString stringWithFormat:@"%@", imgDirection];
+                         if(!imgDirection) {
+                             self.gpsImgDirection.text = @"";
+                         }
+                         else {
+                             self.gpsImgDirection.text = [NSString stringWithFormat:@"%@", imgDirection];
+                         }
                          [self.originalValues setObject:self.gpsImgDirection.text forKey:@"gpsImgDirection"];
                          
                          NSDecimalNumber *mapDatum = CFDictionaryGetValue(gps, kCGImagePropertyGPSMapDatum);
@@ -1419,19 +1506,29 @@
                          [self.originalValues setObject:self.gpsDestLong.text forKey:@"gpsDestLong"];
                          
                          NSString *destBearingRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestBearingRef);
-                         self.gpsDestBearingRef.text = destBearingRef;
+                         if(!destBearingRef) {
+                             self.gpsDestBearingRef.text = @"";
+                         }
+                         else {
+                             self.gpsDestBearingRef.text = destBearingRef;
+                         }
                          [self.originalValues setObject:self.gpsDestBearingRef.text forKey:@"gpsDestBearingRef"];
                          
                          NSDecimalNumber *destBearing = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestBearing);
-                         self.gpsDestBearing.text = [NSString stringWithFormat:@"%@", destBearing];
+                         if(!destBearing) {
+                             self.gpsDestBearing.text = @"";
+                         }
+                         else {
+                             self.gpsDestBearing.text = [NSString stringWithFormat:@"%@", destBearing];
+                         }
                          [self.originalValues setObject:self.gpsDestBearing.text forKey:@"gpsDestBearing"];
                          
-                         NSDecimalNumber *destDistanceRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistanceRef);
+                         NSString *destDistanceRef = CFDictionaryGetValue(gps, kCGImagePropertyGPSDestDistanceRef);
                          if(!destDistanceRef) {
                              self.gpsDestDistanceRef.text = @"";
                          }
                          else {
-                             self.gpsDestDistanceRef.text = [NSString stringWithFormat:@"%@", destDistanceRef];
+                             self.gpsDestDistanceRef.text = destDistanceRef;
                          }
                          [self.originalValues setObject:self.gpsDestDistanceRef.text forKey:@"gpsDestDistanceRef"];
                          
@@ -1453,21 +1550,21 @@
                          }
                          [self.originalValues setObject:self.gpsProcessingMethod.text forKey:@"gpsProcessingMethod"];
                          
-                         NSDecimalNumber *areaInformation = CFDictionaryGetValue(gps, kCGImagePropertyGPSAreaInformation);
+                         NSString *areaInformation = CFDictionaryGetValue(gps, kCGImagePropertyGPSAreaInformation);
                          if(!areaInformation) {
                              self.gpsAreaInformation.text = @"";
                          }
                          else {
-                             self.gpsAreaInformation.text = [NSString stringWithFormat:@"%@", areaInformation];
+                             self.gpsAreaInformation.text = areaInformation;
                          }
                          [self.originalValues setObject:self.gpsAreaInformation.text forKey:@"gpsAreaInformation"];
                          
-                         NSDecimalNumber *dateStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSDateStamp);
+                         NSString *dateStamp = CFDictionaryGetValue(gps, kCGImagePropertyGPSDateStamp);
                          if(!dateStamp) {
                              self.gpsDateStamp.text = @"";
                          }
                          else {
-                             self.gpsDateStamp.text = [NSString stringWithFormat:@"%@", dateStamp];
+                             self.gpsDateStamp.text = dateStamp;
                          }
                          [self.originalValues setObject:self.gpsDateStamp.text forKey:@"gpsDateStamp"];
                          
@@ -4819,15 +4916,15 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 98:
             self.item.text = @"Processing method";
-            self.itemInfo.text = @"The name of the method used for finding a location.";
+            self.itemInfo.text = @"The name of the method used for finding a location. This value will not update.";
             break;
         case 99:
             self.item.text = @"Area information";
-            self.itemInfo.text = @"The name of the GPS area.";
+            self.itemInfo.text = @"The name of the GPS area. This value will not update.";
             break;
         case 100:
             self.item.text = @"Date stamp";
-            self.itemInfo.text = @"The data and time information relative to Coordinated Universal Time (UTC).";
+            self.itemInfo.text = @"The data and time information relative to Coordinated Universal Time (UTC). This value will not update.";
             break;
         case 101:
             self.item.text = @"Differential";
