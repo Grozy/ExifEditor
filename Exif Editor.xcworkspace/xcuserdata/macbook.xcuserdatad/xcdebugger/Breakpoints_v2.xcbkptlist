@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Exif Editor/ViewController.m"
-            timestampString = "465210401.276868"
+            timestampString = "465212232.981511"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "4146"
-            endingLineNumber = "4146"
+            startingLineNumber = "4175"
+            endingLineNumber = "4175"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Exif Editor/ViewController.m"
-            timestampString = "465210401.276868"
+            timestampString = "465212045.100578"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "693"
-            endingLineNumber = "693"
+            startingLineNumber = "689"
+            endingLineNumber = "689"
             landmarkName = "-gpsDictionaryForLocation:"
             landmarkType = "5">
          </BreakpointContent>

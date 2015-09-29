@@ -44,10 +44,6 @@
         self.takeNewPhotoPicker.allowsEditing = NO;
     }
     [self presentViewController:self.takeNewPhotoPicker animated:YES completion:nil];
-//    UIImageWriteToSavedPhotosAlbum(fullImage, self, nil, nil);
-//    UIImageWriteToSavedPhotosAlbum(image, self, @selector(image:finishedSavingWithError:contextInfo:), nil);
-//    [self.takeNewPhotoPicker dismissViewControllerAnimated:YES
-//                               completion:nil];
 }
 
 - (void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo: (void *)contextInfo
@@ -1195,6 +1191,49 @@
  */
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     
+    self.pic = [[UIImagePickerController alloc] init];
+    self.pic = picker;
+    self.inf = [[NSDictionary alloc] init];
+    self.inf = info;
+    
+    if(picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
+        UIImage *fullImage = info[UIImagePickerControllerOriginalImage];
+        NSMutableDictionary *mediaMetadata = (NSMutableDictionary *) [info objectForKey:UIImagePickerControllerMediaMetadata];
+        
+        NSLog(@"now in the imagePickerController method as SourceTypeCamera");
+        
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        
+        ALAssetsLibraryWriteImageCompletionBlock imageWriteCompletionBlock =
+        ^(NSURL *newURL, NSError *error) {
+            if (error) {
+                NSLog( @"Error writing image with metadata to Photo Library: %@", error );
+            } else {
+                NSLog( @"Wrote image %@ with metadata %@ to Photo Library",newURL,mediaMetadata);
+            }
+        };
+        
+        [library writeImageToSavedPhotosAlbum:[fullImage CGImage]
+                                     metadata:mediaMetadata
+                              completionBlock:imageWriteCompletionBlock];
+        
+        [picker dismissViewControllerAnimated:YES completion:nil];
+        
+
+        self.pic = [[UIImagePickerController alloc] init];
+        self.pic.delegate = self;
+        self.pic.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        self.pic.allowsEditing = NO;
+        [self presentViewController:self.pic animated:YES completion:nil];
+//        [self didSelectPhotoFromLibrary:self.pic didFinishPickingMediaWithInfo:self.inf];
+
+    }
+    else if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary) {
+        [self didSelectPhotoFromLibrary:picker didFinishPickingMediaWithInfo:info];
+    }
+}
+
+- (void)didSelectPhotoFromLibrary:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     NSLog(@"now loading the picture's information");
     
     // Clears the data fields before populating them
@@ -1213,17 +1252,7 @@
 //    NSValue *cropRect = info[UIImagePickerControllerCropRect];
 //    NSURL *mediaUrl = info[UIImagePickerControllerMediaURL];
     
-    if(picker.sourceType == UIImagePickerControllerSourceTypeCamera) {
-        NSLog(@"now in the imagePickerController method as SourceTypeCamera");
-        UIImageWriteToSavedPhotosAlbum(fullImage, nil, nil, nil);
-        [picker dismissViewControllerAnimated:YES
-                                   completion:nil];
-        
-        self.pic = [[UIImagePickerController alloc] init];
-        self.pic.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        [self imagePickerController:self.pic didFinishPickingMediaWithInfo:self.inf];
-        return;
-    }
+
     
     NSURL *referenceUrl = info[UIImagePickerControllerReferenceURL];
     
@@ -5501,11 +5530,11 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 71:
             self.item.text = @"GPS version";
-            self.itemInfo.text = @"The GPS version.";
+            self.itemInfo.text = @"The GPS version. This value will not update. Each number represents a digit of the version number. Ex: 2.31 = ( 2, 3, 1)";
             break;
         case 72:
             self.item.text = @"Latitude ref";
-            self.itemInfo.text = @"Whether the latitude is north or south.";
+            self.itemInfo.text = @"Whether the latitude is north or south. N or S.";
             break;
         case 73:
             self.item.text = @"Latitude";
@@ -5513,7 +5542,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 74:
             self.item.text = @"Longitude ref";
-            self.itemInfo.text = @"Whether the longitude is east or west.";
+            self.itemInfo.text = @"Whether the longitude is east or west. E or W.";
             break;
         case 75:
             self.item.text = @"Longitude";
@@ -5521,11 +5550,11 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 76:
             self.item.text = @"Altitude ref";
-            self.itemInfo.text = @"The reference altitude.";
+            self.itemInfo.text = @"The reference altitude. '0' indicates above sea level and '1' indicates below sea level.";
             break;
         case 77:
             self.item.text = @"Altitude";
-            self.itemInfo.text = @"The altitude.";
+            self.itemInfo.text = @"The altitude. Measured in meters.";
             break;
         case 78:
             self.item.text = @"Time stamp";
@@ -5537,11 +5566,11 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 80:
             self.item.text = @"Status";
-            self.itemInfo.text = @"The status of the GPS receiver.";
+            self.itemInfo.text = @"The status of the GPS receiver. 'A' indicates a measurement is in progress and 'V' indicates interoperability.";
             break;
         case 81:
             self.item.text = @"Measure mode";
-            self.itemInfo.text = @"The measurement mode.";
+            self.itemInfo.text = @"The measurement mode. '2' indicates 2D measurement and '3' indicates 3D measurement.";
             break;
         case 82:
             self.item.text = @"Degree of precision";
@@ -5549,23 +5578,23 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 83:
             self.item.text = @"Speed ref";
-            self.itemInfo.text = @"The unit for expressing the GPS receiver speed of movement.";
+            self.itemInfo.text = @"The unit for expressing the GPS receiver speed of movement. 'K' indicates km/hr, 'M' indicates mi/hr, 'N' indicates knots.";
             break;
         case 84:
             self.item.text = @"Speed";
-            self.itemInfo.text = @"The GPS receiver speed of movement.";
+            self.itemInfo.text = @"The GPS receiver speed of movement. Measured in units given by Speed ref.";
             break;
         case 85:
             self.item.text = @"Track ref";
-            self.itemInfo.text = @"The reference for the direction of GPS receiver movement.";
+            self.itemInfo.text = @"The reference for the direction of GPS receiver movement. 'T' indicates true direction and 'M' indicates magnetic direction.";
             break;
         case 86:
             self.item.text = @"Track";
-            self.itemInfo.text = @"The direction of GPS receiver movement.";
+            self.itemInfo.text = @"The direction of GPS receiver movement. The values range from 0.00 to 359.99.";
             break;
         case 87:
             self.item.text = @"Image direction ref";
-            self.itemInfo.text = @"The reference for the direction of the image.";
+            self.itemInfo.text = @"The reference for the direction of the image. 'T' indicates true direction and 'M' indicates magnetic direction.";
             break;
         case 88:
             self.item.text = @"Image direction";
@@ -5577,7 +5606,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 90:
             self.item.text = @"Destination latitude ref";
-            self.itemInfo.text = @"Whether the latitude of the destination point is northern or southern.";
+            self.itemInfo.text = @"Whether the latitude of the destination point is northern or southern. N or S.";
             break;
         case 91:
             self.item.text = @"Destination latitude";
@@ -5585,7 +5614,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 92:
             self.item.text = @"Destination longitude ref";
-            self.itemInfo.text = @"Whether the longitude of the destination point is east or west.";
+            self.itemInfo.text = @"Whether the longitude of the destination point is east or west. E or W.";
             break;
         case 93:
             self.item.text = @"Destination longitude";
@@ -5593,15 +5622,15 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 94:
             self.item.text = @"Destination bearing ref";
-            self.itemInfo.text = @"The reference for giving the bearing to the destination point.";
+            self.itemInfo.text = @"The reference for giving the bearing to the destination point. 'T' indicates true direction and 'M' indicates magnetic direction.";
             break;
         case 95:
             self.item.text = @"Destination bearing";
-            self.itemInfo.text = @"The bearing to the destination point.";
+            self.itemInfo.text = @"The bearing to the destination point. The values range from 0.00 to 359.99.";
             break;
         case 96:
             self.item.text = @"Destination distance ref";
-            self.itemInfo.text = @"The units for expressing the distance to the destination point.";
+            self.itemInfo.text = @"The units for expressing the distance to the destination point. 'K' indicates km/hr, 'M' indicates mi/hr, 'N' indicates knots.";
             break;
         case 97:
             self.item.text = @"Destination distance";
@@ -5621,7 +5650,7 @@ CGPoint pointFromRectangle(CGRect rect) {
             break;
         case 101:
             self.item.text = @"Differential";
-            self.itemInfo.text = @"Whether differential correction is applied to the GPS receiver.";
+            self.itemInfo.text = @"Whether differential correction is applied to the GPS receiver. '0' indicates no differential correction and '1' indicates differential correction was applied.";
             break;
         case 111:
             self.item.text = @"File name";
