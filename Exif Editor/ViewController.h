@@ -53,7 +53,6 @@
 
 // Dictionary of original values (required by both 'Reset' and 'What is this?')
 @property (strong, nonatomic) IBOutlet NSMutableDictionary *originalValues;
-@property (strong, nonatomic) IBOutlet NSString *exifExposureTimeO;
 
 @property (strong, nonatomic) IBOutlet NSMutableDictionary *tags;
 @property long currentTag;
@@ -67,6 +66,7 @@
 @property (strong, nonatomic) IBOutlet UIView *saveView;
 @property (strong, nonatomic) IBOutlet UIButton *jpgSaveButton;
 @property (strong, nonatomic) IBOutlet UIButton *pngSaveButton;
+@property (strong, nonatomic) IBOutlet UILabel *savingLabel;
 @property (strong, nonatomic) IBOutlet KLCPopup *savePopup;
 
 // Not-a-number popup
@@ -79,6 +79,7 @@
 @property (strong, nonatomic) IBOutlet NSMutableDictionary *imageMetadata;
 @property CFDictionaryRef originalExif;
 @property CFDictionaryRef originalGps;
+@property BOOL allFieldsBlank;
 
 // EXIF Dictionary Keys
 @property (strong, nonatomic) IBOutlet UITextField *exifExposureTime;
