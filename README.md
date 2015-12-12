@@ -1,4 +1,2 @@
 # ExifEditor
-edit, wipe exif on iphone images.
-
-In progress
+Edit or wipe Exif and GPS data in iPhone images.
